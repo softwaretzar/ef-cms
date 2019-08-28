@@ -2,6 +2,7 @@ const joi = require('joi-browser');
 const {
   joiValidationDecorator,
 } = require('../../utilities/JoiValidationDecorator');
+const { ContactFactory } = require('./contacts/ContactFactory');
 
 /**
  * constructor
@@ -35,11 +36,26 @@ joiValidationDecorator(
   User,
   joi.object().keys({
     barNumber: joi.string().optional(),
+    contact: joi
+      .object()
+      .keys({
+        address1: joi.string().required(),
+        address2: joi.string().optional(),
+        address3: joi.string().optional(),
+        city: joi.string().required(),
+        countryType: joi
+          .string()
+          .valid(ContactFactory.COUNTRY_TYPES.DOMESTIC)
+          .required(),
+        phone: joi.string().required(),
+        postalCode: joi.string().required(),
+        state: joi.string().required(),
+      })
+      .required(),
     email: joi.string().optional(),
     name: joi.string().optional(),
     token: joi.string().optional(),
     userId: joi.string().required(),
-    // TODO: add contact
   }),
 );
 
