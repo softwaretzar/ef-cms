@@ -97,10 +97,6 @@ jobs:
     resource_class: large
     parallelism: 2
     steps:
-      - checkout
-      - run:
-          name: NPM - Install
-          command: npm i
       - attach_workspace:
           at: /home/circleci
       - run:
@@ -112,18 +108,18 @@ jobs:
             npm run test:client
             TESTFILES=$(circleci tests glob "web-client/**/*.test.js" | circleci tests split --split-by=timings)
             CI=false SKIP_SANITIZE=true SKIP_VIRUS_SCAN=true AWS_ACCESS_KEY_ID=noop AWS_SECRET_ACCESS_KEY=noop FILE_UPLOAD_MODAL_TIMEOUT=1 jest --runInBand --config web-client/jest.config.js ${TESTFILES}
-      # - run:
-      #     name: Web Client - SonarQube
-      #     command: |
-      #       export SONAR_SCANNER_OPTS="-Xmx2048m"
-      #       /tmp/sonar-scanner/bin/sonar-scanner \
-      #       -Dsonar.projectKey="${UI_SONAR_KEY}" \
-      #       -Dsonar.branch.name="${CIRCLE_BRANCH}" \
-      #       -Dsonar.organization="${SONAR_ORG}" \
-      #       -Dsonar.projectBaseDir="web-client" \
-      #       -Dproject.settings="web-client/sonar-project.properties" \
-      #       -Dsonar.login="${UI_SONAR_TOKEN}" \
-      #       -Dsonar.host.url="https://sonarcloud.io"
+      - run:
+          name: Web Client - SonarQube
+          command: |
+            export SONAR_SCANNER_OPTS="-Xmx2048m"
+            /tmp/sonar-scanner/bin/sonar-scanner \
+            -Dsonar.projectKey="${UI_SONAR_KEY}" \
+            -Dsonar.branch.name="${CIRCLE_BRANCH}" \
+            -Dsonar.organization="${SONAR_ORG}" \
+            -Dsonar.projectBaseDir="web-client" \
+            -Dproject.settings="web-client/sonar-project.properties" \
+            -Dsonar.login="${UI_SONAR_TOKEN}" \
+            -Dsonar.host.url="https://sonarcloud.io"
 
   e2e-pa11y:
     docker:
