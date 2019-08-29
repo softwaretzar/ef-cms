@@ -106,7 +106,7 @@ jobs:
             ./wait-until.sh http://localhost:3000/api/swagger 
             sleep 5
             TESTFILES=$(circleci tests glob "web-client/**/*.test.js" | circleci tests split --split-by=timings)
-            CI=false SKIP_SANITIZE=true SKIP_VIRUS_SCAN=true AWS_ACCESS_KEY_ID=noop AWS_SECRET_ACCESS_KEY=noop FILE_UPLOAD_MODAL_TIMEOUT=1 jest --runInBand --config web-client/jest.config.js ${TESTFILES}
+            CI=false SKIP_SANITIZE=true SKIP_VIRUS_SCAN=true AWS_ACCESS_KEY_ID=noop AWS_SECRET_ACCESS_KEY=noop FILE_UPLOAD_MODAL_TIMEOUT=1 npx jest --runInBand --config web-client/jest.config.js ${TESTFILES}
       - run:
           name: Web Client - SonarQube
           command: |
