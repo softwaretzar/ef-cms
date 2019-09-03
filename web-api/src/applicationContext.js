@@ -416,6 +416,9 @@ const {
   updateCaseNoteInteractor,
 } = require('../../shared/src/business/useCases/caseNote/updateCaseNoteInteractor');
 const {
+  updateCaseRespondentPractitionerContactInformationInteractor,
+} = require('../../shared/src/business/useCases/users/updateCaseRespondentPractitionerContactInformationInteractor');
+const {
   updateCaseTrialSortMappingRecords,
 } = require('../../shared/src/persistence/dynamo/cases/updateCaseTrialSortMappingRecords');
 const {
@@ -716,6 +719,7 @@ module.exports = (appContextUser = {}) => {
         updateCaseDeadlineInteractor,
         updateCaseInteractor,
         updateCaseNoteInteractor,
+        updateCaseRespondentPractitionerContactInformationInteractor,
         updateCaseTrialSortTagsInteractor,
         updateDocketEntryInteractor,
         updatePrimaryContactInteractor,

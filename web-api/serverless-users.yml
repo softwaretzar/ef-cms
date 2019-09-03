@@ -353,10 +353,19 @@ functions:
           path: /{userId}/contact-info
           method: put
           cors: true
+          async: true
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId:
               Ref: ApiGatewayAuthorizer
+
+  updateCaseRespondentPractitionerContactInformation:
+    runtime: nodejs8.10
+    handler: web-api/src/usersHandlers.updateCaseRespondentPractitionerContactInformationLambda
+    layers:
+      - arn:aws:lambda:${opt:region}:${opt:accountId}:layer:${opt:stage}-puppeteer:latest
+    memorySize: 3008
+    timeout: 900
 
   getPractitionersBySearchKey:
     handler: web-api/src/usersHandlers.getPractitionersBySearchKeyLambda
