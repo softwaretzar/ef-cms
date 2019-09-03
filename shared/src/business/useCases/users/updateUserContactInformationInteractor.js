@@ -56,6 +56,7 @@ exports.updateUserContactInformationInteractor = async ({
       userId,
     });
 
+<<<<<<< Updated upstream
   const updatedCases = await Promise.all(
     userCases.map(async userCase => {
       let oldData;
@@ -164,39 +165,142 @@ exports.updateUserContactInformationInteractor = async ({
           },
           { applicationContext },
         );
+=======
+  const updatedCases = [];
 
-        workItem.addMessage(message);
-        changeOfAddressDocument.addWorkItem(workItem);
+  for (const userCase of userCases) {
+    let oldData;
+    const newData = contactInfo;
 
-        caseEntity.addDocument(changeOfAddressDocument);
+    let caseEntity = new Case(userCase);
+    const practitioner = caseEntity.practitioners.find(
+      practitioner => practitioner.userId === userId,
+    );
+    if (practitioner) {
+      oldData = clone(practitioner.contact);
+      practitioner.contact = contactInfo;
+    }
 
-        const docketRecordPdfWithCover = await addCoverToPdf({
-          applicationContext,
-          caseEntity,
-          documentEntity: changeOfAddressDocument,
-          pdfData: docketRecordPdf,
+    const respondent = caseEntity.respondents.find(
+      respondent => respondent.userId === userId,
+    );
+    if (respondent) {
+      oldData = clone(respondent.contact);
+      respondent.contact = contactInfo;
+    }
+
+    // we do this again so that it will convert '' to null
+    caseEntity = new Case(caseEntity);
+    const rawCase = caseEntity.validate().toRawObject();
+
+    const caseDetail = {
+      ...rawCase,
+      caseCaptionPostfix: Case.CASE_CAPTION_POSTFIX,
+    };
+
+    if (caseEntity.status !== Case.STATUS_TYPES.closed) {
+      const documentType = applicationContext
+        .getUtilities()
+        .getDocumentTypeForAddressChange({
+          newData,
+          oldData,
         });
 
-        await applicationContext.getPersistenceGateway().saveDocument({
-          applicationContext,
-          document: docketRecordPdfWithCover,
-          documentId: newDocumentId,
+      const pdfContentHtml = applicationContext
+        .getTemplateGenerators()
+        .generateChangeOfAddressTemplate({
+          caption: caseDetail.caseCaption,
+          captionPostfix: caseDetail.caseCaptionPostfix,
+          docketNumberWithSuffix: `${
+            caseDetail.docketNumber
+          }${caseDetail.docketNumberSuffix || ''}`,
+          documentTitle: documentType.title,
+          name: `${user.name} (${user.barNumber})`,
+          newData,
+          oldData,
         });
 
-        await applicationContext
-          .getPersistenceGateway()
-          .saveWorkItemForNonPaper({
-            applicationContext,
-            workItem: workItem,
-          });
-      }
+      const docketRecordPdf = await applicationContext
+        .getUseCases()
+        .generatePdfFromHtmlInteractor({
+          applicationContext,
+          contentHtml: pdfContentHtml,
+          displayHeaderFooter: false,
+          docketNumber: caseDetail.docketNumber,
+        });
+>>>>>>> Stashed changes
 
-      return applicationContext.getPersistenceGateway().updateCase({
+      const newDocumentId = applicationContext.getUniqueId();
+
+      const changeOfAddressDocument = new Document({
+        addToCoversheet: true,
+        additionalInfo: `for ${user.name}`,
+        caseId: caseEntity.caseId,
+        documentId: newDocumentId,
+        documentType: documentType.title,
+        eventCode: documentType.eventCode,
+        filedBy: user.name,
+        processingStatus: 'complete',
+        userId: user.userId,
+      });
+
+      const workItem = new WorkItem({
+        assigneeId: null,
+        assigneeName: null,
+        caseId: caseEntity.caseId,
+        caseStatus: caseEntity.status,
+        docketNumber: caseEntity.docketNumber,
+        docketNumberSuffix: caseEntity.docketNumberSuffix,
+        document: {
+          ...changeOfAddressDocument.toRawObject(),
+          createdAt: changeOfAddressDocument.createdAt,
+        },
+        isInternal: false,
+        section: DOCKET_SECTION,
+        sentBy: user.userId,
+      });
+
+      const message = new Message({
+        from: user.name,
+        fromUserId: user.userId,
+        message: `${changeOfAddressDocument.documentType} filed by ${capitalize(
+          user.role,
+        )} is ready for review.`,
+      });
+
+      workItem.addMessage(message);
+      changeOfAddressDocument.addWorkItem(workItem);
+
+      caseEntity.addDocument(changeOfAddressDocument);
+
+      const docketRecordPdfWithCover = await addCoverToPdf({
+        applicationContext,
+        caseEntity,
+        documentEntity: changeOfAddressDocument,
+        pdfData: docketRecordPdf,
+      });
+
+      await applicationContext.getPersistenceGateway().saveDocument({
+        applicationContext,
+        document: docketRecordPdfWithCover,
+        documentId: newDocumentId,
+      });
+
+      await applicationContext.getPersistenceGateway().saveWorkItemForNonPaper({
+        applicationContext,
+        workItem: workItem,
+      });
+    }
+
+    const updatedCase = await applicationContext
+      .getPersistenceGateway()
+      .updateCase({
         applicationContext,
         caseToUpdate: caseEntity.validate().toRawObject(),
       });
-    }),
-  );
+
+    updatedCases.push(updatedCase);
+  }
 
   return updatedCases;
 };
