@@ -9,5 +9,5 @@ elif [[ $BRANCH == 'staging' ]] ; then
 elif [[ $BRANCH == 'master' ]] ; then
   echo "${DYNAMSOFT_PRODUCT_KEYS_PROD}"
 else
-  exit 1;
+  echo "noop";
 fi
