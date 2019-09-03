@@ -188,16 +188,16 @@ jobs:
       - run:
           name: 'Deploy - Web API - Terraform'
           command: |
-          echo "export ENV=$(./get-env.sh $CIRCLE_BRANCH)" >> $BASH_ENV
-          echo "export DYNAMSOFT_PRODUCT_KEYS='$(./get-keys.sh $CIRCLE_BRANCH)'" >> $BASH_ENV
-          
-          AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
-          AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
-          COGNITO_SUFFIX=${COGNITO_SUFFIX} \
-          EFCMS_DOMAIN=${EFCMS_DOMAIN} \
-          SES_DMARC_EMAIL=${SES_DMARC_EMAIL} \
-          cd web-api/terraform/main && \
-          ../bin/deploy-app.sh ${ENV}
+            echo "export ENV=$(./get-env.sh $CIRCLE_BRANCH)" >> $BASH_ENV
+            echo "export DYNAMSOFT_PRODUCT_KEYS='$(./get-keys.sh $CIRCLE_BRANCH)'" >> $BASH_ENV
+
+            AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
+            AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
+            COGNITO_SUFFIX=${COGNITO_SUFFIX} \
+            EFCMS_DOMAIN=${EFCMS_DOMAIN} \
+            SES_DMARC_EMAIL=${SES_DMARC_EMAIL} \
+            cd web-api/terraform/main && \
+            ../bin/deploy-app.sh ${ENV}
 
   deploy-ui-s3:
     docker:
@@ -207,20 +207,20 @@ jobs:
           at: /home/circleci
       - run:
           name: 'Deploy - Web Client - S3'
-          command: | 
-          echo "export ENV=$(./get-env.sh $CIRCLE_BRANCH)" >> $BASH_ENV
-          echo "export DYNAMSOFT_PRODUCT_KEYS='$(./get-keys.sh $CIRCLE_BRANCH)'" >> $BASH_ENV
+          command: |
+            echo "export ENV=$(./get-env.sh $CIRCLE_BRANCH)" >> $BASH_ENV
+            echo "export DYNAMSOFT_PRODUCT_KEYS='$(./get-keys.sh $CIRCLE_BRANCH)'" >> $BASH_ENV
 
-          DYNAMSOFT_URL_OVERRIDE=${DYNAMSOFT_URL_OVERRIDE} \
-          ENV=${ENV} \
-          AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
-          AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
-          EFCMS_DOMAIN=${EFCMS_DOMAIN} \
-          COGNITO_SUFFIX=${COGNITO_SUFFIX} \
-          GIT_COMMIT=${CIRCLE_SHA1} \
-          ./web-client/build-dist.sh $ENV && \
-          aws s3 sync dist s3://ui-${ENV}.${EFCMS_DOMAIN} --delete --cache-control no-cache && \
-          aws s3 sync dist s3://failover-ui-${ENV}.${EFCMS_DOMAIN} --delete --cache-control no-cache
+            DYNAMSOFT_URL_OVERRIDE=${DYNAMSOFT_URL_OVERRIDE} \
+            ENV=${ENV} \
+            AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
+            AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
+            EFCMS_DOMAIN=${EFCMS_DOMAIN} \
+            COGNITO_SUFFIX=${COGNITO_SUFFIX} \
+            GIT_COMMIT=${CIRCLE_SHA1} \
+            ./web-client/build-dist.sh $ENV && \
+            aws s3 sync dist s3://ui-${ENV}.${EFCMS_DOMAIN} --delete --cache-control no-cache && \
+            aws s3 sync dist s3://failover-ui-${ENV}.${EFCMS_DOMAIN} --delete --cache-control no-cache
 
   deploy-api-east:
     machine:
@@ -383,27 +383,27 @@ workflows:
           # filters:
           #   branches:
           #     only:
-                # - develop
-                # - staging
-                # - master
+          # - develop
+          # - staging
+          # - master
       # - deploy-api-east:
       #     requires:
       #       - deploy-bundle
-          # filters:
-          #   branches:
-          #     only:
-          #       - develop
-          #       - staging
-          #       - master
+      # filters:
+      #   branches:
+      #     only:
+      #       - develop
+      #       - staging
+      #       - master
       # - deploy-api-west:
       #     requires:
       #       - deploy-bundle
-          # filters:
-          #   branches:
-          #     only:
-          #       - develop
-          #       - staging
-          #       - master
+      # filters:
+      #   branches:
+      #     only:
+      #       - develop
+      #       - staging
+      #       - master
       # - post-deploy:
       #     requires:
       #       - deploy-ui
