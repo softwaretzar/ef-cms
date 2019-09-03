@@ -168,8 +168,8 @@ jobs:
       - run:
           name: 'Deploy - Web Client - Terraform'
           command: |
-            echo "export ENV=$(./get-env.sh $CIRCLE_BRANCH)" >> $BASH_ENV
-            echo "export DYNAMSOFT_PRODUCT_KEYS='$(./get-keys.sh $CIRCLE_BRANCH)'" >> $BASH_ENV
+            echo "export ENV=$(~/project/get-env.sh $CIRCLE_BRANCH)" >> $BASH_ENV
+            echo "export DYNAMSOFT_PRODUCT_KEYS='$(~/project/get-keys.sh $CIRCLE_BRANCH)'" >> $BASH_ENV
 
             AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
             AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
@@ -177,7 +177,8 @@ jobs:
             DYNAMSOFT_S3_ZIP_PATH=${DYNAMSOFT_S3_ZIP_PATH} \
             DYNAMSOFT_URL=${DYNAMSOFT_URL} \
             DYNAMSOFT_PRODUCT_KEYS=${DYNAMSOFT_PRODUCT_KEYS} \
-            ./web-client/terraform/bin/deploy-app.sh $ENV
+            cd ~/project/web-client/terraform/main && \
+            ../bin/deploy-app.sh $ENV
 
   deploy-api-terraform:
     docker:
@@ -188,15 +189,15 @@ jobs:
       - run:
           name: 'Deploy - Web API - Terraform'
           command: |
-            echo "export ENV=$(./get-env.sh $CIRCLE_BRANCH)" >> $BASH_ENV
-            echo "export DYNAMSOFT_PRODUCT_KEYS='$(./get-keys.sh $CIRCLE_BRANCH)'" >> $BASH_ENV
+            echo "export ENV=$(~/project/get-env.sh $CIRCLE_BRANCH)" >> $BASH_ENV
+            echo "export DYNAMSOFT_PRODUCT_KEYS='$(~/project/get-keys.sh $CIRCLE_BRANCH)'" >> $BASH_ENV
 
             AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
             AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
             COGNITO_SUFFIX=${COGNITO_SUFFIX} \
             EFCMS_DOMAIN=${EFCMS_DOMAIN} \
             SES_DMARC_EMAIL=${SES_DMARC_EMAIL} \
-            cd web-api/terraform/main && \
+            cd ~/project/web-api/terraform/main && \
             ../bin/deploy-app.sh ${ENV}
 
   deploy-ui-s3:
@@ -208,8 +209,8 @@ jobs:
       - run:
           name: 'Deploy - Web Client - S3'
           command: |
-            echo "export ENV=$(./get-env.sh $CIRCLE_BRANCH)" >> $BASH_ENV
-            echo "export DYNAMSOFT_PRODUCT_KEYS='$(./get-keys.sh $CIRCLE_BRANCH)'" >> $BASH_ENV
+            echo "export ENV=$(~/project/get-env.sh $CIRCLE_BRANCH)" >> $BASH_ENV
+            echo "export DYNAMSOFT_PRODUCT_KEYS='$(~/project/get-keys.sh $CIRCLE_BRANCH)'" >> $BASH_ENV
 
             DYNAMSOFT_URL_OVERRIDE=${DYNAMSOFT_URL_OVERRIDE} \
             ENV=${ENV} \
@@ -218,7 +219,7 @@ jobs:
             EFCMS_DOMAIN=${EFCMS_DOMAIN} \
             COGNITO_SUFFIX=${COGNITO_SUFFIX} \
             GIT_COMMIT=${CIRCLE_SHA1} \
-            ./web-client/build-dist.sh $ENV && \
+            ~/project/web-client/build-dist.sh $ENV && \
             aws s3 sync dist s3://ui-${ENV}.${EFCMS_DOMAIN} --delete --cache-control no-cache && \
             aws s3 sync dist s3://failover-ui-${ENV}.${EFCMS_DOMAIN} --delete --cache-control no-cache
 
