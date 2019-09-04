@@ -161,7 +161,7 @@ jobs:
 
   deploy-ui-terraform:
     docker:
-      - image: sutt0n/ef-cms:latest
+      - image: sutt0n/ef-cms:experimental
     steps:
       - attach_workspace:
           at: /home/circleci
@@ -182,7 +182,7 @@ jobs:
 
   deploy-api-terraform:
     docker:
-      - image: sutt0n/ef-cms:latest
+      - image: sutt0n/ef-cms:experimental
     steps:
       - attach_workspace:
           at: /home/circleci
@@ -202,7 +202,7 @@ jobs:
 
   deploy-ui-s3:
     docker:
-      - image: sutt0n/ef-cms:latest
+      - image: sutt0n/ef-cms:experimental
     steps:
       - attach_workspace:
           at: /home/circleci
