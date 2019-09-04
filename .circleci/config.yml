@@ -157,7 +157,7 @@ jobs:
             ./wait-until.sh http://localhost:1234 
             npm run cypress
       - store_artifacts:
-          path: ~//project/cypress/videos/
+          path: ~/project/cypress/videos/
 
   deploy-ui-terraform:
     docker:
