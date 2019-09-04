@@ -170,6 +170,7 @@ jobs:
           command: |
             echo "export ENV=$(~/project/get-env.sh $CIRCLE_BRANCH)" >> $BASH_ENV
             echo "export DYNAMSOFT_PRODUCT_KEYS='$(~/project/get-keys.sh $CIRCLE_BRANCH)'" >> $BASH_ENV
+            source $BASH_ENV
 
             AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
             AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
@@ -191,6 +192,7 @@ jobs:
           command: |
             echo "export ENV=$(~/project/get-env.sh $CIRCLE_BRANCH)" >> $BASH_ENV
             echo "export DYNAMSOFT_PRODUCT_KEYS='$(~/project/get-keys.sh $CIRCLE_BRANCH)'" >> $BASH_ENV
+            source $BASH_ENV
 
             AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
             AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
@@ -211,6 +213,7 @@ jobs:
           command: |
             echo "export ENV=$(~/project/get-env.sh $CIRCLE_BRANCH)" >> $BASH_ENV
             echo "export DYNAMSOFT_PRODUCT_KEYS='$(~/project/get-keys.sh $CIRCLE_BRANCH)'" >> $BASH_ENV
+            source $BASH_ENV
 
             DYNAMSOFT_URL_OVERRIDE=${DYNAMSOFT_URL_OVERRIDE} \
             ENV=${ENV} \
