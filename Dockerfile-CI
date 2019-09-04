@@ -1,5 +1,3 @@
-# TODO: add package.json script to publish to dockerhub
-
 FROM cypress/base:10.15.3
 
 RUN sh -c 'echo "deb [check-valid-until=no] http://archive.debian.org/debian jessie-backports main" > /etc/apt/sources.list.d/jessie-backports.list'
