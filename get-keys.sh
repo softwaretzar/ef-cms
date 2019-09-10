@@ -2,12 +2,12 @@
 
 BRANCH=$1
 
-if  [[ $BRANCH == 'develop' ]] ; then 
+if [[ $BRANCH == 'develop' ]] || [[ $BRANCH == 'themis' ]] || [[ $BRANCH == 'circleci-deployment-refactor' ]] ; then
   echo "${DYNAMSOFT_PRODUCT_KEYS_DEV}"
 elif [[ $BRANCH == 'staging' ]] ; then
   echo "${DYNAMSOFT_PRODUCT_KEYS_STG}"
 elif [[ $BRANCH == 'master' ]] ; then
   echo "${DYNAMSOFT_PRODUCT_KEYS_PROD}"
 else
-  echo "noop";
+  exit 1;
 fi

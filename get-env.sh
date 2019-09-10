@@ -2,12 +2,16 @@
 
 BRANCH=$1
 
-if  [[ $BRANCH == 'develop' ]] ; then 
+if  [[ $BRANCH == 'develop' ]] ; then
   echo 'dev'
+elif [[ $BRANCH == 'themis' ]] ; then
+  echo 'themis'
+elif [[ $BRANCH == 'circleci-deployment-refactor' ]] ; then
+  echo 'joe'
 elif [[ $BRANCH == 'staging' ]] ; then
   echo 'stg'
 elif [[ $BRANCH == 'master' ]] ; then
   echo 'prod'
 else
-  echo 'joe';
+  exit 1;
 fi
