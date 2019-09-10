@@ -7,7 +7,7 @@ if  [[ $BRANCH == 'develop' ]] ; then
 elif [[ $BRANCH == 'themis' ]] ; then
   echo 'themis'
 elif [[ $BRANCH == 'circleci-deployment-refactor' ]] ; then
-  echo 'joe'
+  echo 'jojo'
 elif [[ $BRANCH == 'staging' ]] ; then
   echo 'stg'
 elif [[ $BRANCH == 'master' ]] ; then
