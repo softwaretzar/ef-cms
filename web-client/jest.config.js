@@ -1,5 +1,10 @@
 module.exports = {
   collectCoverage: true,
+  collectCoverageFrom: [
+    'src/presenter/**/*.js',
+    'integration-tests/*.test.js',
+    '!integration-tests/journey/*.js',
+  ],
   coverageDirectory: './coverage',
   coverageThreshold: {
     global: {
@@ -12,15 +17,14 @@ module.exports = {
   globals: {
     window: true,
   },
-  testEnvironment: 'node',
   // this is to ignore imported html files
+  testEnvironment: 'node',
   transform: {
     '^.+\\.html?$': './htmlLoader.js',
     '^.+\\.js$': 'babel-jest',
     '^.+\\.jsx$': 'babel-jest',
   },
-  verbose: true,
   // TODO: remove 'e2e/**/*.js' - this is including e2e tests in our global coverage %
   // TODO: add in '!src/**/*.test.js' - this is including unit tests in our global coverage %
-  // collectCoverageFrom: ['src/presenter/**/*.js', '!src/**/*.test.js'],
+  verbose: true,
 };
