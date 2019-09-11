@@ -13,6 +13,9 @@ const LOG_LEVEL = 'info'; // ['debug', 'info', 'warn', 'error', 'silent']. Defau
 // do not include trailing slashes
 const PROXY_DESTINATIONS = {
   '/api': `http://${PROXY_HOST}:3001`,
+  '/case-deadlines': `http://${PROXY_HOST}:3009`,
+  '/case-documents': `http://${PROXY_HOST}:3008`,
+  '/case-notes': `http://${PROXY_HOST}:3010`,
   '/cases': `http://${PROXY_HOST}:3002`,
   '/documents': `http://${PROXY_HOST}:3004`,
   '/sections': `http://${PROXY_HOST}:3006`,
@@ -48,7 +51,7 @@ const proxyMain = async () => {
   const app = express();
   app.use('/', proxyObj);
 
-  app.listen(PROXY_PORT, PROXY_HOST);
+  app.listen(PROXY_PORT);
 
   const isProxyReachable = uri => {
     // hitting '/TEST/PROXY' to deliberately elicit a 404 rather than 403 which clutters authorization logs

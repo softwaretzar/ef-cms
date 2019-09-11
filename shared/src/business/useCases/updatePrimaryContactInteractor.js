@@ -37,12 +37,17 @@ exports.updatePrimaryContactInteractor = async ({
     throw new NotFoundError(`Case ${caseId} was not found.`);
   }
 
-  if (user.userId !== caseToUpdate.userId) {
+  const caseEntity = new Case(caseToUpdate, { applicationContext });
+
+  const userIsAssociated = applicationContext
+    .getUseCases()
+    .userIsAssociated({ applicationContext, caseDetail: caseToUpdate, user });
+
+  if (!userIsAssociated) {
     throw new UnauthorizedError('Unauthorized for update case contact');
   }
 
   let caseNameToUse;
-  const caseEntity = new Case(caseToUpdate);
   const spousePartyTypes = [
     ContactFactory.PARTY_TYPES.petitionerSpouse,
     ContactFactory.PARTY_TYPES.petitionerDeceasedSpouse,
@@ -71,7 +76,9 @@ exports.updatePrimaryContactInteractor = async ({
     .generateChangeOfAddressTemplate({
       caption: caseDetail.caseCaption,
       captionPostfix: caseDetail.caseCaptionPostfix,
-      docketNumber: caseDetail.docketNumber,
+      docketNumberWithSuffix: `${
+        caseDetail.docketNumber
+      }${caseDetail.docketNumberSuffix || ''}`,
       documentTitle: documentType.title,
       name: caseNameToUse,
       newData: contactInfo,
@@ -95,40 +102,50 @@ exports.updatePrimaryContactInteractor = async ({
 
   const newDocumentId = applicationContext.getUniqueId();
 
-  const changeOfAddressDocument = new Document({
-    additionalInfo2: `for ${caseNameToUse}`,
-    caseId,
-    documentId: newDocumentId,
-    documentType: documentType.title,
-    eventCode: documentType.eventCode,
-    filedBy: user.name,
-    processingStatus: 'complete',
-    userId: user.userId,
-  });
-
-  const workItem = new WorkItem({
-    assigneeId: null,
-    assigneeName: null,
-    caseId,
-    caseStatus: caseEntity.status,
-    docketNumber: caseEntity.docketNumber,
-    docketNumberSuffix: caseEntity.docketNumberSuffix,
-    document: {
-      ...changeOfAddressDocument.toRawObject(),
-      createdAt: changeOfAddressDocument.createdAt,
+  const changeOfAddressDocument = new Document(
+    {
+      addToCoversheet: true,
+      additionalInfo: `for ${caseNameToUse}`,
+      caseId,
+      documentId: newDocumentId,
+      documentType: documentType.title,
+      eventCode: documentType.eventCode,
+      filedBy: user.name,
+      processingStatus: 'complete',
+      userId: user.userId,
     },
-    isInternal: false,
-    section: DOCKET_SECTION,
-    sentBy: user.userId,
-  });
+    { applicationContext },
+  );
 
-  const message = new Message({
-    from: user.name,
-    fromUserId: user.userId,
-    message: `${changeOfAddressDocument.documentType} filed by ${capitalize(
-      user.role,
-    )} is ready for review.`,
-  });
+  const workItem = new WorkItem(
+    {
+      assigneeId: null,
+      assigneeName: null,
+      caseId,
+      caseStatus: caseEntity.status,
+      docketNumber: caseEntity.docketNumber,
+      docketNumberSuffix: caseEntity.docketNumberSuffix,
+      document: {
+        ...changeOfAddressDocument.toRawObject(),
+        createdAt: changeOfAddressDocument.createdAt,
+      },
+      isInternal: false,
+      section: DOCKET_SECTION,
+      sentBy: user.userId,
+    },
+    { applicationContext },
+  );
+
+  const message = new Message(
+    {
+      from: user.name,
+      fromUserId: user.userId,
+      message: `${changeOfAddressDocument.documentType} filed by ${capitalize(
+        user.role,
+      )} is ready for review.`,
+    },
+    { applicationContext },
+  );
 
   workItem.addMessage(message);
   changeOfAddressDocument.addWorkItem(workItem);

@@ -1,5 +1,7 @@
 import { batchDownloadTrialSessionInteractor } from './batchDownloadTrialSessionInteractor';
 
+const { MOCK_CASE } = require('../../../test/mockCase');
+
 describe('batchDownloadTrialSessionInteractor', () => {
   let applicationContext;
   const getTrialSessionByIdMock = jest.fn(() => {
@@ -10,19 +12,10 @@ describe('batchDownloadTrialSessionInteractor', () => {
   });
   const getCalendaredCasesForTrialSessionMock = jest.fn(() => [
     {
-      docketNumber: '123-45',
-      documents: [
-        {
-          documentId: '123123123123',
-          documentType: 'Test Document',
-        },
-        {
-          documentId: '123123123124',
-          documentType: 'Petition',
-        },
-      ],
+      ...MOCK_CASE,
     },
   ]);
+
   const zipDocumentsMock = jest.fn();
   const getDownloadPolicyUrlMock = jest.fn();
 
@@ -37,6 +30,9 @@ describe('batchDownloadTrialSessionInteractor', () => {
         getDownloadPolicyUrl: getDownloadPolicyUrlMock,
         getTrialSessionById: getTrialSessionByIdMock,
         zipDocuments: zipDocumentsMock,
+      }),
+      getUseCases: () => ({
+        generateDocketRecordPdfInteractor: () => {},
       }),
     };
   });
@@ -68,6 +64,5 @@ describe('batchDownloadTrialSessionInteractor', () => {
     expect(getTrialSessionByIdMock).toHaveBeenCalled();
     expect(getCalendaredCasesForTrialSessionMock).toHaveBeenCalled();
     expect(zipDocumentsMock).toHaveBeenCalled();
-    expect(getDownloadPolicyUrlMock).toHaveBeenCalled();
   });
 });

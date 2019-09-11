@@ -1,4 +1,4 @@
-export const constants = {
+const constants = {
   SI_ELECTRONIC: 'Electronic',
   SI_NONE: 'None',
   SI_PAPER: 'Paper',
@@ -10,7 +10,7 @@ export const constants = {
  * @param {object} caseDetail case to set service indicators on
  * @returns {object} service indicators for petitioner, practitioners, and respondents
  */
-export const setServiceIndicatorsForCase = caseDetail => {
+const setServiceIndicatorsForCase = caseDetail => {
   const {
     contactPrimary,
     contactSecondary,
@@ -32,19 +32,12 @@ export const setServiceIndicatorsForCase = caseDetail => {
   // practitioners
   if (practitioners && practitioners.length) {
     practitioners.forEach(practitioner => {
-      if (practitioner.representingPrimary) {
-        hasPrimaryPractitioner = true;
-      }
+      hasPrimaryPractitioner = !!practitioner.representingPrimary;
+      hasSecondaryPractitioner = !!practitioner.representingSecondary;
 
-      if (practitioner.representingSecondary) {
-        hasSecondaryPractitioner = true;
-      }
-
-      if (practitioner.userId) {
-        practitioner.serviceIndicator = constants.SI_ELECTRONIC;
-      } else {
-        practitioner.serviceIndicator = constants.SI_PAPER;
-      }
+      practitioner.serviceIndicator = practitioner.userId
+        ? constants.SI_ELECTRONIC
+        : constants.SI_PAPER;
     });
   }
 
@@ -53,22 +46,23 @@ export const setServiceIndicatorsForCase = caseDetail => {
     if (hasPrimaryPractitioner) {
       contactPrimary.serviceIndicator = constants.SI_NONE;
     } else {
-      if (isPaper) {
-        contactPrimary.serviceIndicator = constants.SI_PAPER;
-      } else {
-        contactPrimary.serviceIndicator = constants.SI_ELECTRONIC;
-      }
+      contactPrimary.serviceIndicator = isPaper
+        ? constants.SI_PAPER
+        : constants.SI_ELECTRONIC;
     }
   }
 
   // contactSecondary
   if (contactSecondary) {
-    if (hasSecondaryPractitioner) {
-      contactSecondary.serviceIndicator = constants.SI_NONE;
-    } else {
-      contactSecondary.serviceIndicator = constants.SI_PAPER;
-    }
+    contactSecondary.serviceIndicator = hasSecondaryPractitioner
+      ? constants.SI_NONE
+      : constants.SI_PAPER;
   }
 
   return caseDetail;
+};
+
+module.exports = {
+  constants,
+  setServiceIndicatorsForCase,
 };

@@ -9,6 +9,7 @@ const { capitalize, clone } = require('lodash');
 const { Case } = require('../../entities/cases/Case');
 const { DOCKET_SECTION } = require('../../entities/WorkQueue');
 const { Document } = require('../../entities/Document');
+const { isEqual } = require('lodash');
 const { Message } = require('../../entities/Message');
 const { UnauthorizedError } = require('../../../errors/errors');
 const { WorkItem } = require('../../entities/WorkItem');
@@ -41,11 +42,15 @@ exports.updateUserContactInformationInteractor = async ({
     .getPersistenceGateway()
     .getUserById({ applicationContext, userId });
 
+  if (isEqual(user.contact, contactInfo)) {
+    throw new Error('there were no changes found needing to be updated');
+  }
+
   await applicationContext.getPersistenceGateway().updateUser({
     applicationContext,
     user: {
       ...user,
-      contact: contactInfo,
+      contact: { ...contactInfo },
     },
   });
 
@@ -56,35 +61,38 @@ exports.updateUserContactInformationInteractor = async ({
       userId,
     });
 
-  const updatedCases = await Promise.all(
-    userCases.map(async userCase => {
-      let oldData;
-      const newData = contactInfo;
-      const caseEntity = new Case(userCase);
+  const updatedCases = [];
+  for (let userCase of userCases) {
+    let oldData;
+    const newData = contactInfo;
 
-      const practitioner = caseEntity.practitioners.find(
-        practitioner => practitioner.userId === userId,
-      );
-      if (practitioner) {
-        oldData = clone(practitioner);
-        Object.assign(practitioner, contactInfo);
-      }
+    let caseEntity = new Case(userCase, { applicationContext });
+    const practitioner = caseEntity.practitioners.find(
+      practitioner => practitioner.userId === userId,
+    );
+    if (practitioner) {
+      oldData = clone(practitioner.contact);
+      practitioner.contact = contactInfo;
+    }
 
-      const respondent = caseEntity.respondents.find(
-        respondent => respondent.userId === userId,
-      );
-      if (respondent) {
-        oldData = clone(respondent);
-        Object.assign(respondent, contactInfo);
-      }
+    const respondent = caseEntity.respondents.find(
+      respondent => respondent.userId === userId,
+    );
+    if (respondent) {
+      oldData = clone(respondent.contact);
+      respondent.contact = contactInfo;
+    }
 
-      const rawCase = caseEntity.validate().toRawObject();
+    // we do this again so that it will convert '' to null
+    caseEntity = new Case(caseEntity, { applicationContext });
+    const rawCase = caseEntity.validate().toRawObject();
 
-      const caseDetail = {
-        ...rawCase,
-        caseCaptionPostfix: Case.CASE_CAPTION_POSTFIX,
-      };
+    const caseDetail = {
+      ...rawCase,
+      caseCaptionPostfix: Case.CASE_CAPTION_POSTFIX,
+    };
 
+    if (caseEntity.status !== Case.STATUS_TYPES.closed) {
       const documentType = applicationContext
         .getUtilities()
         .getDocumentTypeForAddressChange({
@@ -97,9 +105,11 @@ exports.updateUserContactInformationInteractor = async ({
         .generateChangeOfAddressTemplate({
           caption: caseDetail.caseCaption,
           captionPostfix: caseDetail.caseCaptionPostfix,
-          docketNumber: caseDetail.docketNumber,
+          docketNumberWithSuffix: `${
+            caseDetail.docketNumber
+          }${caseDetail.docketNumberSuffix || ''}`,
           documentTitle: documentType.title,
-          name: contactInfo.name,
+          name: `${user.name} (${user.barNumber})`,
           newData,
           oldData,
         });
@@ -110,46 +120,55 @@ exports.updateUserContactInformationInteractor = async ({
           applicationContext,
           contentHtml: pdfContentHtml,
           displayHeaderFooter: false,
-          docketNumber: caseEntity.docketNumber,
-          headerHtml: null,
+          docketNumber: caseDetail.docketNumber,
         });
 
       const newDocumentId = applicationContext.getUniqueId();
 
-      const changeOfAddressDocument = new Document({
-        additionalInfo2: `for ${contactInfo.name}`,
-        caseId: caseEntity.caseId,
-        documentId: newDocumentId,
-        documentType: documentType.title,
-        eventCode: documentType.eventCode,
-        filedBy: user.name,
-        processingStatus: 'complete',
-        userId: user.userId,
-      });
-
-      const workItem = new WorkItem({
-        assigneeId: null,
-        assigneeName: null,
-        caseId: caseEntity.caseId,
-        caseStatus: caseEntity.status,
-        docketNumber: caseEntity.docketNumber,
-        docketNumberSuffix: caseEntity.docketNumberSuffix,
-        document: {
-          ...changeOfAddressDocument.toRawObject(),
-          createdAt: changeOfAddressDocument.createdAt,
+      const changeOfAddressDocument = new Document(
+        {
+          addToCoversheet: true,
+          additionalInfo: `for ${user.name}`,
+          caseId: caseEntity.caseId,
+          documentId: newDocumentId,
+          documentType: documentType.title,
+          eventCode: documentType.eventCode,
+          filedBy: user.name,
+          processingStatus: 'complete',
+          userId: user.userId,
         },
-        isInternal: false,
-        section: DOCKET_SECTION,
-        sentBy: user.userId,
-      });
+        { applicationContext },
+      );
 
-      const message = new Message({
-        from: user.name,
-        fromUserId: user.userId,
-        message: `${changeOfAddressDocument.documentType} filed by ${capitalize(
-          user.role,
-        )} is ready for review.`,
-      });
+      const workItem = new WorkItem(
+        {
+          assigneeId: null,
+          assigneeName: null,
+          caseId: caseEntity.caseId,
+          caseStatus: caseEntity.status,
+          docketNumber: caseEntity.docketNumber,
+          docketNumberSuffix: caseEntity.docketNumberSuffix,
+          document: {
+            ...changeOfAddressDocument.toRawObject(),
+            createdAt: changeOfAddressDocument.createdAt,
+          },
+          isInternal: false,
+          section: DOCKET_SECTION,
+          sentBy: user.userId,
+        },
+        { applicationContext },
+      );
+
+      const message = new Message(
+        {
+          from: user.name,
+          fromUserId: user.userId,
+          message: `${
+            changeOfAddressDocument.documentType
+          } filed by ${capitalize(user.role)} is ready for review.`,
+        },
+        { applicationContext },
+      );
 
       workItem.addMessage(message);
       changeOfAddressDocument.addWorkItem(workItem);
@@ -173,13 +192,16 @@ exports.updateUserContactInformationInteractor = async ({
         applicationContext,
         workItem: workItem,
       });
+    }
 
-      return applicationContext.getPersistenceGateway().updateCase({
+    const updatedCase = await applicationContext
+      .getPersistenceGateway()
+      .updateCase({
         applicationContext,
         caseToUpdate: caseEntity.validate().toRawObject(),
       });
-    }),
-  );
+    updatedCases.push(updatedCase);
+  }
 
   return updatedCases;
 };
