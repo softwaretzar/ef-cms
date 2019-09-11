@@ -469,7 +469,7 @@ workflows:
             - build-client
             - e2e-pa11y
             - e2e-cypress
-      - deploy-ui-s3:
+      - deploy-s3:
           requires:
             - deploy-terraform-api
             - deploy-terraform-ui
