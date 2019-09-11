@@ -465,8 +465,8 @@ workflows:
             - e2e-cypress
       - deploy-ui-s3:
           requires:
-            - deploy-api-terraform
-            - deploy-ui-terraform
+            - deploy-terraform-api
+            - deploy-terraform-ui
           # filters:
           #   branches:
           #     only:
