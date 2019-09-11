@@ -158,7 +158,7 @@ jobs:
       - store_artifacts:
           path: ~/project/cypress/videos/
 
-  deploy-ui-terraform:
+  deploy-terraform-ui:
     docker:
       - image: sutt0n/ef-cms:experimental
     steps:
@@ -180,7 +180,7 @@ jobs:
             cd ~/project/web-client/terraform/main && \
             ../bin/deploy-app.sh $ENV
 
-  deploy-api-terraform:
+  deploy-terraform-api:
     docker:
       - image: sutt0n/ef-cms:experimental
     steps:
@@ -201,7 +201,7 @@ jobs:
             cd ~/project/web-api/terraform/main && \
             ../bin/deploy-app.sh ${ENV}
 
-  deploy-ui-s3:
+  deploy-s3:
     docker:
       - image: sutt0n/ef-cms:experimental
     steps:
@@ -224,6 +224,42 @@ jobs:
             ~/project/web-client/build-dist.sh $ENV && \
             aws s3 sync dist s3://ui-${ENV}.${EFCMS_DOMAIN} --delete --cache-control no-cache && \
             aws s3 sync dist s3://failover-ui-${ENV}.${EFCMS_DOMAIN} --delete --cache-control no-cache
+
+  build-layer-clamav:
+    docker:
+      - image: sutt0n/ef-cms:experimental
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Build Lambda Layer - ClamAV
+          command: |
+            cd web-api/runtimes/clamav
+            ./build.sh
+
+  build-layer-ghostscript:
+    docker:
+      - image: sutt0n/ef-cms:experimental
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Build Lambda Layer - Ghostscript
+          command: |
+            cd web-api/runtimes/ghostscript
+            ./build.sh
+
+  build-layer-puppeteer:
+    docker:
+      - image: sutt0n/ef-cms:experimental
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Build Lambda Layer - Puppeteer
+          command: |
+            cd web-api/runtimes/puppeteer
+            ./build.sh
 
   deploy-api-east:
     machine:
@@ -392,14 +428,35 @@ workflows:
       - e2e-cypress:
           requires:
             - bundle
-      - deploy-ui-terraform:
+      - deploy-terraform-ui:
           requires:
             - build-shared
             - build-api
             - build-client
             - e2e-pa11y
             - e2e-cypress
-      - deploy-api-terraform:
+      - deploy-terraform-api:
+          requires:
+            - build-shared
+            - build-api
+            - build-client
+            - e2e-pa11y
+            - e2e-cypress
+      - build-layer-clamav:
+          requires:
+            - build-shared
+            - build-api
+            - build-client
+            - e2e-pa11y
+            - e2e-cypress
+      - build-layer-ghostscript:
+          requires:
+            - build-shared
+            - build-api
+            - build-client
+            - e2e-pa11y
+            - e2e-cypress
+      - build-layer-puppeteer:
           requires:
             - build-shared
             - build-api
