@@ -234,6 +234,7 @@ jobs:
       - run:
           name: Build Lambda Layer - ClamAV
           command: |
+            apt-get install -y docker.io
             cd web-api/runtimes/clamav
             ./build.sh
 
@@ -246,6 +247,7 @@ jobs:
       - run:
           name: Build Lambda Layer - Ghostscript
           command: |
+            apt-get install -y docker.io
             cd web-api/runtimes/ghostscript
             ./build.sh
 
@@ -258,6 +260,7 @@ jobs:
       - run:
           name: Build Lambda Layer - Puppeteer
           command: |
+            apt-get install -y docker.io
             cd web-api/runtimes/puppeteer
             ./build.sh
 
