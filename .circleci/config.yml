@@ -231,10 +231,11 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
+      - setup_remote_docker
+          docker_layer_caching: true
       - run:
           name: Build Lambda Layer - ClamAV
           command: |
-            apt-get install -y docker.io
             cd web-api/runtimes/clamav
             ./build.sh
 
@@ -244,10 +245,11 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
+      - setup_remote_docker
+          docker_layer_caching: true
       - run:
           name: Build Lambda Layer - Ghostscript
           command: |
-            apt-get install -y docker.io
             cd web-api/runtimes/ghostscript
             ./build.sh
 
@@ -257,10 +259,11 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
+      - setup_remote_docker
+          docker_layer_caching: true
       - run:
           name: Build Lambda Layer - Puppeteer
           command: |
-            apt-get install -y docker.io
             cd web-api/runtimes/puppeteer
             ./build.sh
 
