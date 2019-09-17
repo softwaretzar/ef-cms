@@ -273,9 +273,10 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
-      - run: 'Deploy - Serverless - API - us-east-1'
-        command: |
-          ./web-api/run-serverless-api.sh $ENV us-east-1
+      - run:
+          name: 'Deploy - Serverless - API - us-east-1'
+          command: |
+            ./web-api/run-serverless-api.sh $ENV us-east-1
 
   deploy-sls-api-west-1:
     docker:
@@ -283,9 +284,10 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
-      - run: 'Deploy - Serverless - API - us-west-1'
-        command: |
-          ./web-api/run-serverless-api.sh $ENV us-west-1
+      - run:
+          name: 'Deploy - Serverless - API - us-west-1'
+          command: |
+            ./web-api/run-serverless-api.sh $ENV us-west-1
 
   deploy-sls-cases-east-1:
     docker:
@@ -293,9 +295,10 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
-      - run: 'Deploy - Serverless - Cases - us-east-1'
-        command: |
-          ./web-api/run-serverless-cases.sh $ENV us-east-1
+      - run:
+          name: 'Deploy - Serverless - Cases - us-east-1'
+          command: |
+            ./web-api/run-serverless-cases.sh $ENV us-east-1
 
   deploy-sls-cases-west-1:
     docker:
@@ -303,9 +306,10 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
-      - run: 'Deploy - Serverless - Cases - us-west-1'
-        command: |
-          ./web-api/run-serverless-cases.sh $ENV us-west-1
+      - run:
+          name: 'Deploy - Serverless - Cases - us-west-1'
+          command: |
+            ./web-api/run-serverless-cases.sh $ENV us-west-1
 
   deploy-api-east:
     machine:
@@ -491,22 +495,37 @@ workflows:
           requires:
             - deploy-terraform-api
             - deploy-terraform-ui
+            - build-layer-puppeteer
+            - build-layer-ghostscript
+            - build-layer-clamav
       - deploy-sls-api-east-1:
           requires:
             - deploy-terraform-api
             - deploy-terraform-ui
+            - build-layer-puppeteer
+            - build-layer-ghostscript
+            - build-layer-clamav
       - deploy-sls-api-west-1:
           requires:
             - deploy-terraform-api
             - deploy-terraform-ui
+            - build-layer-puppeteer
+            - build-layer-ghostscript
+            - build-layer-clamav
       - deploy-sls-cases-west-1:
           requires:
             - deploy-terraform-api
             - deploy-terraform-ui
+            - build-layer-puppeteer
+            - build-layer-ghostscript
+            - build-layer-clamav
       - deploy-sls-cases-east-1:
           requires:
             - deploy-terraform-api
             - deploy-terraform-ui
+            - build-layer-puppeteer
+            - build-layer-ghostscript
+            - build-layer-clamav
           # filters:
           #   branches:
           #     only:
