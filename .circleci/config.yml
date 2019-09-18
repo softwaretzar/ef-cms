@@ -238,6 +238,11 @@ jobs:
           command: |
             cd web-api/runtimes/clamav
             ./build.sh
+      - run:
+          name: Deploy Lambda Layer - ClamAV
+          command: |
+            export ENV=$(~/project/get-env.sh $CIRCLE_BRANCH)
+            ./web-api/run-serverless-clamav.sh ${ENV} us-west-1
 
   build-layer-ghostscript:
     docker:
@@ -252,6 +257,11 @@ jobs:
           command: |
             cd web-api/runtimes/ghostscript
             ./build.sh
+      - run:
+          name: Deploy Lambda Layer - Ghostscript
+          command: |
+            export ENV=$(~/project/get-env.sh $CIRCLE_BRANCH)
+            ./web-api/run-serverless-ghostscript.sh ${ENV} us-west-1
 
   build-layer-puppeteer:
     docker:
@@ -266,6 +276,11 @@ jobs:
           command: |
             cd web-api/runtimes/puppeteer
             ./build.sh
+      - run:
+          name: Deploy Lambda Layer - Puppeteer
+          command: |
+            export ENV=$(~/project/get-env.sh $CIRCLE_BRANCH)
+            ./web-api/run-serverless-puppeteer.sh ${ENV} us-west-1
 
   deploy-sls-api-east-1:
     docker:
