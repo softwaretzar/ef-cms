@@ -1,9 +1,13 @@
 // use a conditional require to keep the mock out of the production build
 let getScannerInterface;
 if (process.env.NO_SCANNER) {
-  getScannerInterface = require('../../shared/src/persistence/dynamsoft/getScannerMockInterface');
+  // eslint-disable-next-line
+  getScannerInterface = require('../../shared/src/persistence/dynamsoft/getScannerMockInterface')
+    .getScannerInterface;
 } else {
-  getScannerInterface = require('../../shared/src/persistence/dynamsoft/getScannerInterface');
+  // eslint-disable-next-line
+  getScannerInterface = require('../../shared/src/persistence/dynamsoft/getScannerInterface')
+    .getScannerInterface;
 }
 
 import { AddPractitionerFactory } from '../../shared/src/business/entities/caseAssociation/AddPractitionerFactory';
