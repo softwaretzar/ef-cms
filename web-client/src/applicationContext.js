@@ -99,7 +99,6 @@ import { getPractitionersBySearchKeyInteractor } from '../../shared/src/proxies/
 import { getProcedureTypesInteractor } from '../../shared/src/business/useCases/getProcedureTypesInteractor';
 import { getRespondentsBySearchKeyInteractor } from '../../shared/src/proxies/users/getRespondentsBySearchKeyProxy';
 import { getScannerInterface } from '../../shared/src/persistence/dynamsoft/getScannerInterface';
-import { getScannerInterface as getScannerMockInterfaceInteractor } from '../../shared/src/persistence/dynamsoft/getScannerMockInterface';
 import { getSentMessagesForSectionInteractor } from '../../shared/src/proxies/workitems/getSentMessagesForSectionProxy';
 import { getSentMessagesForUserInteractor } from '../../shared/src/proxies/workitems/getSentMessagesForUserProxy';
 import { getTrialSessionDetailsInteractor } from '../../shared/src/proxies/trialSessions/getTrialSessionDetailsProxy';
