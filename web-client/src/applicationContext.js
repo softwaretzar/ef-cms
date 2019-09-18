@@ -1,3 +1,11 @@
+// use a conditional require to keep the mock out of the production build
+let getScannerInterface;
+if (process.env.NO_SCANNER) {
+  getScannerInterface = require('../../shared/src/persistence/dynamsoft/getScannerMockInterface');
+} else {
+  getScannerInterface = require('../../shared/src/persistence/dynamsoft/getScannerInterface');
+}
+
 import { AddPractitionerFactory } from '../../shared/src/business/entities/caseAssociation/AddPractitionerFactory';
 import { AddRespondent } from '../../shared/src/business/entities/caseAssociation/AddRespondent';
 import {
@@ -98,7 +106,6 @@ import { getNotificationsInteractor } from '../../shared/src/proxies/users/getNo
 import { getPractitionersBySearchKeyInteractor } from '../../shared/src/proxies/users/getPractitionersBySearchKeyProxy';
 import { getProcedureTypesInteractor } from '../../shared/src/business/useCases/getProcedureTypesInteractor';
 import { getRespondentsBySearchKeyInteractor } from '../../shared/src/proxies/users/getRespondentsBySearchKeyProxy';
-import { getScannerInterface } from '../../shared/src/persistence/dynamsoft/getScannerInterface';
 import { getSentMessagesForSectionInteractor } from '../../shared/src/proxies/workitems/getSentMessagesForSectionProxy';
 import { getSentMessagesForUserInteractor } from '../../shared/src/proxies/workitems/getSentMessagesForUserProxy';
 import { getTrialSessionDetailsInteractor } from '../../shared/src/proxies/trialSessions/getTrialSessionDetailsProxy';
@@ -411,9 +418,7 @@ const applicationContext = {
       uploadPdf,
     };
   },
-  getScanner: process.env.NO_SCANNER
-    ? getScannerMockInterfaceInteractor
-    : getScannerInterface,
+  getScanner: getScannerInterface,
   getScannerResourceUri: () => {
     return (
       process.env.SCANNER_RESOURCE_URI || 'http://localhost:10000/Resources'
