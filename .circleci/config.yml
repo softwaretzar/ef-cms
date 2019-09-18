@@ -225,7 +225,7 @@ jobs:
             aws s3 sync dist s3://ui-${ENV}.${EFCMS_DOMAIN} --delete --cache-control no-cache && \
             aws s3 sync dist s3://failover-ui-${ENV}.${EFCMS_DOMAIN} --delete --cache-control no-cache
 
-  build-layer-clamav:
+  deploy-layer-clamav:
     docker:
       - image: sutt0n/ef-cms:experimental
     steps:
@@ -233,18 +233,24 @@ jobs:
           at: ~/
       - setup_remote_docker:
           docker_layer_caching: true
+      - run:
+          name: Setup ENV
+          command: echo "export ENV=$(~/project/get-env.sh $CIRCLE_BRANCH)" >> $BASH_ENV
       - run:
           name: Build Lambda Layer - ClamAV
           command: |
             cd web-api/runtimes/clamav
             ./build.sh
       - run:
-          name: Deploy Lambda Layer - ClamAV
+          name: Deploy Lambda Layer - ClamAV - us-east-1
           command: |
-            export ENV=$(~/project/get-env.sh $CIRCLE_BRANCH)
+            ./web-api/run-serverless-clamav.sh ${ENV} us-east-1
+      - run:
+          name: Deploy Lambda Layer - ClamAV - us-west-1
+          command: |
             ./web-api/run-serverless-clamav.sh ${ENV} us-west-1
 
-  build-layer-ghostscript:
+  deploy-layer-ghostscript:
     docker:
       - image: sutt0n/ef-cms:experimental
     steps:
@@ -252,6 +258,9 @@ jobs:
           at: ~/
       - setup_remote_docker:
           docker_layer_caching: true
+      - run:
+          name: Setup ENV
+          command: echo "export ENV=$(~/project/get-env.sh $CIRCLE_BRANCH)" >> $BASH_ENV
       - run:
           name: Build Lambda Layer - Ghostscript
           command: |
@@ -260,15 +269,21 @@ jobs:
       - run:
           name: Deploy Lambda Layer - Ghostscript
           command: |
-            export ENV=$(~/project/get-env.sh $CIRCLE_BRANCH)
             ./web-api/run-serverless-ghostscript.sh ${ENV} us-west-1
+      - run:
+          name: Deploy Lambda Layer - Ghostscript
+          command: |
+            ./web-api/run-serverless-ghostscript.sh ${ENV} us-east-1
 
-  build-layer-puppeteer:
+  deploy-layer-puppeteer:
     docker:
       - image: sutt0n/ef-cms:experimental
     steps:
       - attach_workspace:
           at: ~/
+      - run:
+          name: Setup ENV
+          command: echo "export ENV=$(~/project/get-env.sh $CIRCLE_BRANCH)" >> $BASH_ENV
       - setup_remote_docker:
           docker_layer_caching: true
       - run:
@@ -277,7 +292,12 @@ jobs:
             cd web-api/runtimes/puppeteer
             ./build.sh
       - run:
-          name: Deploy Lambda Layer - Puppeteer
+          name: Deploy Lambda Layer - Puppeteer - us-east-1
+          command: |
+            export ENV=$(~/project/get-env.sh $CIRCLE_BRANCH)
+            ./web-api/run-serverless-puppeteer.sh ${ENV} us-east-1
+      - run:
+          name: Deploy Lambda Layer - Puppeteer - us-west-1
           command: |
             export ENV=$(~/project/get-env.sh $CIRCLE_BRANCH)
             ./web-api/run-serverless-puppeteer.sh ${ENV} us-west-1
@@ -497,21 +517,21 @@ workflows:
             - build-client
             - e2e-pa11y
             - e2e-cypress
-      - build-layer-clamav:
+      - deploy-layer-clamav:
           requires:
             - build-shared
             - build-api
             - build-client
             - e2e-pa11y
             - e2e-cypress
-      - build-layer-ghostscript:
+      - deploy-layer-ghostscript:
           requires:
             - build-shared
             - build-api
             - build-client
             - e2e-pa11y
             - e2e-cypress
-      - build-layer-puppeteer:
+      - deploy-layer-puppeteer:
           requires:
             - build-shared
             - build-api
@@ -522,37 +542,37 @@ workflows:
           requires:
             - deploy-terraform-api
             - deploy-terraform-ui
-            - build-layer-puppeteer
-            - build-layer-ghostscript
-            - build-layer-clamav
+            - deploy-layer-puppeteer
+            - deploy-layer-ghostscript
+            - deploy-layer-clamav
       - deploy-sls-api-east-1:
           requires:
             - deploy-terraform-api
             - deploy-terraform-ui
-            - build-layer-puppeteer
-            - build-layer-ghostscript
-            - build-layer-clamav
+            - deploy-layer-puppeteer
+            - deploy-layer-ghostscript
+            - deploy-layer-clamav
       - deploy-sls-api-west-1:
           requires:
             - deploy-terraform-api
             - deploy-terraform-ui
-            - build-layer-puppeteer
-            - build-layer-ghostscript
-            - build-layer-clamav
+            - deploy-layer-puppeteer
+            - deploy-layer-ghostscript
+            - deploy-layer-clamav
       - deploy-sls-cases-west-1:
           requires:
             - deploy-terraform-api
             - deploy-terraform-ui
-            - build-layer-puppeteer
-            - build-layer-ghostscript
-            - build-layer-clamav
+            - deploy-layer-puppeteer
+            - deploy-layer-ghostscript
+            - deploy-layer-clamav
       - deploy-sls-cases-east-1:
           requires:
             - deploy-terraform-api
             - deploy-terraform-ui
-            - build-layer-puppeteer
-            - build-layer-ghostscript
-            - build-layer-clamav
+            - deploy-layer-puppeteer
+            - deploy-layer-ghostscript
+            - deploy-layer-clamav
           # filters:
           #   branches:
           #     only:
