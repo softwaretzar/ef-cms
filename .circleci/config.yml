@@ -274,6 +274,9 @@ jobs:
       - attach_workspace:
           at: ~/
       - run:
+          name: Setup Env
+          command: echo "export ENV=$(./get-env.sh $CIRCLE_BRANCH)" >> $BASH_ENV
+      - run:
           name: 'Deploy - Serverless - API - us-east-1'
           command: |
             ./web-api/run-serverless-api.sh $ENV us-east-1
@@ -284,6 +287,9 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
+      - run:
+          name: Setup Env
+          command: echo "export ENV=$(./get-env.sh $CIRCLE_BRANCH)" >> $BASH_ENV
       - run:
           name: 'Deploy - Serverless - API - us-west-1'
           command: |
@@ -296,6 +302,9 @@ jobs:
       - attach_workspace:
           at: ~/
       - run:
+          name: Setup Env
+          command: echo "export ENV=$(./get-env.sh $CIRCLE_BRANCH)" >> $BASH_ENV
+      - run:
           name: 'Deploy - Serverless - Cases - us-east-1'
           command: |
             ./web-api/run-serverless-cases.sh $ENV us-east-1
@@ -306,6 +315,9 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
+      - run:
+          name: Setup Env
+          command: echo "export ENV=$(./get-env.sh $CIRCLE_BRANCH)" >> $BASH_ENV
       - run:
           name: 'Deploy - Serverless - Cases - us-west-1'
           command: |
