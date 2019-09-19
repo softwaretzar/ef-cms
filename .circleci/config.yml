@@ -358,6 +358,34 @@ jobs:
           command: |
             ./web-api/run-serverless-cases.sh $ENV us-west-1
 
+  deploy-sls-case-documents-east-1:
+    docker:
+      - image: sutt0n/ef-cms:experimental
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Setup Env
+          command: echo "export ENV=$(./get-env.sh $CIRCLE_BRANCH)" >> $BASH_ENV
+      - run:
+          name: 'Deploy - Serverless - Case Documents - us-east-1'
+          command: |
+            ./web-api/run-serverless-case-documents.sh $ENV us-east-1
+
+    deploy-sls-case-documents-west-1:
+    docker:
+      - image: sutt0n/ef-cms:experimental
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Setup Env
+          command: echo "export ENV=$(./get-env.sh $CIRCLE_BRANCH)" >> $BASH_ENV
+      - run:
+          name: 'Deploy - Serverless - Case Documents - us-west-1'
+          command: |
+            ./web-api/run-serverless-case-documents.sh $ENV us-west-1
+
   deploy-api-east:
     machine:
       docker_layer_caching: true
