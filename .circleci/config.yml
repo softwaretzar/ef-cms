@@ -386,7 +386,7 @@ jobs:
           command: |
             ./web-api/run-serverless-case-documents.sh $ENV us-west-1
 
-    deploy-sls-case-deadlines-east-1:
+  deploy-sls-case-deadlines-east-1:
     docker:
       - image: sutt0n/ef-cms:experimental
     steps:
