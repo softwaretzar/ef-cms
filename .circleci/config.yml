@@ -696,28 +696,7 @@ workflows:
             - deploy-layer-puppeteer
             - deploy-layer-ghostscript
             - deploy-layer-clamav
-      - deploy-sls-api-west-1:
-          requires:
-            - deploy-terraform-api
-            - deploy-terraform-ui
-            - deploy-layer-puppeteer
-            - deploy-layer-ghostscript
-            - deploy-layer-clamav
-      - deploy-sls-cases-west-1:
-          requires:
-            - deploy-terraform-api
-            - deploy-terraform-ui
-            - deploy-layer-puppeteer
-            - deploy-layer-ghostscript
-            - deploy-layer-clamav
       - deploy-sls-cases-east-1:
-          requires:
-            - deploy-terraform-api
-            - deploy-terraform-ui
-            - deploy-layer-puppeteer
-            - deploy-layer-ghostscript
-            - deploy-layer-clamav
-      - deploy-sls-case-documents-west-1:
           requires:
             - deploy-terraform-api
             - deploy-terraform-ui
@@ -731,21 +710,7 @@ workflows:
             - deploy-layer-puppeteer
             - deploy-layer-ghostscript
             - deploy-layer-clamav
-      - deploy-sls-case-deadlines-west-1:
-          requires:
-            - deploy-terraform-api
-            - deploy-terraform-ui
-            - deploy-layer-puppeteer
-            - deploy-layer-ghostscript
-            - deploy-layer-clamav
       - deploy-sls-case-deadlines-east-1:
-          requires:
-            - deploy-terraform-api
-            - deploy-terraform-ui
-            - deploy-layer-puppeteer
-            - deploy-layer-ghostscript
-            - deploy-layer-clamav
-      - deploy-sls-case-notes-west-1:
           requires:
             - deploy-terraform-api
             - deploy-terraform-ui
@@ -759,21 +724,7 @@ workflows:
             - deploy-layer-puppeteer
             - deploy-layer-ghostscript
             - deploy-layer-clamav
-      - deploy-sls-documents-west-1:
-          requires:
-            - deploy-terraform-api
-            - deploy-terraform-ui
-            - deploy-layer-puppeteer
-            - deploy-layer-ghostscript
-            - deploy-layer-clamav
       - deploy-sls-documents-east-1:
-          requires:
-            - deploy-terraform-api
-            - deploy-terraform-ui
-            - deploy-layer-puppeteer
-            - deploy-layer-ghostscript
-            - deploy-layer-clamav
-      - deploy-sls-users-west-1:
           requires:
             - deploy-terraform-api
             - deploy-terraform-ui
@@ -787,21 +738,7 @@ workflows:
             - deploy-layer-puppeteer
             - deploy-layer-ghostscript
             - deploy-layer-clamav
-      - deploy-sls-sections-west-1:
-          requires:
-            - deploy-terraform-api
-            - deploy-terraform-ui
-            - deploy-layer-puppeteer
-            - deploy-layer-ghostscript
-            - deploy-layer-clamav
       - deploy-sls-sections-east-1:
-          requires:
-            - deploy-terraform-api
-            - deploy-terraform-ui
-            - deploy-layer-puppeteer
-            - deploy-layer-ghostscript
-            - deploy-layer-clamav
-      - deploy-sls-trial-sessions-west-1:
           requires:
             - deploy-terraform-api
             - deploy-terraform-ui
@@ -815,13 +752,6 @@ workflows:
             - deploy-layer-puppeteer
             - deploy-layer-ghostscript
             - deploy-layer-clamav
-      - deploy-sls-work-items-west-1:
-          requires:
-            - deploy-terraform-api
-            - deploy-terraform-ui
-            - deploy-layer-puppeteer
-            - deploy-layer-ghostscript
-            - deploy-layer-clamav
       - deploy-sls-work-items-east-1:
           requires:
             - deploy-terraform-api
@@ -829,6 +759,116 @@ workflows:
             - deploy-layer-puppeteer
             - deploy-layer-ghostscript
             - deploy-layer-clamav
+      - deploy-sls-api-west-1:
+          requires:
+            - deploy-sls-cases-east-1
+            - deploy-sls-case-documents-east-1
+            - deploy-sls-case-deadlines-east-1
+            - deploy-sls-case-notes-east-1
+            - deploy-sls-documents-east-1
+            - deploy-sls-users-east-1
+            - deploy-sls-sections-east-1
+            - deploy-sls-trial-sessions-east-1
+            - deploy-sls-work-items-east-1
+      - deploy-sls-cases-west-1:
+          requires:
+            - deploy-sls-cases-east-1
+            - deploy-sls-case-documents-east-1
+            - deploy-sls-case-deadlines-east-1
+            - deploy-sls-case-notes-east-1
+            - deploy-sls-documents-east-1
+            - deploy-sls-users-east-1
+            - deploy-sls-sections-east-1
+            - deploy-sls-trial-sessions-east-1
+            - deploy-sls-work-items-east-1
+      - deploy-sls-case-documents-west-1:
+          requires:
+            - deploy-sls-cases-east-1
+            - deploy-sls-case-documents-east-1
+            - deploy-sls-case-deadlines-east-1
+            - deploy-sls-case-notes-east-1
+            - deploy-sls-documents-east-1
+            - deploy-sls-users-east-1
+            - deploy-sls-sections-east-1
+            - deploy-sls-trial-sessions-east-1
+            - deploy-sls-work-items-east-1
+      - deploy-sls-case-deadlines-west-1:
+          requires:
+            - deploy-sls-cases-east-1
+            - deploy-sls-case-documents-east-1
+            - deploy-sls-case-deadlines-east-1
+            - deploy-sls-case-notes-east-1
+            - deploy-sls-documents-east-1
+            - deploy-sls-users-east-1
+            - deploy-sls-sections-east-1
+            - deploy-sls-trial-sessions-east-1
+            - deploy-sls-work-items-east-1
+      - deploy-sls-case-notes-west-1:
+          requires:
+            - deploy-sls-cases-east-1
+            - deploy-sls-case-documents-east-1
+            - deploy-sls-case-deadlines-east-1
+            - deploy-sls-case-notes-east-1
+            - deploy-sls-documents-east-1
+            - deploy-sls-users-east-1
+            - deploy-sls-sections-east-1
+            - deploy-sls-trial-sessions-east-1
+            - deploy-sls-work-items-east-1
+      - deploy-sls-documents-west-1:
+          requires:
+            - deploy-sls-cases-east-1
+            - deploy-sls-case-documents-east-1
+            - deploy-sls-case-deadlines-east-1
+            - deploy-sls-case-notes-east-1
+            - deploy-sls-documents-east-1
+            - deploy-sls-users-east-1
+            - deploy-sls-sections-east-1
+            - deploy-sls-trial-sessions-east-1
+            - deploy-sls-work-items-east-1
+      - deploy-sls-users-west-1:
+          requires:
+            - deploy-sls-cases-east-1
+            - deploy-sls-case-documents-east-1
+            - deploy-sls-case-deadlines-east-1
+            - deploy-sls-case-notes-east-1
+            - deploy-sls-documents-east-1
+            - deploy-sls-users-east-1
+            - deploy-sls-sections-east-1
+            - deploy-sls-trial-sessions-east-1
+            - deploy-sls-work-items-east-1
+      - deploy-sls-sections-west-1:
+          requires:
+            - deploy-sls-cases-east-1
+            - deploy-sls-case-documents-east-1
+            - deploy-sls-case-deadlines-east-1
+            - deploy-sls-case-notes-east-1
+            - deploy-sls-documents-east-1
+            - deploy-sls-users-east-1
+            - deploy-sls-sections-east-1
+            - deploy-sls-trial-sessions-east-1
+            - deploy-sls-work-items-east-1
+      - deploy-sls-trial-sessions-west-1:
+          requires:
+            - deploy-sls-cases-east-1
+            - deploy-sls-case-documents-east-1
+            - deploy-sls-case-deadlines-east-1
+            - deploy-sls-case-notes-east-1
+            - deploy-sls-documents-east-1
+            - deploy-sls-users-east-1
+            - deploy-sls-sections-east-1
+            - deploy-sls-trial-sessions-east-1
+            - deploy-sls-work-items-east-1
+      - deploy-sls-work-items-west-1:
+          requires:
+            - deploy-sls-cases-east-1
+            - deploy-sls-case-documents-east-1
+            - deploy-sls-case-deadlines-east-1
+            - deploy-sls-case-notes-east-1
+            - deploy-sls-documents-east-1
+            - deploy-sls-users-east-1
+            - deploy-sls-sections-east-1
+            - deploy-sls-trial-sessions-east-1
+            - deploy-sls-work-items-east-1
           # filters:
           #   branches:
           #     only:
