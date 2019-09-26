@@ -11,8 +11,13 @@ export const OrdersNeededSummary = connect(
     formattedCaseDetail: state.formattedCaseDetail,
     openCreateOrderChooseTypeModalSequence:
       sequences.openCreateOrderChooseTypeModalSequence,
+    printFromBrowserSequence: sequences.printFromBrowserSequence,
   },
-  ({ formattedCaseDetail, openCreateOrderChooseTypeModalSequence }) => {
+  ({
+    formattedCaseDetail,
+    openCreateOrderChooseTypeModalSequence,
+    printFromBrowserSequence,
+  }) => {
     return (
       <>
         <CaseDetailHeader />
@@ -25,7 +30,9 @@ export const OrdersNeededSummary = connect(
               <div className="display-inline-block margin-left-2 margin-top-neg-1">
                 <button
                   className="usa-button usa-button--unstyled"
-                  onClick={() => {}}
+                  onClick={() => {
+                    printFromBrowserSequence();
+                  }}
                 >
                   <FontAwesomeIcon icon="print" size="sm" />
                   Print
@@ -49,6 +56,9 @@ export const OrdersNeededSummary = connect(
               )}
               {formattedCaseDetail.orderForRatification && (
                 <li>Order for Radification of Petition</li>
+              )}
+              {formattedCaseDetail.orderDesignatingPlaceOfTrial && (
+                <li>Order to Change Designated Place of Trial</li>
               )}
               {formattedCaseDetail.orderToShowCause && (
                 <li>Order to Show Cause</li>
