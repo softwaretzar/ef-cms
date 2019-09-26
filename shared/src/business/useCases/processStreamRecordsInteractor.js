@@ -9,7 +9,7 @@ exports.processStreamRecordsInteractor = async ({
   recordsToProcess,
 }) => {
   applicationContext.logger.info('Time', createISODateString());
-  recordsToProcess.forEach(async record => {
+  for (const record of recordsToProcess) {
     if (['INSERT', 'MODIFY'].includes(record.eventName)) {
       try {
         await applicationContext.getSearchClient().index({
@@ -21,6 +21,6 @@ exports.processStreamRecordsInteractor = async ({
         applicationContext.logger.info('Error', e);
       }
     }
-  });
+  }
   applicationContext.logger.info('Time', createISODateString());
 };

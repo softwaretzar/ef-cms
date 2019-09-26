@@ -545,12 +545,13 @@ const {
 const {
   zipDocuments,
 } = require('../../shared/src/persistence/s3/zipDocuments');
-const { Client } = require('@elastic/elasticsearch');
+const elasticsearch = require('elasticsearch');
 const { exec } = require('child_process');
 const { User } = require('../../shared/src/business/entities/User');
 const { Order } = require('../../shared/src/business/entities/orders/Order');
+const connectionClass = require('http-aws-es');
 
-const { DynamoDB, S3, SES } = AWS;
+const { DynamoDB, S3, SES,EnvironmentCredentials  } = AWS;
 const execPromise = util.promisify(exec);
 
 const environment = {
@@ -728,8 +729,17 @@ module.exports = (appContextUser = {}) => {
     },
     getSearchClient: () => {
       if (!searchClientCache) {
-        searchClientCache = new Client({
-          node: environment.elasticsearchEndpoint,
+        searchClientCache = new elasticsearch.Client({
+          host: environment.elasticsearchEndpoint,
+          log: 'warning',
+          port: 443,
+          protocol: 'https',
+          apiVersion: '7.1',
+          connectionClass: connectionClass,
+          amazonES: {
+            region: 'us-east-1',
+            credentials: new EnvironmentCredentials('AWS')
+          }
         });
       }
       return searchClientCache;
