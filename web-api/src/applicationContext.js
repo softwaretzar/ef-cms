@@ -345,6 +345,12 @@ const {
   getWorkItemById,
 } = require('../../shared/src/persistence/dynamo/workitems/getWorkItemById');
 const {
+  getWebSocketConnectionsByUserId,
+} = require('../../shared/src/persistence/dynamo/notifications/getWebSocketConnectionsByUserId');
+const {
+  getWebSocketConnectionByConnectionId,
+} = require('../../shared/src/persistence/dynamo/notifications/getWebSocketConnectionByConnectionId');
+const {
   getWorkItemInteractor,
 } = require('../../shared/src/business/useCases/workitems/getWorkItemInteractor');
 const {
@@ -551,6 +557,9 @@ const { User } = require('../../shared/src/business/entities/User');
 const { Order } = require('../../shared/src/business/entities/orders/Order');
 const connectionClass = require('http-aws-es');
 
+// increase the timeout for zip uploads to S3
+AWS.config.httpOptions.timeout = 300000;
+
 const { DynamoDB, EnvironmentCredentials, S3, SES } = AWS;
 const execPromise = util.promisify(exec);
 
@@ -699,6 +708,8 @@ module.exports = (appContextUser = {}) => {
         getUserById,
         getUsersBySearchKey,
         getUsersInSection,
+        getWebSocketConnectionByConnectionId,
+        getWebSocketConnectionsByUserId,
         getWorkItemById,
         incrementCounter,
         isFileExists,
