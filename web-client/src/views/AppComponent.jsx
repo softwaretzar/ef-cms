@@ -8,13 +8,10 @@ import { CaseDetail } from './CaseDetail';
 import { CaseDetailInternal } from './CaseDetailInternal';
 import { CaseSearchNoMatches } from './CaseSearchNoMatches';
 import { CreateOrder } from './CreateOrder/CreateOrder';
-import { DashboardDocketClerk } from './Dashboards/DashboardDocketClerk';
 import { DashboardJudge } from './Dashboards/DashboardJudge';
 import { DashboardPetitioner } from './Dashboards/DashboardPetitioner';
-import { DashboardPetitionsClerk } from './Dashboards/DashboardPetitionsClerk';
 import { DashboardPractitioner } from './Dashboards/DashboardPractitioner';
 import { DashboardRespondent } from './Dashboards/DashboardRespondent';
-import { DashboardSeniorAttorney } from './Dashboards/DashboardSeniorAttorney';
 import { DocumentDetail } from './DocumentDetail';
 import { Error } from './Error';
 import { FileDocumentWizard } from './FileDocument/FileDocumentWizard';
@@ -24,13 +21,15 @@ import { IdleLogout } from './IdleLogout';
 import { Interstitial } from './Interstitial';
 import { Loading } from './Loading';
 import { LogIn } from './LogIn';
-import { MessagesJudge } from './Messages/MessagesJudge';
-import { PDFSigner } from './PDFSigner';
+import { Messages } from './Messages/Messages';
+import { OrdersNeededSummary } from './CaseDetailEdit/OrdersNeededSummary';
 import { PrimaryContactEdit } from './PrimaryContactEdit';
 import { PrintableDocketRecord } from './DocketRecord/PrintableDocketRecord';
 import { PrintableTrialCalendar } from './TrialSessionDetail/PrintableTrialCalendar';
 import { RequestAccessWizard } from './RequestAccess/RequestAccessWizard';
 import { SelectDocumentType } from './FileDocument/SelectDocumentType';
+import { SignOrder } from './SignOrder';
+import { SignStipDecision } from './SignStipDecision';
 import { StartCaseInternal } from './StartCaseInternal';
 import { StartCaseWizard } from './StartCase/StartCaseWizard';
 import { StyleGuide } from './StyleGuide/StyleGuide';
@@ -55,13 +54,10 @@ const pages = {
   CaseDetailInternal,
   CaseSearchNoMatches,
   CreateOrder,
-  DashboardDocketClerk,
   DashboardJudge,
   DashboardPetitioner,
-  DashboardPetitionsClerk,
   DashboardPractitioner,
   DashboardRespondent,
-  DashboardSeniorAttorney,
   DocumentDetail,
   Error,
   FileDocumentWizard,
@@ -69,13 +65,15 @@ const pages = {
   Interstitial,
   Loading,
   LogIn,
-  MessagesJudge,
-  PDFSigner,
+  Messages,
+  OrdersNeededSummary,
   PrimaryContactEdit,
   PrintableDocketRecord,
   PrintableTrialCalendar,
   RequestAccessWizard,
   SelectDocumentType,
+  SignOrder,
+  SignStipDecision,
   StartCaseInternal,
   StartCaseWizard,
   StyleGuide,

@@ -43,7 +43,8 @@ jobs:
           at: ~/
       - run:
           name: Lint
-          command: npm run lint
+          command: |
+            npm run lint
       - run:
           name: Shellcheck
           command: |
@@ -92,7 +93,7 @@ jobs:
     docker:
       - image: sutt0n/ef-cms:latest
     environment:
-      _JAVA_OPTIONS: '-Xms1024m -Xmx2024m'
+      _JAVA_OPTIONS: '-Xms1024m -Xmx2048m'
     resource_class: large
     steps:
       - attach_workspace:
@@ -100,9 +101,8 @@ jobs:
       - run:
           name: Web Client - Test
           command: |
-            AWS_ACCESS_KEY_ID=noop AWS_SECRET_ACCESS_KEY=noop npm run start:api > /dev/null &
+            AWS_ACCESS_KEY_ID=noop AWS_SECRET_ACCESS_KEY=noop npm run start:api:ci > /dev/null &
             ./wait-until.sh http://localhost:3000/api/swagger
-            sleep 5
             npm run test:client
       - run:
           name: Web Client - SonarQube
@@ -121,7 +121,7 @@ jobs:
     docker:
       - image: sutt0n/ef-cms:latest
     environment:
-      _JAVA_OPTIONS: '-Xms1024m -Xmx2024m'
+      _JAVA_OPTIONS: '-Xms1024m -Xmx2048m'
     resource_class: large
     steps:
       - attach_workspace:
@@ -129,16 +129,17 @@ jobs:
       - run:
           name: Pa11y
           command: |
-            SLS_DEBUG=* AWS_ACCESS_KEY_ID=noop AWS_SECRET_ACCESS_KEY=noop npx run-p start:client:ci start:api:ci > /dev/null &
+            SLS_DEBUG=* AWS_ACCESS_KEY_ID=noop AWS_SECRET_ACCESS_KEY=noop npx run-p start:api:ci start:client:ci > /dev/null &
             ./wait-until-services.sh
             ./wait-until.sh http://localhost:3000/api/swagger
+            sleep 5
             npm run test:pa11y
 
   e2e-cypress:
     docker:
       - image: sutt0n/ef-cms:latest
     environment:
-      _JAVA_OPTIONS: '-Xms1024m -Xmx2024m'
+      _JAVA_OPTIONS: '-Xms1024m -Xmx2048m'
     resource_class: large
     steps:
       - attach_workspace:
@@ -151,9 +152,10 @@ jobs:
               ./node_modules/.bin/cypress install
             fi
 
-            SLS_DEBUG=* AWS_ACCESS_KEY_ID=noop AWS_SECRET_ACCESS_KEY=noop npx run-p start:client:ci start:api:ci > /dev/null &
+            SLS_DEBUG=* AWS_ACCESS_KEY_ID=noop AWS_SECRET_ACCESS_KEY=noop npx run-p start:api:ci start:client:ci > /dev/null &
             ./wait-until-services.sh
-            ./wait-until.sh http://localhost:1234
+            ./wait-until.sh http://localhost:3000/api/swagger
+            sleep 5
             npm run cypress
       - store_artifacts:
           path: ~/project/cypress/videos/
@@ -564,7 +566,7 @@ jobs:
           name: Setup Env
           command: echo "export ENV=$(./get-env.sh $CIRCLE_BRANCH)" >> $BASH_ENV
       - run:
-          name: 'Deploy - Serverless - Case Documents - us-east-1'
+          name: 'Deploy - Serverless - Trial Sessions - us-east-1'
           command: |
             ./web-api/run-serverless-trial-sessions.sh $ENV us-east-1
 
@@ -578,9 +580,51 @@ jobs:
           name: Setup Env
           command: echo "export ENV=$(./get-env.sh $CIRCLE_BRANCH)" >> $BASH_ENV
       - run:
-          name: 'Deploy - Serverless - Case Documents - us-west-1'
+          name: 'Deploy - Serverless - Trial Sessions - us-west-1'
           command: |
             ./web-api/run-serverless-trial-sessions.sh $ENV us-west-1
+
+  deploy-sls-notifications-east-1:
+    docker:
+      - image: sutt0n/ef-cms:experimental
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Setup Env
+          command: echo "export ENV=$(./get-env.sh $CIRCLE_BRANCH)" >> $BASH_ENV
+      - run:
+          name: 'Deploy - Web API - Serverless - Notifications - us-east-1'
+          command: |
+            ./web-api/run-serverless-notifications.sh ${ENV} us-east-1
+
+  deploy-sls-notifications-west-1:
+    docker:
+      - image: sutt0n/ef-cms:experimental
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Setup Env
+          command: echo "export ENV=$(./get-env.sh $CIRCLE_BRANCH)" >> $BASH_ENV
+      - run:
+          name: 'Deploy - Web API - Serverless - Notifications - us-west-1'
+          command: |
+            ./web-api/run-serverless-notifications.sh ${ENV} us-west-1
+
+  deploy-sls-streams:
+    docker:
+      - image: sutt0n/ef-cms:experimental
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Setup Env
+          command: echo "export ENV=$(./get-env.sh $CIRCLE_BRANCH)" >> $BASH_ENV
+      - run:
+          name: 'Deploy - Web API - Serverless - Streams - us-east-1 (east only)'
+          command: |
+            ./web-api/run-serverless-notifications.sh ${ENV} us-east-1
 
   post-deploy:
     machine:
@@ -596,6 +640,9 @@ jobs:
       - run:
           name: 'Deploy - Web API - Route53'
           command: docker run -e "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}" -e "AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}" -e "EFCMS_DOMAIN=${EFCMS_DOMAIN}" --rm efcms /bin/sh -c "cd web-api && ./setup-regional-route53.sh ${ENV}"
+      - run:
+          name: 'Deploy - Web WS - Route53'
+          command: docker run -e "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}" -e "AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}" -e "EFCMS_DOMAIN=${EFCMS_DOMAIN}" --rm efcms /bin/sh -c "cd web-api && ./setup-regional-route53-ws.sh ${ENV}"
       - run:
           name: 'Deploy - Web API - S3 Replication'
           command: docker run -e "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}" -e "AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}" -e "EFCMS_DOMAIN=${EFCMS_DOMAIN}" --rm efcms /bin/sh -c "cd web-api && ./setup-s3-replication.sh ${ENV}"
@@ -622,6 +669,11 @@ workflows:
       - deploy-ui
       - deploy-api-west
       - deploy-api-east
+      - post-deploy:
+          requires:
+            - deploy-ui
+            - deploy-api-west
+            - deploy-api-east
     triggers:
       - schedule:
           cron: '0 12-23 * * 1-5'
@@ -661,6 +713,13 @@ workflows:
             - build-client
             - e2e-pa11y
             - e2e-cypress
+      - deploy-es-index-settings:
+          requires:
+            - build-shared
+            - build-api
+            - build-client
+            - e2e-pa11y
+            - e2e-cypress
       - deploy-layer-clamav:
           requires:
             - build-shared
@@ -689,6 +748,15 @@ workflows:
             - deploy-layer-puppeteer
             - deploy-layer-ghostscript
             - deploy-layer-clamav
+            - deploy-es-index-settings
+      - deploy-sls-streams:
+          requires:
+            - deploy-terraform-api
+            - deploy-terraform-ui
+            - deploy-layer-puppeteer
+            - deploy-layer-ghostscript
+            - deploy-layer-clamav
+            - deploy-es-index-settings
       - deploy-sls-api-east-1:
           requires:
             - deploy-terraform-api
@@ -696,6 +764,7 @@ workflows:
             - deploy-layer-puppeteer
             - deploy-layer-ghostscript
             - deploy-layer-clamav
+            - deploy-es-index-settings
       - deploy-sls-cases-east-1:
           requires:
             - deploy-terraform-api
@@ -703,6 +772,7 @@ workflows:
             - deploy-layer-puppeteer
             - deploy-layer-ghostscript
             - deploy-layer-clamav
+            - deploy-es-index-settings
       - deploy-sls-case-documents-east-1:
           requires:
             - deploy-terraform-api
@@ -710,6 +780,7 @@ workflows:
             - deploy-layer-puppeteer
             - deploy-layer-ghostscript
             - deploy-layer-clamav
+            - deploy-es-index-settings
       - deploy-sls-case-deadlines-east-1:
           requires:
             - deploy-terraform-api
@@ -717,6 +788,7 @@ workflows:
             - deploy-layer-puppeteer
             - deploy-layer-ghostscript
             - deploy-layer-clamav
+            - deploy-es-index-settings
       - deploy-sls-case-notes-east-1:
           requires:
             - deploy-terraform-api
@@ -724,6 +796,7 @@ workflows:
             - deploy-layer-puppeteer
             - deploy-layer-ghostscript
             - deploy-layer-clamav
+            - deploy-es-index-settings
       - deploy-sls-documents-east-1:
           requires:
             - deploy-terraform-api
@@ -731,6 +804,7 @@ workflows:
             - deploy-layer-puppeteer
             - deploy-layer-ghostscript
             - deploy-layer-clamav
+            - deploy-es-index-settings
       - deploy-sls-users-east-1:
           requires:
             - deploy-terraform-api
@@ -738,6 +812,7 @@ workflows:
             - deploy-layer-puppeteer
             - deploy-layer-ghostscript
             - deploy-layer-clamav
+            - deploy-es-index-settings
       - deploy-sls-sections-east-1:
           requires:
             - deploy-terraform-api
@@ -745,6 +820,7 @@ workflows:
             - deploy-layer-puppeteer
             - deploy-layer-ghostscript
             - deploy-layer-clamav
+            - deploy-es-index-settings
       - deploy-sls-trial-sessions-east-1:
           requires:
             - deploy-terraform-api
@@ -752,6 +828,7 @@ workflows:
             - deploy-layer-puppeteer
             - deploy-layer-ghostscript
             - deploy-layer-clamav
+            - deploy-es-index-settings
       - deploy-sls-work-items-east-1:
           requires:
             - deploy-terraform-api
@@ -759,6 +836,15 @@ workflows:
             - deploy-layer-puppeteer
             - deploy-layer-ghostscript
             - deploy-layer-clamav
+            - deploy-es-index-settings
+      - deploy-sls-notifications-east-1:
+          requires:
+            - deploy-terraform-api
+            - deploy-terraform-ui
+            - deploy-layer-puppeteer
+            - deploy-layer-ghostscript
+            - deploy-layer-clamav
+            - deploy-es-index-settings
       - deploy-sls-api-west-1:
           requires:
             - deploy-sls-api-east-1
@@ -771,6 +857,7 @@ workflows:
             - deploy-sls-sections-east-1
             - deploy-sls-trial-sessions-east-1
             - deploy-sls-work-items-east-1
+            - deploy-sls-notifications-west-1
       - deploy-sls-cases-west-1:
           requires:
             - deploy-sls-api-east-1
@@ -783,6 +870,7 @@ workflows:
             - deploy-sls-sections-east-1
             - deploy-sls-trial-sessions-east-1
             - deploy-sls-work-items-east-1
+            - deploy-sls-notifications-west-1
       - deploy-sls-case-documents-west-1:
           requires:
             - deploy-sls-api-east-1
@@ -795,6 +883,7 @@ workflows:
             - deploy-sls-sections-east-1
             - deploy-sls-trial-sessions-east-1
             - deploy-sls-work-items-east-1
+            - deploy-sls-notifications-west-1
       - deploy-sls-case-deadlines-west-1:
           requires:
             - deploy-sls-api-east-1
@@ -807,6 +896,7 @@ workflows:
             - deploy-sls-sections-east-1
             - deploy-sls-trial-sessions-east-1
             - deploy-sls-work-items-east-1
+            - deploy-sls-notifications-west-1
       - deploy-sls-case-notes-west-1:
           requires:
             - deploy-sls-api-east-1
@@ -819,6 +909,7 @@ workflows:
             - deploy-sls-sections-east-1
             - deploy-sls-trial-sessions-east-1
             - deploy-sls-work-items-east-1
+            - deploy-sls-notifications-west-1
       - deploy-sls-documents-west-1:
           requires:
             - deploy-sls-api-east-1
@@ -831,6 +922,7 @@ workflows:
             - deploy-sls-sections-east-1
             - deploy-sls-trial-sessions-east-1
             - deploy-sls-work-items-east-1
+            - deploy-sls-notifications-west-1
       - deploy-sls-users-west-1:
           requires:
             - deploy-sls-api-east-1
@@ -843,6 +935,7 @@ workflows:
             - deploy-sls-sections-east-1
             - deploy-sls-trial-sessions-east-1
             - deploy-sls-work-items-east-1
+            - deploy-sls-notifications-west-1
       - deploy-sls-sections-west-1:
           requires:
             - deploy-sls-api-east-1
@@ -855,6 +948,7 @@ workflows:
             - deploy-sls-sections-east-1
             - deploy-sls-trial-sessions-east-1
             - deploy-sls-work-items-east-1
+            - deploy-sls-notifications-west-1
       - deploy-sls-trial-sessions-west-1:
           requires:
             - deploy-sls-api-east-1
@@ -867,6 +961,7 @@ workflows:
             - deploy-sls-sections-east-1
             - deploy-sls-trial-sessions-east-1
             - deploy-sls-work-items-east-1
+            - deploy-sls-notifications-west-1
       - deploy-sls-work-items-west-1:
           requires:
             - deploy-sls-api-east-1
@@ -879,6 +974,20 @@ workflows:
             - deploy-sls-sections-east-1
             - deploy-sls-trial-sessions-east-1
             - deploy-sls-work-items-east-1
+            - deploy-sls-notifications-west-1
+      - deploy-sls-notifications-west-1:
+          requires:
+            - deploy-sls-api-east-1
+            - deploy-sls-cases-east-1
+            - deploy-sls-case-documents-east-1
+            - deploy-sls-case-deadlines-east-1
+            - deploy-sls-case-notes-east-1
+            - deploy-sls-documents-east-1
+            - deploy-sls-users-east-1
+            - deploy-sls-sections-east-1
+            - deploy-sls-trial-sessions-east-1
+            - deploy-sls-work-items-east-1
+            - deploy-sls-notifications-west-1
           # filters:
           #   branches:
           #     only:

@@ -1,3 +1,4 @@
+import { Button } from '../ustc-ui/Button/Button';
 import { PDFPreviewErrorModal } from './PDFPreviewErrorModal';
 import { PDFPreviewModal } from './PDFPreviewModal';
 import { connect } from '@cerebral/react';
@@ -8,28 +9,28 @@ export const PDFPreviewButton = connect(
   {
     openPdfPreviewModalSequence: sequences.openPdfPreviewModalSequence,
     pdfPreviewModalHelper: state.pdfPreviewModalHelper,
-    previewFile: state.previewPdfFile,
+    previewPdfFile: state.previewPdfFile,
     showModal: state.showModal,
   },
   ({
     file,
     openPdfPreviewModalSequence,
     pdfPreviewModalHelper,
-    previewFile,
+    previewPdfFile,
     showModal,
     title,
   }) => {
     return (
       <>
-        <button
-          className="usa-button usa-button--unstyled pdf-preview-btn"
-          type="button"
+        <Button
+          link
+          className="pdf-preview-btn padding-0"
           onClick={() => openPdfPreviewModalSequence({ file })}
         >
           {file.name}
-        </button>
+        </Button>
         {showModal === 'PDFPreviewModal' &&
-          previewFile === file &&
+          previewPdfFile === file &&
           (pdfPreviewModalHelper.displayErrorText ? (
             <PDFPreviewErrorModal title={title} />
           ) : (

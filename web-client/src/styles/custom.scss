@@ -15,6 +15,11 @@ hr {
   margin: 20px 0;
 }
 
+.ustc-icon-square--small {
+  width: 15px;
+  height: 15px;
+}
+
 .hide {
   display: none;
 }
@@ -23,6 +28,10 @@ hr {
   &.underlined {
     border-bottom: 1px solid color($theme-color-base-lighter);
   }
+}
+
+.max-width-200 {
+  max-width: 200px;
 }
 
 .text-align-left {
@@ -231,11 +240,18 @@ select[disabled] {
   }
 }
 
+.site-banner {
+  .usa-accordion__button {
+    padding: 0;
+    font-weight: normal;
+  }
+}
+
 .alert-blank-message {
   height: 24px;
 }
 
-.required-statement {
+.required-statement  {
   font-weight: $font-semibold;
 }
 
@@ -411,7 +427,10 @@ select[disabled] {
 }
 
 .alert-gold {
-  max-width: 700px;
+  span {
+    max-width: 700px;
+  }
+  display: inline-block;
   padding: 10px;
   border-left: 5px solid color($theme-color-warning);
   background: color($theme-color-warning-lighter);
@@ -431,7 +450,9 @@ select[disabled] {
 }
 
 .alert-gold.full-width {
-  max-width: none;
+  span {
+    max-width: none;
+  }
 }
 
 .alert-gold.wider {
@@ -478,11 +499,6 @@ select[disabled] {
       margin-top: 20px;
     }
   }
-  [role='listitem'],
-  .button-box-container {
-    min-height: 150px;
-    clear: left;
-  }
 
   .caseItem__icon {
     position: absolute;
@@ -507,14 +523,9 @@ select[disabled] {
     }
 
     @media only screen and (min-width: $medium-screen) {
-      width: 100px;
-      height: 100px;
+      width: 75px;
+      height: 75px;
       padding: 20px;
-
-      .svg-wrapper img.svg {
-        width: 54px;
-        height: 62px;
-      }
     }
   }
 
@@ -523,13 +534,13 @@ select[disabled] {
     @media only screen and (min-width: $medium-screen) {
       min-height: 0;
       padding-left: 86px;
-      padding-left: 150px;
+      padding-left: 100px;
     }
   }
 
   .caseItem__content {
     @media only screen and (min-width: $medium-screen) {
-      padding-left: 150px;
+      padding-left: 100px;
     }
   }
 }
@@ -538,11 +549,6 @@ select[disabled] {
     position: relative;
     margin-top: 30px;
     margin-bottom: 30px;
-  }
-  [role='listitem'],
-  .button-box-container {
-    min-height: 150px;
-    clear: left;
   }
 
   .caseItem__icon {
@@ -573,14 +579,9 @@ select[disabled] {
     }
 
     @media only screen and (min-width: $medium-screen) {
-      width: 100px;
-      height: 100px;
+      width: 75px;
+      height: 75px;
       padding: 20px;
-
-      .svg-wrapper img.svg {
-        width: 54px;
-        height: 62px;
-      }
     }
   }
 
@@ -589,13 +590,13 @@ select[disabled] {
     padding-left: 86px;
     @media only screen and (min-width: $medium-screen) {
       min-height: 0;
-      padding-left: 150px;
+      padding-left: 100px;
     }
   }
 
   .caseItem__content {
     @media only screen and (min-width: $medium-screen) {
-      padding-left: 150px;
+      padding-left: 100px;
     }
   }
 }
@@ -626,7 +627,7 @@ select.ustc-input-error {
 
 #case-detail-tabs {
   border: 1px solid color($theme-color-base-lighter);
-  margin-bottom: 20px;
+  margin-bottom: 40px;
 }
 
 .case-detail-party-info {
@@ -674,7 +675,7 @@ textarea#case-caption {
 .filed-by {
   display: inline-block;
   padding: 0px;
-  margin-bottom: 40px;
+  margin-bottom: 10px;
   font-size: 17px;
 }
 
@@ -705,7 +706,7 @@ textarea#case-caption {
 }
 
 .beta {
-  padding: 20px;
+  padding: 10px;
   background-color: color($theme-color-warning-lighter);
   font-weight: $font-bold;
   a {
@@ -763,7 +764,7 @@ textarea#case-caption {
 
 header.usa-header {
   display: flex;
-  height: 115px;
+  height: 100px;
   flex-direction: row;
   border-bottom: none;
   margin-bottom: 0px;
@@ -839,8 +840,8 @@ header.usa-header {
 }
 
 .big-blue-header {
-  padding: 25px 0;
-  margin-bottom: 40px;
+  padding: 20px 0;
+  margin-bottom: 20px;
   background-color: color($theme-color-primary-darker);
   color: $color-white;
   h1 {
@@ -880,7 +881,7 @@ header.usa-header {
 
 .title {
   border-bottom: 1px solid color($theme-color-base-lighter);
-  margin-bottom: 40px;
+  margin-bottom: 20px;
 
   h1 {
     position: relative;
@@ -906,7 +907,15 @@ hr.lighter {
 }
 
 .document-detail__action-buttons {
-  margin-bottom: -4px;
+  .float-left {
+    position: absolute;
+    bottom: 14px;
+    width: 300px;
+  }
+
+  .float-right {
+    margin-top: 8px;
+  }
 }
 
 .DocumentDetail {
@@ -959,7 +968,6 @@ hr.lighter {
 
 .tab-right-button {
   position: absolute;
-  top: -10px;
   right: -7px;
 }
 
@@ -1335,6 +1343,13 @@ button.change-scanner-button {
   h3 {
     margin-bottom: 0;
   }
+  button {
+    color: $color-white;
+  }
+  a:not(.usa-button):hover,
+  button:hover {
+    color: $color-primary-alt;
+  }
 }
 
 .minw-30 {
@@ -1342,8 +1357,18 @@ button.change-scanner-button {
 }
 
 .advanced-search {
-  .right-gray-border {
-    border-right: 1px solid color($theme-color-base-light);
+  /* big screens */
+  @media only screen and (min-width: $medium-screen) {
+    .right-gray-border {
+      border-right: 1px solid color($theme-color-base-light);
+    }
+  }
+  /* little screens */
+  @media only screen and (max-width: $medium-screen - 1) {
+    input#petitioner-name,
+    select {
+      margin-bottom: 20px;
+    }
   }
 
   .advanced-search__button {

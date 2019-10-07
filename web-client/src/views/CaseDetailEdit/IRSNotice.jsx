@@ -31,7 +31,7 @@ export const IRSNotice = connect(
       return (
         <fieldset className="usa-fieldset" id="irs-verified-notice-radios">
           <legend htmlFor="irs-verified-notice-radios">
-            Notice Attached to Petition?
+            Notice attached to petition?
           </legend>
           <div className="usa-radio usa-radio__inline">
             <input
@@ -88,7 +88,7 @@ export const IRSNotice = connect(
       return (
         <div
           className={
-            'usa-form-group ' +
+            'usa-form-group margin-bottom-0 ' +
             (caseDetailErrors.irsNoticeDate ? 'usa-form-group--error' : '')
           }
         >
@@ -193,7 +193,7 @@ export const IRSNotice = connect(
         <CaseTypeSelect
           allowDefaultOption={true}
           caseTypes={caseTypes}
-          legend="Type of Case"
+          legend="Type of case"
           validation="autoSaveCaseSequence"
           value={caseDetail.caseType}
           onChange="updateCaseValueSequence"

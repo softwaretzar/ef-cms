@@ -1,6 +1,6 @@
 import { Mobile, NonMobile } from '../../ustc-ui/Responsive/Responsive';
 import { StateSelect } from './StateSelect';
-import { Text } from '../../ustc-ui/Text/Text';
+import { ValidationText } from '../../ustc-ui/Text/ValidationText';
 import { connect } from '@cerebral/react';
 import { props, sequences, state } from 'cerebral';
 import React from 'react';
@@ -36,7 +36,7 @@ export const Address = connect(
           }
         >
           <label className="usa-label" htmlFor={`${type}.address1`}>
-            Mailing Address Line 1
+            Mailing address line 1
           </label>
           <input
             autoCapitalize="none"
@@ -55,14 +55,11 @@ export const Address = connect(
               });
             }}
           />
-          <Text
-            bind={`validationErrors.${type}.address1`}
-            className="usa-error-message"
-          />
+          <ValidationText field={`${type}.address1`} />
         </div>
         <div className="usa-form-group">
           <label className="usa-label" htmlFor={`${type}.address2`}>
-            Address Line 2 <span className="usa-hint">(optional)</span>
+            Address line 2 <span className="usa-hint">(optional)</span>
           </label>
           <input
             autoCapitalize="none"
@@ -84,7 +81,7 @@ export const Address = connect(
         </div>
         <div className="usa-form-group">
           <label className="usa-label" htmlFor={`${type}.address3`}>
-            Address Line 3 <span className="usa-hint">(optional)</span>
+            Address line 3 <span className="usa-hint">(optional)</span>
           </label>
           <input
             autoCapitalize="none"
@@ -149,14 +146,14 @@ export const Address = connect(
                   validateStartCaseSequence={validateStartCaseSequence}
                 />
               </div>
-              <Text
-                bind={`validationErrors.${type}.city`}
-                className="usa-error-message"
-              />
-              <Text
-                bind={`validationErrors.${type}.state`}
-                className="usa-error-message"
-              />
+            </div>
+            <div className="grid-row grid-gap">
+              <div className="grid-col-8">
+                <ValidationText field={`${type}.city`} />
+              </div>
+              <div className="grid-col-4">
+                <ValidationText field={`${type}.state`} />
+              </div>
             </div>
           </div>
         </NonMobile>
@@ -190,10 +187,7 @@ export const Address = connect(
                 });
               }}
             />
-            <Text
-              bind={`validationErrors.${type}.city`}
-              className="usa-error-message"
-            />
+            <ValidationText field={`${type}.city`} />
           </div>
           <div
             className={classNames(
@@ -214,10 +208,7 @@ export const Address = connect(
               usStates={usStates}
               validateStartCaseSequence={validateStartCaseSequence}
             />
-            <Text
-              bind={`validationErrors.${type}.state`}
-              className="usa-error-message"
-            />
+            <ValidationText field={`${type}.state`} />
           </div>
         </Mobile>
         <div
@@ -235,11 +226,11 @@ export const Address = connect(
             className="usa-label"
             htmlFor={`${type}.postalCode`}
           >
-            ZIP Code
+            ZIP code
           </label>
           <input
             autoCapitalize="none"
-            className="usa-input tablet:usa-input--medium"
+            className="usa-input max-width-200 tablet:usa-input--medium"
             id={`${type}.postalCode`}
             name={`${type}.postalCode`}
             type="text"
@@ -254,10 +245,7 @@ export const Address = connect(
               });
             }}
           />
-          <Text
-            bind={`validationErrors.${type}.postalCode`}
-            className="usa-error-message"
-          />
+          <ValidationText field={`${type}.postalCode`} />
         </div>
       </React.Fragment>
     );

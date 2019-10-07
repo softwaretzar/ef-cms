@@ -1,13 +1,14 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Button } from '../ustc-ui/Button/Button';
+import { CaseLink } from '../ustc-ui/CaseLink/CaseLink';
 import { connect } from '@cerebral/react';
 import { state } from 'cerebral';
 import React from 'react';
 
 export const CaseListPetitioner = connect(
   {
-    caseList: state.formattedCases,
+    formattedCases: state.formattedCases,
   },
-  ({ caseList }) => {
+  ({ formattedCases }) => {
     return (
       <>
         <div className="grid-container padding-x-0">
@@ -16,13 +17,14 @@ export const CaseListPetitioner = connect(
               <h2 className="margin-0">My Cases</h2>
             </div>
             <div className="tablet:grid-col-6 mobile:grid-col-12 text-right">
-              <a
-                className="usa-button new-case tablet-full-width"
+              <Button
+                className="new-case tablet-full-width margin-right-0"
                 href="/before-filing-a-petition"
+                icon="file"
                 id="init-file-petition"
               >
-                <FontAwesomeIcon icon="file" size="1x" /> File a Petition
-              </a>
+                File a Petition
+              </Button>
             </div>
           </div>
         </div>
@@ -42,20 +44,16 @@ export const CaseListPetitioner = connect(
               </tr>
             </thead>
             <tbody>
-              {caseList.map(item => (
+              {formattedCases.map(item => (
                 <tr key={item.docketNumber}>
                   <td className="hide-on-mobile">
-                    <a href={'/case-detail/' + item.docketNumber}>
-                      {item.docketNumberWithSuffix}
-                    </a>
+                    <CaseLink formattedCase={item} />
                   </td>
                   <td className="hide-on-mobile">{item.caseName}</td>
                   <td>{item.createdAtFormatted}</td>
                   <td className="show-on-mobile">
                     <div>
-                      <a href={'/case-detail/' + item.docketNumber}>
-                        {item.docketNumberWithSuffix}
-                      </a>
+                      <CaseLink formattedCase={item} />
                     </div>
                     {item.caseName}
                   </td>

@@ -31,20 +31,25 @@ import { OrderWithoutBody } from '../../shared/src/business/entities/orders/Orde
 import { TrialSession } from '../../shared/src/business/entities/trialSessions/TrialSession';
 import { TrialSessionWorkingCopy } from '../../shared/src/business/entities/trialSessions/TrialSessionWorkingCopy';
 import { User } from '../../shared/src/business/entities/User';
+import { addCoversheetInteractor } from '../../shared/src/proxies/documents/addCoversheetProxy';
 import { archiveDraftDocumentInteractor } from '../../shared/src/proxies/archiveDraftDocumentProxy';
 import { assignWorkItemsInteractor } from '../../shared/src/proxies/workitems/assignWorkItemsProxy';
 import { associatePractitionerWithCaseInteractor } from '../../shared/src/proxies/manualAssociation/associatePractitionerWithCaseProxy';
 import { associateRespondentWithCaseInteractor } from '../../shared/src/proxies/manualAssociation/associateRespondentWithCaseProxy';
 import { authorizeCodeInteractor } from '../../shared/src/business/useCases/authorizeCodeInteractor';
+import { batchDownloadTrialSessionInteractor } from '../../shared/src/proxies/trialSessions/batchDownloadTrialSessionProxy';
 import { caseSearchInteractor } from '../../shared/src/proxies/caseSearchProxy';
+import {
+  compareCasesByDocketNumber,
+  formatCase as formatCaseForTrialSession,
+  formattedTrialSessionDetails,
+} from '../../shared/src/business/utilities/getFormattedTrialSessionDetails';
 import { completeWorkItemInteractor } from '../../shared/src/proxies/workitems/completeWorkItemProxy';
 import { createCaseDeadlineInteractor } from '../../shared/src/proxies/caseDeadline/createCaseDeadlineProxy';
 import { createCaseFromPaperInteractor } from '../../shared/src/proxies/createCaseFromPaperProxy';
 import { createCaseInteractor } from '../../shared/src/proxies/createCaseProxy';
 import { createCaseNoteInteractor } from '../../shared/src/proxies/caseNote/createCaseNoteProxy';
 import { createCourtIssuedOrderPdfFromHtmlInteractor } from '../../shared/src/proxies/courtIssuedOrder/createCourtIssuedOrderPdfFromHtmlProxy';
-import { createCoverSheetInteractor } from '../../shared/src/proxies/documents/createCoverSheetProxy';
-import { createDocketRecordPdfInteractor } from '../../shared/src/proxies/createDocketRecordPdfProxy';
 import {
   createISODateString,
   formatDateString,
@@ -70,9 +75,11 @@ import {
 } from '../../shared/src/business/utilities/getFormattedCaseDetail';
 import { forwardWorkItemInteractor } from '../../shared/src/proxies/workitems/forwardWorkItemProxy';
 import { generateCaseAssociationDocumentTitleInteractor } from '../../shared/src/business/useCases/caseAssociationRequest/generateCaseAssociationDocumentTitleInteractor';
+import { generateDocketRecordPdfInteractor } from '../../shared/src/proxies/generateDocketRecordPdfProxy';
 import { generateDocumentTitleInteractor } from '../../shared/src/business/useCases/externalDocument/generateDocumentTitleInteractor';
 import { generatePDFFromJPGDataInteractor } from '../../shared/src/business/useCases/generatePDFFromJPGDataInteractor';
 import { generateSignedDocumentInteractor } from '../../shared/src/business/useCases/generateSignedDocumentInteractor';
+import { generateTrialCalendarPdfInteractor } from '../../shared/src/proxies/trialSessions/generateTrialCalendarPdfUrlProxy';
 import { getAllCaseDeadlinesInteractor } from '../../shared/src/proxies/caseDeadline/getAllCaseDeadlinesProxy';
 import { getCalendaredCasesForTrialSessionInteractor } from '../../shared/src/proxies/trialSessions/getCalendaredCasesForTrialSessionProxy';
 import { getCaseDeadlinesForCaseInteractor } from '../../shared/src/proxies/caseDeadline/getCaseDeadlinesForCaseProxy';
@@ -133,6 +140,7 @@ import { updateCaseDeadlineInteractor } from '../../shared/src/proxies/caseDeadl
 import { updateCaseInteractor } from '../../shared/src/proxies/updateCaseProxy';
 import { updateCaseNoteInteractor } from '../../shared/src/proxies/caseNote/updateCaseNoteProxy';
 import { updateCaseTrialSortTagsInteractor } from '../../shared/src/proxies/updateCaseTrialSortTagsProxy';
+import { updateCourtIssuedOrderInteractor } from '../../shared/src/proxies/courtIssuedOrder/updateCourtIssuedOrderProxy';
 import { updateDocketEntryInteractor } from '../../shared/src/proxies/documents/updateDocketEntryProxy';
 import { updatePrimaryContactInteractor } from '../../shared/src/proxies/updatePrimaryContactProxy';
 import { updateTrialSessionWorkingCopyInteractor } from '../../shared/src/proxies/trialSessions/updateTrialSessionWorkingCopyProxy';
@@ -190,11 +198,13 @@ const setCurrentUserToken = newToken => {
 };
 
 const allUseCases = {
+  addCoversheetInteractor,
   archiveDraftDocumentInteractor,
   assignWorkItemsInteractor,
   associatePractitionerWithCaseInteractor,
   associateRespondentWithCaseInteractor,
   authorizeCodeInteractor,
+  batchDownloadTrialSessionInteractor,
   caseSearchInteractor,
   completeWorkItemInteractor,
   createCaseDeadlineInteractor,
@@ -202,8 +212,6 @@ const allUseCases = {
   createCaseInteractor,
   createCaseNoteInteractor,
   createCourtIssuedOrderPdfFromHtmlInteractor,
-  createCoverSheetInteractor,
-  createDocketRecordPdfInteractor,
   createTrialSessionInteractor,
   createWorkItemInteractor,
   deleteCaseDeadlineInteractor,
@@ -216,9 +224,11 @@ const allUseCases = {
   filePetitionInteractor,
   forwardWorkItemInteractor,
   generateCaseAssociationDocumentTitleInteractor,
+  generateDocketRecordPdfInteractor,
   generateDocumentTitleInteractor,
   generatePDFFromJPGDataInteractor,
   generateSignedDocumentInteractor,
+  generateTrialCalendarPdfInteractor,
   getAllCaseDeadlinesInteractor,
   getCalendaredCasesForTrialSessionInteractor,
   getCaseDeadlinesForCaseInteractor,
@@ -271,6 +281,7 @@ const allUseCases = {
   updateCaseInteractor,
   updateCaseNoteInteractor,
   updateCaseTrialSortTagsInteractor,
+  updateCourtIssuedOrderInteractor,
   updateDocketEntryInteractor,
   updatePrimaryContactInteractor,
   updateTrialSessionWorkingCopyInteractor,
@@ -424,17 +435,26 @@ const applicationContext = {
   getUseCases: () => allUseCases,
   getUtilities: () => {
     return {
+      compareCasesByDocketNumber,
       createISODateString,
       formatCase,
       formatCaseDeadlines,
+      formatCaseForTrialSession,
       formatDateString,
       formatDocument,
+      formattedTrialSessionDetails,
       getFormattedCaseDetail,
       isStringISOFormatted,
       prepareDateFromString,
       setServiceIndicatorsForCase,
       sortDocketRecords,
     };
+  },
+  getWebSocketClient: token => {
+    const notificationsUrl = process.env.WS_URL || 'ws://localhost:3011';
+    const connectionUrl = `${notificationsUrl}?token=${token}`;
+    const socket = new WebSocket(connectionUrl);
+    return socket;
   },
   setCurrentUser,
   setCurrentUserToken,

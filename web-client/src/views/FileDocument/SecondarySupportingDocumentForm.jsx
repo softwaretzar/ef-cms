@@ -1,3 +1,4 @@
+import { Button } from '../../ustc-ui/Button/Button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { StateDrivenFileInput } from '../FileDocument/StateDrivenFileInput';
 import { SupportingDocumentInclusionsForm } from './SupportingDocumentInclusionsForm';
@@ -12,6 +13,8 @@ export const SecondarySupportingDocumentForm = connect(
     fileDocumentHelper: state.fileDocumentHelper,
     form: state.form,
     index: props.index,
+    removeSecondarySupportingDocumentSequence:
+      sequences.removeSecondarySupportingDocumentSequence,
     updateFileDocumentWizardFormValueSequence:
       sequences.updateFileDocumentWizardFormValueSequence,
     validateExternalDocumentInformationSequence:
@@ -23,6 +26,7 @@ export const SecondarySupportingDocumentForm = connect(
     fileDocumentHelper,
     form,
     index,
+    removeSecondarySupportingDocumentSequence,
     updateFileDocumentWizardFormValueSequence,
     validateExternalDocumentInformationSequence,
     validationErrors,
@@ -30,7 +34,19 @@ export const SecondarySupportingDocumentForm = connect(
     return (
       <>
         <h2 className="margin-top-4">
-          Secondary Supporting Document {index + 1}
+          <div className="display-flex">
+            Secondary Supporting Document {index + 1}{' '}
+            <Button
+              link
+              className="red-warning text-left padding-0 margin-left-1"
+              icon="times-circle"
+              onClick={() => {
+                removeSecondarySupportingDocumentSequence({ index });
+              }}
+            >
+              Remove
+            </Button>
+          </div>
         </h2>
         <div className="blue-container">
           <div
@@ -122,7 +138,7 @@ export const SecondarySupportingDocumentForm = connect(
                 htmlFor={`secondary-supporting-document-free-text-${index}`}
                 id={`secondary-supporting-document-free-text-${index}-label`}
               >
-                Supporting Document Signed By
+                Supporting document signed by
               </label>
               <input
                 aria-describedby={`secondary-supporting-document-free-text-${index}-label`}
@@ -180,7 +196,7 @@ export const SecondarySupportingDocumentForm = connect(
                   htmlFor={`secondary-supporting-document-file-${index}`}
                   id={`secondary-supporting-document-file-${index}-label`}
                 >
-                  Upload Your Supporting Document{' '}
+                  Upload your supporting document{' '}
                   <span className="success-message padding-left-1">
                     <FontAwesomeIcon icon="check-circle" size="sm" />
                   </span>

@@ -1,3 +1,4 @@
+import { Button } from '../../ustc-ui/Button/Button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Mobile, NonMobile } from '../../ustc-ui/Responsive/Responsive';
 import { connect } from '@cerebral/react';
@@ -8,10 +9,10 @@ export const FilingsAndProceedings = connect(
   {
     arrayIndex: props.arrayIndex,
     baseUrl: state.baseUrl,
-    caseDetail: state.formattedCaseDetail,
     caseDetailHelper: state.caseDetailHelper,
     document: props.document,
     documentHelper: state.documentHelper,
+    formattedCaseDetail: state.formattedCaseDetail,
     record: props.record,
     showDocketRecordDetailModalSequence:
       sequences.showDocketRecordDetailModalSequence,
@@ -20,10 +21,10 @@ export const FilingsAndProceedings = connect(
   ({
     arrayIndex,
     baseUrl,
-    caseDetail,
     caseDetailHelper,
     document,
     documentHelper,
+    formattedCaseDetail,
     record,
     showDocketRecordDetailModalSequence,
     token,
@@ -54,9 +55,10 @@ export const FilingsAndProceedings = connect(
                 </a>
               </NonMobile>
               <Mobile>
-                <button
+                <Button
+                  link
                   aria-roledescription="button to view document details"
-                  className="usa-button usa-button--unstyled border-0"
+                  className="padding-0 border-0"
                   onClick={() => {
                     showDocketRecordDetailModalSequence({
                       docketRecordIndex,
@@ -65,7 +67,7 @@ export const FilingsAndProceedings = connect(
                   }}
                 >
                   {description}
-                </button>
+                </Button>
               </Mobile>
             </React.Fragment>
           )}
@@ -106,7 +108,7 @@ export const FilingsAndProceedings = connect(
           <a
             aria-label="View PDF"
             href={documentHelper({
-              docketNumber: caseDetail.docketNumber,
+              docketNumber: formattedCaseDetail.docketNumber,
               documentId: document.documentId,
               shouldLinkToEdit: document.isFileAttached === false,
             })}

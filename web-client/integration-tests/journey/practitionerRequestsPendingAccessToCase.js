@@ -1,3 +1,7 @@
+import { CaseAssociationRequestFactory } from '../../../shared/src/business/entities/CaseAssociationRequestFactory';
+
+const { VALIDATION_ERROR_MESSAGES } = CaseAssociationRequestFactory;
+
 export default (test, fakeFile) => {
   return it('Practitioner requests access to case', async () => {
     await test.runSequence('gotoRequestAccessSequence', {
@@ -7,13 +11,12 @@ export default (test, fakeFile) => {
     await test.runSequence('reviewRequestAccessInformationSequence');
 
     expect(test.getState('validationErrors')).toEqual({
-      certificateOfService: 'Enter selection for Certificate of Service.',
-      documentTitleTemplate: 'Select a document.',
-      documentType: 'Select a document.',
-      eventCode: 'Select a document.',
-      primaryDocumentFile: 'A file was not selected.',
-      representingPrimary: 'Select a party.',
-      scenario: 'Select a document.',
+      documentTitleTemplate: VALIDATION_ERROR_MESSAGES.documentTitleTemplate,
+      documentType: VALIDATION_ERROR_MESSAGES.documentType,
+      eventCode: VALIDATION_ERROR_MESSAGES.eventCode,
+      primaryDocumentFile: VALIDATION_ERROR_MESSAGES.primaryDocumentFile,
+      representingPrimary: VALIDATION_ERROR_MESSAGES.representingPrimary,
+      scenario: VALIDATION_ERROR_MESSAGES.scenario,
     });
 
     await test.runSequence('updateCaseAssociationFormValueSequence', {
@@ -35,13 +38,9 @@ export default (test, fakeFile) => {
 
     await test.runSequence('validateCaseAssociationRequestSequence');
     expect(test.getState('validationErrors')).toEqual({
-      attachments: 'Enter selection for Attachments.',
-      certificateOfService: 'Enter selection for Certificate of Service.',
-      exhibits: 'Enter selection for Exhibits.',
-      hasSupportingDocuments: 'Enter selection for Supporting Documents.',
-      objections: 'Enter selection for Objections.',
-      primaryDocumentFile: 'A file was not selected.',
-      representingPrimary: 'Select a party.',
+      objections: VALIDATION_ERROR_MESSAGES.objections,
+      primaryDocumentFile: VALIDATION_ERROR_MESSAGES.primaryDocumentFile,
+      representingPrimary: VALIDATION_ERROR_MESSAGES.representingPrimary,
     });
 
     await test.runSequence('updateCaseAssociationFormValueSequence', {
@@ -77,47 +76,6 @@ export default (test, fakeFile) => {
     await test.runSequence('updateCaseAssociationFormValueSequence', {
       key: 'representingSecondary',
       value: true,
-    });
-
-    await test.runSequence('validateCaseAssociationRequestSequence');
-    expect(test.getState('validationErrors')).toEqual({
-      supportingDocument: 'Enter selection for Supporting Document.',
-    });
-
-    await test.runSequence('updateCaseAssociationFormValueSequence', {
-      key: 'supportingDocument',
-      value: 'Declaration in Support',
-    });
-
-    await test.runSequence('updateCaseAssociationFormValueSequence', {
-      key: 'supportingDocumentMetadata.documentType',
-      value: 'Declaration in Support',
-    });
-
-    await test.runSequence('updateCaseAssociationFormValueSequence', {
-      key: 'supportingDocumentMetadata.category',
-      value: 'Supporting Document',
-    });
-
-    await test.runSequence('validateCaseAssociationRequestSequence');
-    expect(test.getState('validationErrors')).toEqual({
-      supportingDocumentFile: 'A file was not selected.',
-      supportingDocumentFreeText: 'Please provide a value.',
-    });
-
-    await test.runSequence('updateCaseAssociationFormValueSequence', {
-      key: 'supportingDocumentFreeText',
-      value: 'No',
-    });
-
-    await test.runSequence('updateCaseAssociationFormValueSequence', {
-      key: 'supportingDocumentMetadata.freeText',
-      value: 'No',
-    });
-
-    await test.runSequence('updateCaseAssociationFormValueSequence', {
-      key: 'supportingDocumentFile',
-      value: fakeFile,
     });
 
     await test.runSequence('validateCaseAssociationRequestSequence');

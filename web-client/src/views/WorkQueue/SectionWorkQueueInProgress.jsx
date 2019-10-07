@@ -1,3 +1,4 @@
+import { CaseLink } from '../../ustc-ui/CaseLink/CaseLink';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { connect } from '@cerebral/react';
 import { sequences, state } from 'cerebral';
@@ -7,22 +8,22 @@ export const SectionWorkQueueInProgress = connect(
   {
     assignSelectedWorkItemsSequence: sequences.assignSelectedWorkItemsSequence,
     documentHelper: state.documentHelper,
-    sectionWorkQueue: state.formattedWorkQueue,
+    formattedWorkQueue: state.formattedWorkQueue,
     selectAssigneeSequence: sequences.selectAssigneeSequence,
     selectWorkItemSequence: sequences.selectWorkItemSequence,
     selectedWorkItems: state.selectedWorkItems,
-    setFocusedWorkItem: sequences.setFocusedWorkItemSequence,
+    setFocusedWorkItemSequence: sequences.setFocusedWorkItemSequence,
     users: state.users,
     workQueueHelper: state.workQueueHelper,
   },
   ({
     assignSelectedWorkItemsSequence,
     documentHelper,
-    sectionWorkQueue,
+    formattedWorkQueue,
     selectAssigneeSequence,
     selectedWorkItems,
     selectWorkItemSequence,
-    setFocusedWorkItem,
+    setFocusedWorkItemSequence,
     users,
     workQueueHelper,
   }) => {
@@ -70,8 +71,9 @@ export const SectionWorkQueueInProgress = connect(
               {workQueueHelper.showSelectColumn && <th colSpan="2">&nbsp;</th>}
               <th aria-label="Docket Number">Docket</th>
               <th>Filed</th>
+              <th>Case name</th>
               <th>Document</th>
-              {!workQueueHelper.hideFiledByColumn && <th>Filed By</th>}
+              {!workQueueHelper.hideFiledByColumn && <th>Filed by</th>}
               <th>Case Status</th>
               {workQueueHelper.showAssignedToColumn && (
                 <th>{workQueueHelper.assigneeColumnTitle}</th>
@@ -80,11 +82,11 @@ export const SectionWorkQueueInProgress = connect(
               {!workQueueHelper.hideSectionColumn && <th>Section</th>}
             </tr>
           </thead>
-          {sectionWorkQueue.map((item, idx) => (
+          {formattedWorkQueue.map((item, idx) => (
             <tbody
               key={idx}
               onClick={() =>
-                setFocusedWorkItem({
+                setFocusedWorkItemSequence({
                   queueType: 'workQueue',
                   uiKey: item.uiKey,
                 })
@@ -125,15 +127,13 @@ export const SectionWorkQueueInProgress = connect(
                   </>
                 )}
                 <td className="message-queue-row">
-                  <a
-                    className="no-wrap"
-                    href={`/case-detail/${item.docketNumber}`}
-                  >
-                    {item.docketNumberWithSuffix}
-                  </a>
+                  <CaseLink formattedCase={item} />
                 </td>
                 <td className="message-queue-row">
                   <span className="no-wrap">{item.received}</span>
+                </td>
+                <td className="message-queue-row message-queue-case-title">
+                  {item.caseTitle}
                 </td>
                 <td className="message-queue-row message-queue-document">
                   <div className="message-document-title">
@@ -181,6 +181,9 @@ export const SectionWorkQueueInProgress = connect(
             </tbody>
           ))}
         </table>
+        {formattedWorkQueue.length === 0 && (
+          <p>{workQueueHelper.queueEmptyMessage}</p>
+        )}
       </React.Fragment>
     );
   },

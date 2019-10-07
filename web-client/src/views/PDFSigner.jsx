@@ -1,3 +1,4 @@
+import { Button } from '../ustc-ui/Button/Button';
 import { CaseDetailHeader } from './CaseDetailHeader';
 import { PDFSignerMessage } from './PDFSignerMessage';
 import { PDFSignerToolbar } from './PDFSignerToolbar';
@@ -138,15 +139,13 @@ class PDFSignerComponent extends React.Component {
                   <div className="margin-top-2">
                     {/* TODO: This is commented out until we revisit the stipulated
                     decision */}
-                    {/* <button
-                      className="usa-button"
+                    {/* <Button
                       disabled={this.props.pdfSignerHelper.disableSaveButton}
                       onClick={() => this.props.saveDocumentSigningSequence()}
                     >
                       Save
-                    </button> */}
-                    <button
-                      className="usa-button"
+                    </Button> */}
+                    <Button
                       disabled={
                         this.props.pdfSignerHelper.disableSaveAndSendButton
                       }
@@ -155,9 +154,10 @@ class PDFSignerComponent extends React.Component {
                       }
                     >
                       Save & Send Message
-                    </button>
-                    <button
-                      className="usa-button usa-button--unstyled margin-left-2"
+                    </Button>
+                    <Button
+                      link
+                      className="margin-left-2"
                       onClick={() =>
                         this.props.navigateToPathSequence({
                           path: `/case-detail/${this.props.docketNumber}/documents/${this.props.documentId}`,
@@ -165,7 +165,7 @@ class PDFSignerComponent extends React.Component {
                       }
                     >
                       Cancel
-                    </button>
+                    </Button>
                   </div>
                 </div>
                 <div className="grid-col-8">
@@ -203,7 +203,6 @@ class PDFSignerComponent extends React.Component {
 }
 
 PDFSignerComponent.propTypes = {
-  cancel: PropTypes.func,
   completeDocumentSigningSequence: PropTypes.func,
   currentPageNumber: PropTypes.number,
   docketNumber: PropTypes.string,
@@ -216,7 +215,6 @@ PDFSignerComponent.propTypes = {
   pdfSignerHelper: PropTypes.object,
   saveDocumentSigningSequence: PropTypes.func,
   setCanvas: PropTypes.func,
-  setPage: PropTypes.func,
   setSignatureData: PropTypes.func,
   signatureApplied: PropTypes.bool,
   signatureData: PropTypes.object,
@@ -224,7 +222,6 @@ PDFSignerComponent.propTypes = {
 
 export const PDFSigner = connect(
   {
-    cancel: sequences.gotoDocumentDetailSequence,
     completeDocumentSigningSequence: sequences.completeDocumentSigningSequence,
     currentPageNumber: state.pdfForSigning.pageNumber,
     docketNumber: state.caseDetail.docketNumber,

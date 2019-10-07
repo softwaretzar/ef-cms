@@ -1,14 +1,16 @@
 const {
   MAX_FILE_SIZE_BYTES,
-  MAX_FILE_SIZE_MB,
 } = require('../../../persistence/s3/getUploadPolicy');
 const { CaseExternal } = require('./CaseExternal');
+const { ContactFactory } = require('../contacts/ContactFactory');
+
+const { VALIDATION_ERROR_MESSAGES } = CaseExternal;
 
 describe('CaseExternal entity', () => {
   describe('isValid', () => {
     it('requires ownership disclosure if filing type is a business', () => {
       const caseExternal = new CaseExternal({
-        businessType: 'Corporation',
+        businessType: ContactFactory.PARTY_TYPES.corporation,
         caseType: 'other',
         filingType: 'A business',
         hasIrsNotice: false,
@@ -17,7 +19,7 @@ describe('CaseExternal entity', () => {
       });
       expect(
         caseExternal.getFormattedValidationErrors().ownershipDisclosureFile,
-      ).toEqual('Upload an Ownership Disclosure Statement');
+      ).toEqual(VALIDATION_ERROR_MESSAGES.ownershipDisclosureFile);
     });
     it('does not require ownership disclosure if filing type not set', () => {
       const petition = new CaseExternal({
@@ -44,7 +46,7 @@ describe('CaseExternal entity', () => {
     });
     it('requires stinFile', () => {
       const caseExternal = new CaseExternal({
-        businessType: 'Corporation',
+        businessType: ContactFactory.PARTY_TYPES.corporation,
         caseType: 'other',
         filingType: 'A business',
         hasIrsNotice: false,
@@ -52,7 +54,7 @@ describe('CaseExternal entity', () => {
         procedureType: 'Small',
       });
       expect(caseExternal.getFormattedValidationErrors().stinFile).toEqual(
-        'Upload a Statement of Taxpayer Identification',
+        VALIDATION_ERROR_MESSAGES.stinFile,
       );
     });
   });
@@ -63,8 +65,7 @@ describe('CaseExternal entity', () => {
         caseType: 'other',
         filingType: 'Myself',
         hasIrsNotice: true,
-        partyType:
-          'Next Friend for a Minor (Without a Guardian, Conservator, or other like Fiduciary)',
+        partyType: ContactFactory.PARTY_TYPES.nextFriendForMinor,
         petitionFile: new File([], 'test.pdf'),
         petitionFileSize: MAX_FILE_SIZE_BYTES + 5,
         preferredTrialCity: 'Chattanooga, TN',
@@ -72,9 +73,7 @@ describe('CaseExternal entity', () => {
       });
       expect(
         caseExternal.getFormattedValidationErrors().petitionFileSize,
-      ).toEqual(
-        `Your Petition file size is too big. The maximum file size is ${MAX_FILE_SIZE_MB}MB.`,
-      );
+      ).toEqual(VALIDATION_ERROR_MESSAGES.petitionFileSize[0].message);
     });
 
     it('should inform you if petition file size is zero', () => {
@@ -82,8 +81,7 @@ describe('CaseExternal entity', () => {
         caseType: 'other',
         filingType: 'Myself',
         hasIrsNotice: true,
-        partyType:
-          'Next Friend for a Minor (Without a Guardian, Conservator, or other like Fiduciary)',
+        partyType: ContactFactory.PARTY_TYPES.nextFriendForMinor,
         petitionFile: {},
         petitionFileSize: 0,
         preferredTrialCity: 'Chattanooga, TN',
@@ -91,7 +89,7 @@ describe('CaseExternal entity', () => {
       });
       expect(
         caseExternal.getFormattedValidationErrors().petitionFileSize,
-      ).toEqual('Your Petition file size is empty');
+      ).toEqual(VALIDATION_ERROR_MESSAGES.petitionFileSize[1]);
     });
 
     it('should not error on petitionFileSize when petitionFile is undefined', () => {
@@ -99,8 +97,7 @@ describe('CaseExternal entity', () => {
         caseType: 'other',
         filingType: 'Myself',
         hasIrsNotice: true,
-        partyType:
-          'Next Friend for a Minor (Without a Guardian, Conservator, or other like Fiduciary)',
+        partyType: ContactFactory.PARTY_TYPES.nextFriendForMinor,
         preferredTrialCity: 'Chattanooga, TN',
         procedureType: 'Small',
       });
@@ -114,15 +111,14 @@ describe('CaseExternal entity', () => {
         caseType: 'other',
         filingType: 'Myself',
         hasIrsNotice: true,
-        partyType:
-          'Next Friend for a Minor (Without a Guardian, Conservator, or other like Fiduciary)',
+        partyType: ContactFactory.PARTY_TYPES.nextFriendForMinor,
         petitionFile: new File([], 'testPetitionFile.pdf'),
         preferredTrialCity: 'Chattanooga, TN',
         procedureType: 'Small',
       });
       expect(
         caseExternal.getFormattedValidationErrors().petitionFileSize,
-      ).toEqual('Your Petition file size is empty');
+      ).toEqual(VALIDATION_ERROR_MESSAGES.petitionFileSize[1]);
     });
   });
 
@@ -132,15 +128,14 @@ describe('CaseExternal entity', () => {
         caseType: 'other',
         filingType: 'Myself',
         hasIrsNotice: true,
-        partyType:
-          'Next Friend for a Minor (Without a Guardian, Conservator, or other like Fiduciary)',
+        partyType: ContactFactory.PARTY_TYPES.nextFriendForMinor,
         preferredTrialCity: 'Chattanooga, TN',
         procedureType: 'Small',
         stinFile: new File([], 'test.pdf'),
         stinFileSize: MAX_FILE_SIZE_BYTES + 5,
       });
       expect(caseExternal.getFormattedValidationErrors().stinFileSize).toEqual(
-        `Your STIN file size is too big. The maximum file size is ${MAX_FILE_SIZE_MB}MB.`,
+        VALIDATION_ERROR_MESSAGES.stinFileSize[0].message,
       );
     });
 
@@ -149,15 +144,14 @@ describe('CaseExternal entity', () => {
         caseType: 'other',
         filingType: 'Myself',
         hasIrsNotice: true,
-        partyType:
-          'Next Friend for a Minor (Without a Guardian, Conservator, or other like Fiduciary)',
+        partyType: ContactFactory.PARTY_TYPES.nextFriendForMinor,
         preferredTrialCity: 'Chattanooga, TN',
         procedureType: 'Small',
         stinFile: new File([], 'test.pdf'),
         stinFileSize: 0,
       });
       expect(caseExternal.getFormattedValidationErrors().stinFileSize).toEqual(
-        'Your STIN file size is empty',
+        VALIDATION_ERROR_MESSAGES.stinFileSize[1],
       );
     });
 
@@ -166,8 +160,7 @@ describe('CaseExternal entity', () => {
         caseType: 'other',
         filingType: 'Myself',
         hasIrsNotice: true,
-        partyType:
-          'Next Friend for a Minor (Without a Guardian, Conservator, or other like Fiduciary)',
+        partyType: ContactFactory.PARTY_TYPES.nextFriendForMinor,
         preferredTrialCity: 'Chattanooga, TN',
         procedureType: 'Small',
       });
@@ -181,14 +174,13 @@ describe('CaseExternal entity', () => {
         caseType: 'other',
         filingType: 'Myself',
         hasIrsNotice: true,
-        partyType:
-          'Next Friend for a Minor (Without a Guardian, Conservator, or other like Fiduciary)',
+        partyType: ContactFactory.PARTY_TYPES.nextFriendForMinor,
         preferredTrialCity: 'Chattanooga, TN',
         procedureType: 'Small',
         stinFile: new File([], 'testStinFile.pdf'),
       });
       expect(caseExternal.getFormattedValidationErrors().stinFileSize).toEqual(
-        'Your STIN file size is empty',
+        VALIDATION_ERROR_MESSAGES.stinFileSize[1],
       );
     });
   });
@@ -201,15 +193,14 @@ describe('CaseExternal entity', () => {
         hasIrsNotice: true,
         ownershipDisclosureFile: new File([], 'odsFile.pdf'),
         ownershipDisclosureFileSize: MAX_FILE_SIZE_BYTES + 5,
-        partyType:
-          'Next Friend for a Minor (Without a Guardian, Conservator, or other like Fiduciary)',
+        partyType: ContactFactory.PARTY_TYPES.nextFriendForMinor,
         preferredTrialCity: 'Chattanooga, TN',
         procedureType: 'Small',
       });
       expect(
         caseExternal.getFormattedValidationErrors().ownershipDisclosureFileSize,
       ).toEqual(
-        `Your Ownership Disclosure Statement file size is too big. The maximum file size is ${MAX_FILE_SIZE_MB}MB.`,
+        VALIDATION_ERROR_MESSAGES.ownershipDisclosureFileSize[0].message,
       );
     });
 
@@ -220,14 +211,13 @@ describe('CaseExternal entity', () => {
         hasIrsNotice: true,
         ownershipDisclosureFile: new File([], 'test.pdf'),
         ownershipDisclosureFileSize: 0,
-        partyType:
-          'Next Friend for a Minor (Without a Guardian, Conservator, or other like Fiduciary)',
+        partyType: ContactFactory.PARTY_TYPES.nextFriendForMinor,
         preferredTrialCity: 'Chattanooga, TN',
         procedureType: 'Small',
       });
       expect(
         caseExternal.getFormattedValidationErrors().ownershipDisclosureFileSize,
-      ).toEqual('Your Ownership Disclosure Statement file size is empty');
+      ).toEqual(VALIDATION_ERROR_MESSAGES.ownershipDisclosureFileSize[1]);
     });
 
     it('should not error on ownershipDisclosureFileSize when ownershipDisclosureFile is undefined', () => {
@@ -235,8 +225,7 @@ describe('CaseExternal entity', () => {
         caseType: 'other',
         filingType: 'Myself',
         hasIrsNotice: true,
-        partyType:
-          'Next Friend for a Minor (Without a Guardian, Conservator, or other like Fiduciary)',
+        partyType: ContactFactory.PARTY_TYPES.nextFriendForMinor,
         preferredTrialCity: 'Chattanooga, TN',
         procedureType: 'Small',
       });
@@ -251,14 +240,13 @@ describe('CaseExternal entity', () => {
         filingType: 'Myself',
         hasIrsNotice: true,
         ownershipDisclosureFile: new File([], 'testStinFile.pdf'),
-        partyType:
-          'Next Friend for a Minor (Without a Guardian, Conservator, or other like Fiduciary)',
+        partyType: ContactFactory.PARTY_TYPES.nextFriendForMinor,
         preferredTrialCity: 'Chattanooga, TN',
         procedureType: 'Small',
       });
       expect(
         caseExternal.getFormattedValidationErrors().ownershipDisclosureFileSize,
-      ).toEqual('Your Ownership Disclosure Statement file size is empty');
+      ).toEqual(VALIDATION_ERROR_MESSAGES.ownershipDisclosureFileSize[1]);
     });
   });
 });

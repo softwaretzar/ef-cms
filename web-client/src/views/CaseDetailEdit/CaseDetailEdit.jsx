@@ -1,6 +1,7 @@
 import { Tab, Tabs } from '../../ustc-ui/Tabs/Tabs';
 import { sequences, state } from 'cerebral';
 
+import { Button } from '../../ustc-ui/Button/Button';
 import { CaseInfo } from './CaseInfo';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IRSNotice } from './IRSNotice';
@@ -13,14 +14,14 @@ export const CaseDetailEdit = connect(
     screenMetadata: state.screenMetadata,
     submitCaseDetailEditSaveSequence:
       sequences.submitCaseDetailEditSaveSequence,
-    submitting: state.submitting,
     unsetFormSaveSuccessSequence: sequences.unsetFormSaveSuccessSequence,
+    waitingForResponse: state.waitingForResponse,
   },
   ({
     screenMetadata,
     submitCaseDetailEditSaveSequence,
-    submitting,
     unsetFormSaveSuccessSequence,
+    waitingForResponse,
   }) => {
     return (
       <form
@@ -52,19 +53,15 @@ export const CaseDetailEdit = connect(
           </Tab>
         </Tabs>
 
-        <button
-          aria-disabled={submitting ? 'true' : 'false'}
-          className={
-            submitting
-              ? 'usa-button usa-button-active'
-              : 'usa-button usa-button--outline'
-          }
-          disabled={submitting}
+        <Button
+          aria-disabled={waitingForResponse ? 'true' : 'false'}
+          disabled={waitingForResponse}
+          secondary={!waitingForResponse}
           type="submit"
         >
-          {submitting && <div className="spinner" />}
+          {waitingForResponse && <div className="spinner" />}
           Save
-        </button>
+        </Button>
         {screenMetadata.showSaveSuccess && (
           <span aria-live="polite" className="mini-success" role="alert">
             <FontAwesomeIcon icon="check-circle" size="sm" />

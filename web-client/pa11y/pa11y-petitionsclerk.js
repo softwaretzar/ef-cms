@@ -4,7 +4,7 @@ module.exports = [
   {
     actions: [
       'wait for #party-type to be visible',
-      'set field #party-type to Surviving Spouse',
+      'set field #party-type to Surviving spouse',
       'check field #party-type',
       'wait for #secondary-name to be visible',
     ],
@@ -112,6 +112,15 @@ module.exports = [
     notes: 'checks a11y of add deadline modal',
     url:
       'http://localhost:1234/mock-login?token=petitionsclerk&path=/case-detail/105-19&info=add-deadline',
+  },
+  {
+    actions: [
+      'wait for ul.usa-list to be visible',
+      'wait for #button-create-order to be visible',
+    ],
+    notes: 'checks a11y of orders needed summary',
+    url:
+      'http://localhost:1234/mock-login?token=petitionsclerk&path=/case-detail/104-19/orders-needed&info=orders-needed-summary',
   },
 
   //this url probably needs to be moved to calendaring when those users are created

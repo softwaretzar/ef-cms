@@ -168,6 +168,50 @@
         }
       }
     },
+    "/cases/search": {
+      "get": {
+        "tags": ["cases"],
+        "summary": "search for a case by name, country, state, and/or year filed",
+        "description": "Search for a case by name, country, state, and/or year filed.\n",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "schema": {
+              "$ref": "#/definitions/case"
+            }
+          }
+        },
+        "security": [
+          {
+            "CognitoUserPool": []
+          }
+        ]
+      },
+      "options": {
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              },
+              "Access-Control-Allow-Methods": {
+                "type": "string"
+              },
+              "Access-Control-Allow-Credentials": {
+                "type": "string"
+              },
+              "Access-Control-Allow-Headers": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
     "/cases/{caseId}": {
       "parameters": [
         {
@@ -2556,6 +2600,97 @@
             }
           }
         },
+        "security": [
+          {
+            "CognitoUserPool": []
+          }
+        ]
+      },
+      "options": {
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              },
+              "Access-Control-Allow-Methods": {
+                "type": "string"
+              },
+              "Access-Control-Allow-Credentials": {
+                "type": "string"
+              },
+              "Access-Control-Allow-Headers": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/cases/{caseId}/court-issued-orders/{documentId}": {
+      "parameters": [
+        {
+          "name": "caseId",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "documentId",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "in": "body",
+          "name": "draft order",
+          "description": "the draft order information",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "documentMetadata": {
+                "type": "object",
+                "properties": {
+                  "caseId": {
+                    "type": "string"
+                  },
+                  "docketNumber": {
+                    "type": "string"
+                  },
+                  "documentTitle": {
+                    "type": "string"
+                  },
+                  "documentType": {
+                    "type": "string"
+                  },
+                  "draftState": {
+                    "type": "object"
+                  },
+                  "eventCode": {
+                    "type": "string"
+                  },
+                  "richText": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      ],
+      "put": {
+        "summary": "updates the draft court issued order",
+        "description": "updates the draft court issued order.\n",
+        "produces": ["application/pdf"],
+        "responses": {
+          "200": {
+            "description": "200 response"
+          }
+        },
+
         "security": [
           {
             "CognitoUserPool": []

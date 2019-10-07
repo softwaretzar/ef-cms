@@ -1,3 +1,4 @@
+import { Button } from '../../ustc-ui/Button/Button';
 import { FileUploadErrorModal } from '../FileUploadErrorModal';
 import { FileUploadStatusModal } from '../FileUploadStatusModal';
 import { Focus } from '../../ustc-ui/Focus/Focus';
@@ -10,25 +11,31 @@ import React from 'react';
 
 export const FileDocumentReview = connect(
   {
-    caseDetail: state.formattedCaseDetail,
     fileDocumentHelper: state.fileDocumentHelper,
     form: state.form,
     formCancelToggleCancelSequence: sequences.formCancelToggleCancelSequence,
+    formattedCaseDetail: state.formattedCaseDetail,
+    navigateBackSequence: sequences.navigateBackSequence,
     showModal: state.showModal,
     submitExternalDocumentSequence: sequences.submitExternalDocumentSequence,
   },
   ({
-    caseDetail,
     fileDocumentHelper,
     form,
+    formattedCaseDetail,
     formCancelToggleCancelSequence,
+    navigateBackSequence,
     showModal,
     submitExternalDocumentSequence,
   }) => {
     return (
       <React.Fragment>
         <Focus>
-          <h1 className="heading-1" id="file-a-document-header" tabIndex="-1">
+          <h1
+            className="heading-1 margin-bottom-0"
+            id="file-a-document-header"
+            tabIndex="-1"
+          >
             Review Your Filing
           </h1>
         </Focus>
@@ -323,11 +330,15 @@ export const FileDocumentReview = connect(
                       </label>
                       <ul className="ustc-unstyled-list without-margins">
                         {form.partyPrimary && (
-                          <li>{caseDetail.contactPrimary.name}, Petitioner</li>
+                          <li>
+                            {formattedCaseDetail.contactPrimary.name},
+                            Petitioner
+                          </li>
                         )}
                         {form.partySecondary && (
                           <li>
-                            {caseDetail.contactSecondary.name}, Petitioner
+                            {formattedCaseDetail.contactSecondary.name},
+                            Petitioner
                           </li>
                         )}
                         {form.partyRespondent && <li>Respondent</li>}
@@ -340,56 +351,56 @@ export const FileDocumentReview = connect(
           </div>
         </div>
 
-        <div className="grid-row grid-gap">
+        <div className="grid-row grid-gap margin-bottom-5">
           <div className="tablet:grid-col-12 bg-white submit-reminders">
             <div className="card">
               <div className="content-header bg-accent-cool-dark text-white heading-3">
                 A Few Reminders Before You Submit
               </div>
               <div className="content-wrapper">
-                <p>
-                  1. Double check that the PDF files you’ve selected are
-                  correct. <br />
-                  2. Be sure you’ve removed or redacted all personal information
-                  from your documents. <br />
-                  3. Indicate any related documents that you’ve included with
-                  your filing. <br />
-                  4. Confirm everything appears as you want it to—you can’t edit
-                  your filing after you submit it.
-                </p>
+                <ol className="numbered-list">
+                  <li>
+                    Double check that the PDF files you’ve selected are correct.
+                  </li>
+                  <li>
+                    Be sure you’ve removed or redacted all personal information
+                    from your documents.
+                  </li>
+                  <li>
+                    Indicate any related documents that you’ve included with
+                    your filing.
+                  </li>
+                  <li>
+                    Confirm everything appears as you want it to—you can’t edit
+                    your filing after you submit it.
+                  </li>
+                </ol>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="button-box-container">
-          <button
-            className="usa-button margin-bottom-1"
-            id="submit-document"
-            type="submit"
-            onClick={() => {
-              submitExternalDocumentSequence();
-            }}
-          >
-            Submit Your Filing
-          </button>
-          <button
-            className="usa-button usa-button--outline margin-bottom-1"
-            type="button"
-            onClick={() => history.back()}
-          >
-            Back
-          </button>
-          <button
-            className="usa-button usa-button--unstyled ustc-button--unstyled"
-            type="button"
-            onClick={() => {
-              formCancelToggleCancelSequence();
-            }}
-          >
-            Cancel
-          </button>
-        </div>
+        <Button
+          id="submit-document"
+          type="submit"
+          onClick={() => {
+            submitExternalDocumentSequence();
+          }}
+        >
+          Submit Your Filing
+        </Button>
+        <Button secondary onClick={() => navigateBackSequence()}>
+          Back
+        </Button>
+        <Button
+          link
+          onClick={() => {
+            formCancelToggleCancelSequence();
+          }}
+        >
+          Cancel
+        </Button>
+
         {showModal === 'FileUploadStatusModal' && <FileUploadStatusModal />}
         {showModal === 'FileUploadErrorModal' && (
           <FileUploadErrorModal

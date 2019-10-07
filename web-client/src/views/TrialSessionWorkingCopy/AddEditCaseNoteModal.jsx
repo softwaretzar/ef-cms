@@ -33,7 +33,7 @@ export const AddEditCaseNoteModal = connect(
           )}
         >
           <label className="usa-label" htmlFor="case-notes">
-            {"Judge's Notes"}
+            Judge’s notes
           </label>
           <BindedTextarea
             ariaLabel="notes"

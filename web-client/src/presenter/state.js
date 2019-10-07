@@ -51,6 +51,7 @@ import { workQueueSectionHelper } from './computeds/workQueueSectionHelper';
 
 export const state = {
   addDocketEntryHelper,
+  advancedSearchForm: {},
   advancedSearchHelper,
   alertHelper,
   archiveDraftDocument: {
@@ -98,6 +99,7 @@ export const state = {
   documentUploadMode: 'scan',
   extractedDocument,
   extractedPendingMessagesFromCaseDetail,
+  fieldOrder: [],
   fileDocumentHelper,
   fileUploadStatusHelper,
   filingTypes: [],
@@ -157,7 +159,6 @@ export const state = {
   startCaseHelper,
   startCaseInternalContactsHelper,
   startCaseInternalHelper,
-  submitting: false,
   timeRemaining: Number.POSITIVE_INFINITY,
   trialCitiesHelper,
   trialSessionHeaderHelper,
@@ -169,6 +170,7 @@ export const state = {
   users: [],
   validationErrors: {},
   viewAllDocumentsHelper,
+  waitingForResponse: false,
   workItem: {},
   workItemActions: {},
   workItemMetadata: {},

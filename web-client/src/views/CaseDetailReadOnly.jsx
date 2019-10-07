@@ -5,34 +5,32 @@ import React from 'react';
 
 export const CaseDetailReadOnly = connect(
   {
-    caseDetail: state.formattedCaseDetail,
-    caseDetailErrors: state.caseDetailErrors,
     formattedCaseDetail: state.formattedCaseDetail,
   },
-  ({ caseDetail, formattedCaseDetail }) => {
+  ({ formattedCaseDetail }) => {
     return (
       <React.Fragment>
         <CaseDetailReadOnlyPartyInformation />
 
         <div className="blue-container">
           <h3>Case Information</h3>
-          <div className="label">Case Procedure</div>
-          <p>{caseDetail.procedureType} Tax Case</p>
+          <div className="label">Case procedure</div>
+          <p>{formattedCaseDetail.procedureType} Tax Case</p>
           <div className="label">Trial Location</div>
-          <p>{caseDetail.preferredTrialCity}</p>
-          <div className="label">Fee Payment Date</div>
-          <p>{caseDetail.payGovDateFormatted || 'Unpaid'}</p>
-          <div className="label">Fee Payment ID</div>
+          <p>{formattedCaseDetail.preferredTrialCity}</p>
+          <div className="label">Fee payment date</div>
+          <p>{formattedCaseDetail.payGovDateFormatted || 'Unpaid'}</p>
+          <div className="label">Fee payment ID</div>
           <p id="fee-payment-id" name="payGovId">
-            {caseDetail.payGovId || 'Unpaid'}
+            {formattedCaseDetail.payGovId || 'Unpaid'}
           </p>
         </div>
 
         <div className="blue-container">
           <h3>IRS Notice(s)</h3>
 
-          <span className="label">Notice/Case Type</span>
-          <p>{caseDetail.caseType}</p>
+          <span className="label">Notice/case type</span>
+          <p>{formattedCaseDetail.caseType}</p>
 
           <div className="label">Notice Date</div>
           <p>{formattedCaseDetail.irsNoticeDateFormatted}</p>

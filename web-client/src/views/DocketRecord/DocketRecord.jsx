@@ -8,13 +8,18 @@ import React, { useEffect } from 'react';
 
 export const DocketRecord = connect(
   {
-    caseDetail: state.formattedCaseDetail,
+    caseDetailHelper: state.caseDetailHelper,
     clearDocumentSequence: sequences.clearDocumentSequence,
-    helper: state.caseDetailHelper,
+    formattedCaseDetail: state.formattedCaseDetail,
     refreshCaseSequence: sequences.refreshCaseSequence,
     showModal: state.showModal,
   },
-  ({ caseDetail, helper, refreshCaseSequence, showModal }) => {
+  ({
+    caseDetailHelper,
+    formattedCaseDetail,
+    refreshCaseSequence,
+    showModal,
+  }) => {
     useEffect(() => {
       const interval = setInterval(() => {
         refreshCaseSequence();
@@ -41,18 +46,18 @@ export const DocketRecord = connect(
               <th>Date</th>
               <th className="center-column">Event</th>
               <th aria-hidden="true" className="icon-column" />
-              <th>Filings and Proceedings</th>
-              <th>Filed By</th>
+              <th>Filings and proceedings</th>
+              <th>Filed by</th>
               <th>Action</th>
               <th>Served</th>
               <th className="center-column">Parties</th>
             </tr>
           </thead>
           <tbody>
-            {caseDetail.docketRecordWithDocument.map(
+            {formattedCaseDetail.docketRecordWithDocument.map(
               ({ document, index, record }, arrayIndex) => {
                 const isInProgress =
-                  helper.showDocketRecordInProgressState &&
+                  caseDetailHelper.showDocketRecordInProgressState &&
                   document &&
                   document.isFileAttached === false;
                 return (
@@ -79,8 +84,8 @@ export const DocketRecord = connect(
                       )}
 
                       {document &&
-                        helper.showDirectDownloadLink &&
-                        helper.showDocketRecordInProgressState &&
+                        caseDetailHelper.showDirectDownloadLink &&
+                        caseDetailHelper.showDocketRecordInProgressState &&
                         document.processingStatus !== 'complete' && (
                           <FontAwesomeIcon
                             className="fa-spin spinner"

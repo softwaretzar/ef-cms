@@ -29,7 +29,7 @@ export const updateDocketEntryWithFileAction = async ({
     isPaper: true,
     docketNumber,
     caseId,
-    createdAt: applicationContext.getUtilities().createISODateString(),
+    createdAt: documentMetadata.dateReceived,
     receivedAt: documentMetadata.dateReceived,
   };
 
@@ -56,7 +56,7 @@ export const updateDocketEntryWithFileAction = async ({
       primaryDocumentFileId: documentId,
     });
 
-  await applicationContext.getUseCases().createCoverSheetInteractor({
+  await applicationContext.getUseCases().addCoversheetInteractor({
     applicationContext,
     caseId: caseDetail.caseId,
     documentId,

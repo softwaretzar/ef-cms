@@ -1,4 +1,8 @@
 const { CaseExternal } = require('./CaseExternal');
+const { ContactFactory } = require('../contacts/ContactFactory');
+
+const contactErrorMessages =
+  ContactFactory.INTERNATIONAL_VALIDATION_ERROR_MESSAGES;
 
 describe('CaseExternal', () => {
   describe('for (international) Contacts', () => {
@@ -18,7 +22,7 @@ describe('CaseExternal', () => {
         filingType: 'Myself',
         hasIrsNotice: true,
         irsNoticeDate: '2009-10-13',
-        partyType: 'Petitioner',
+        partyType: ContactFactory.PARTY_TYPES.petitioner,
         petitionFile: {},
         petitionFileSize: 1,
         preferredTrialCity: 'Chattanooga, TN',
@@ -28,7 +32,7 @@ describe('CaseExternal', () => {
         stinFileSize: 1,
       });
       expect(caseExternal.getFormattedValidationErrors()).toEqual({
-        contactPrimary: { country: 'Country is a required field.' },
+        contactPrimary: { country: contactErrorMessages.country },
       });
     });
 
@@ -49,7 +53,7 @@ describe('CaseExternal', () => {
         filingType: 'Myself',
         hasIrsNotice: true,
         irsNoticeDate: '2009-10-13',
-        partyType: 'Petitioner',
+        partyType: ContactFactory.PARTY_TYPES.petitioner,
         petitionFile: {},
         petitionFileSize: 1,
         preferredTrialCity: 'Chattanooga, TN',

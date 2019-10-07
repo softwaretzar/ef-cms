@@ -1,3 +1,4 @@
+import { CaseLink } from '../../ustc-ui/CaseLink/CaseLink';
 import { connect } from '@cerebral/react';
 import { state } from 'cerebral';
 import React from 'react';
@@ -5,10 +6,10 @@ import React from 'react';
 export const IndividualWorkQueueInProgress = connect(
   {
     documentHelper: state.documentHelper,
-    workQueue: state.formattedWorkQueue,
+    formattedWorkQueue: state.formattedWorkQueue,
     workQueueHelper: state.workQueueHelper,
   },
-  ({ documentHelper, workQueue, workQueueHelper }) => {
+  ({ documentHelper, formattedWorkQueue, workQueueHelper }) => {
     return (
       <React.Fragment>
         <table
@@ -22,28 +23,27 @@ export const IndividualWorkQueueInProgress = connect(
                 <span className="padding-left-2px">Docket</span>
               </th>
               <th>Filed</th>
+              <th>Case name</th>
               <th>Document</th>
-              {!workQueueHelper.hideFiledByColumn && <th>Filed By</th>}
+              {!workQueueHelper.hideFiledByColumn && <th>Filed by</th>}
               <th>Case Status</th>
               {!workQueueHelper.hideFromColumn && <th>From</th>}
               {!workQueueHelper.hideSectionColumn && <th>Section</th>}
             </tr>
           </thead>
-          {workQueue.map((item, idx) => {
+          {formattedWorkQueue.map((item, idx) => {
             return (
               <tbody key={idx}>
                 <tr>
                   <td aria-hidden="true" className="focus-toggle" />
                   <td className="message-queue-row">
-                    <a
-                      className="no-wrap"
-                      href={`/case-detail/${item.docketNumber}`}
-                    >
-                      {item.docketNumberWithSuffix}
-                    </a>
+                    <CaseLink formattedCase={item} />
                   </td>
                   <td className="message-queue-row">
                     <span className="no-wrap">{item.received}</span>
+                  </td>
+                  <td className="message-queue-row message-queue-case-title">
+                    {item.caseTitle}
                   </td>
                   <td className="message-queue-row message-queue-document">
                     <div className="message-document-title">
@@ -94,6 +94,9 @@ export const IndividualWorkQueueInProgress = connect(
             );
           })}
         </table>
+        {formattedWorkQueue.length === 0 && (
+          <p>{workQueueHelper.queueEmptyMessage}</p>
+        )}
       </React.Fragment>
     );
   },

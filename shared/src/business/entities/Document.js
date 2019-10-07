@@ -182,8 +182,12 @@ joiValidationDecorator(
     signedAt: joi
       .date()
       .iso()
-      .optional(),
-    signedByUserId: joi.string().optional(),
+      .optional()
+      .allow(null),
+    signedByUserId: joi
+      .string()
+      .optional()
+      .allow(null),
     status: joi.string().optional(),
     userId: joi.string().required(),
   }),
@@ -203,7 +207,6 @@ Document.prototype.addWorkItem = function(workItem) {
 /**
  * sets the document as archived (used to hide from the ui)
  *
- * @param {WorkItem} workItem the work item to add to the document
  */
 Document.prototype.archive = function() {
   this.archived = true;
@@ -271,6 +274,15 @@ Document.prototype.generateFiledBy = function(caseDetail) {
 Document.prototype.setSigned = function(signByUserId) {
   this.signedByUserId = signByUserId;
   this.signedAt = createISODateString();
+};
+
+Document.prototype.unsignDocument = function() {
+  this.signedAt = null;
+  this.signedByUserId = null;
+};
+
+Document.prototype.setAsProcessingStatusAsCompleted = function() {
+  this.processingStatus = 'complete';
 };
 
 exports.Document = Document;

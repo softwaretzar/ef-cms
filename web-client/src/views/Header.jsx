@@ -22,10 +22,14 @@ const BetaBar = toggleBetaBarSequence => {
           </div>
           <div className="grid-col-2">
             <button
-              className="button-icon float-right usa-button usa-button--unstyled"
+              className="button-icon float-right"
               onClick={() => toggleBetaBarSequence()}
             >
-              <img alt="close" src={close} />
+              <img
+                alt="close"
+                className="ustc-icon-square--small"
+                src={close}
+              />
             </button>
           </div>
         </div>
@@ -41,13 +45,12 @@ const NavigationItems = (helper, { isReportsMenuOpen }) => {
         <li className="usa-nav__primary-item">
           <a
             className={classNames(
-              'hidden-underline usa-nav__link',
+              'usa-nav__link',
               helper.pageIsHome && 'usa-current',
             )}
             href="/"
           >
-            <FontAwesomeIcon icon="home" />
-            <span className="sr-only">Home</span>
+            Dashboard
           </a>
         </li>
       )}
@@ -130,7 +133,7 @@ export class HeaderComponent extends React.Component {
   constructor(props) {
     super(props);
     this.clearAlertSequence = props.clearAlertSequence;
-    this.resetSequence = props.resetSequence;
+    this.resetSequence = props.resetHeaderAccordionsSequence;
     this.headerRef = React.createRef();
 
     this.headerNavClick = this.headerNavClick.bind(this);
@@ -248,7 +251,7 @@ HeaderComponent.propTypes = {
   isAccountMenuOpen: PropTypes.bool,
   isReportsMenuOpen: PropTypes.bool,
   mobileMenu: PropTypes.object,
-  resetSequence: PropTypes.func,
+  resetHeaderAccordionsSequence: PropTypes.func,
   toggleBetaBarSequence: PropTypes.func,
   toggleMobileMenuSequence: PropTypes.func,
   user: PropTypes.object,
@@ -262,7 +265,7 @@ export const Header = connect(
     isAccountMenuOpen: state.menuHelper.isAccountMenuOpen,
     isReportsMenuOpen: state.menuHelper.isReportsMenuOpen,
     mobileMenu: state.mobileMenu,
-    resetSequence: sequences.resetHeaderAccordionsSequence,
+    resetHeaderAccordionsSequence: sequences.resetHeaderAccordionsSequence,
     toggleBetaBarSequence: sequences.toggleBetaBarSequence,
     toggleMobileMenuSequence: sequences.toggleMobileMenuSequence,
     user: state.user,

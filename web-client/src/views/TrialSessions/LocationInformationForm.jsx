@@ -1,5 +1,5 @@
-import { Text } from '../../ustc-ui/Text/Text';
 import { TrialCityOptions } from '../TrialCityOptions';
+import { ValidationText } from '../../ustc-ui/Text/ValidationText';
 import { connect } from '@cerebral/react';
 import { sequences, state } from 'cerebral';
 import React from 'react';
@@ -28,7 +28,7 @@ export const LocationInformationForm = connect(
             }`}
           >
             <label className="usa-label" htmlFor="trial-location">
-              Trial Location
+              Trial location
             </label>
             <select
               className="usa-select"
@@ -46,15 +46,12 @@ export const LocationInformationForm = connect(
               <option value="">-- Select --</option>
               <TrialCityOptions />
             </select>
-            <Text
-              bind="validationErrors.trialLocation"
-              className="usa-error-message"
-            />
+            <ValidationText field="trialLocation" />
           </div>
 
           <div className="usa-form-group">
             <label className="usa-label" htmlFor="courthouse-name">
-              Courthouse Name <span className="usa-hint">(optional)</span>
+              Courthouse name <span className="usa-hint">(optional)</span>
             </label>
             <input
               autoCapitalize="none"
@@ -94,7 +91,7 @@ export const LocationInformationForm = connect(
 
           <div className="usa-form-group">
             <label className="usa-label" htmlFor="address2">
-              Address Line 2 <span className="usa-hint">(optional)</span>
+              Address line 2 <span className="usa-hint">(optional)</span>
             </label>
             <input
               autoCapitalize="none"
@@ -231,11 +228,11 @@ export const LocationInformationForm = connect(
               className="usa-label"
               htmlFor="postal-code"
             >
-              ZIP Code <span className="usa-hint">(optional)</span>
+              ZIP code <span className="usa-hint">(optional)</span>
             </label>
             <input
               autoCapitalize="none"
-              className="usa-input usa-input--medium"
+              className="usa-input max-width-200 usa-input--medium"
               id="postal-code"
               name="postalCode"
               type="text"
@@ -250,10 +247,7 @@ export const LocationInformationForm = connect(
                 });
               }}
             />
-            <Text
-              bind="validationErrors.postalCode"
-              className="usa-error-message"
-            />
+            <ValidationText field="postalCode" />
           </div>
         </div>
       </>

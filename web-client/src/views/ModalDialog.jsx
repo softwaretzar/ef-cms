@@ -1,10 +1,10 @@
+import { Button } from '../ustc-ui/Button/Button';
+import { FocusLock } from '../ustc-ui/FocusLock/FocusLock';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import FocusLock from 'react-focus-lock';
 import PropTypes from 'prop-types';
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-const appRoot = document.getElementById('app');
 const modalRoot = document.getElementById('modal-root');
 
 export class ModalDialog extends React.Component {
@@ -64,8 +64,6 @@ export class ModalDialog extends React.Component {
   }
   componentDidMount() {
     modalRoot.appendChild(this.el);
-    appRoot.inert = true;
-    appRoot.setAttribute('aria-hidden', 'true');
     document.addEventListener('keydown', this.keydownTriggered, false);
     this.toggleNoScroll(true);
     this.focusModal();
@@ -75,10 +73,7 @@ export class ModalDialog extends React.Component {
   }
   componentWillUnmount() {
     modalRoot.removeChild(this.el);
-    appRoot.inert = false;
-    appRoot.setAttribute('aria-hidden', 'false');
     document.removeEventListener('keydown', this.keydownTriggered, false);
-
     this.toggleNoScroll(false);
   }
 
@@ -86,7 +81,7 @@ export class ModalDialog extends React.Component {
     const modalHeader = document.querySelector(
       '.modal-header .modal-header__title',
     );
-    modalHeader.focus();
+    modalHeader && modalHeader.focus();
   }
 
   render() {
@@ -118,37 +113,32 @@ export class ModalDialog extends React.Component {
                   </h3>
                 </div>
                 <div className="mobile-lg:grid-col-3">
-                  <button
-                    className="text-no-underline usa-button usa-button--unstyled hide-on-mobile float-right"
-                    type="button"
+                  <Button
+                    link
+                    className="text-no-underline hide-on-mobile float-right margin-right-0 padding-top-0"
                     onClick={this.runCancelSequence}
                   >
-                    Close{' '}
-                    <FontAwesomeIcon className="margin-0" icon="times-circle" />
-                  </button>
+                    Close
+                    <FontAwesomeIcon
+                      className="margin-right-0 margin-left-1"
+                      icon="times-circle"
+                    />
+                  </Button>
                 </div>
               </div>
             </div>
-            {modal.message && <p className="margin-0">{modal.message}</p>}
+            {modal.message && (
+              <p className="margin-bottom-5">{modal.message}</p>
+            )}
             {this.renderBody && this.renderBody()}
-            <div className="button-box-container">
-              <button
-                className="usa-button margin-right-205"
-                type="button"
-                onClick={this.runConfirmSequence}
-              >
-                {modal.confirmLabel}
-              </button>
-              {modal.cancelLabel && (
-                <button
-                  className="usa-button usa-button--outline"
-                  type="button"
-                  onClick={this.runCancelSequence}
-                >
-                  {modal.cancelLabel}
-                </button>
-              )}
-            </div>
+            <Button onClick={this.runConfirmSequence}>
+              {modal.confirmLabel}
+            </Button>
+            {modal.cancelLabel && (
+              <Button secondary onClick={this.runCancelSequence}>
+                {modal.cancelLabel}
+              </Button>
+            )}
           </div>
         </dialog>
       </FocusLock>

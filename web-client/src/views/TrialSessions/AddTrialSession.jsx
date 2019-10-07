@@ -1,4 +1,5 @@
 import { BigHeader } from '../BigHeader';
+import { Button } from '../../ustc-ui/Button/Button';
 import { ErrorNotification } from '../ErrorNotification';
 import { FormCancelModalDialog } from '../FormCancelModalDialog';
 import { LocationInformationForm } from './LocationInformationForm';
@@ -26,7 +27,7 @@ export const AddTrialSession = connect(
   }) => {
     return (
       <>
-        <BigHeader text="Trial Sessions" />
+        <BigHeader text="Create Trial Session" />
 
         <section className="usa-section grid-container DocumentDetail">
           <form
@@ -44,18 +45,19 @@ export const AddTrialSession = connect(
             )}
             <ErrorNotification />
 
-            <h1>Add Trial Session</h1>
-            <p>All fields required unless otherwise noted</p>
+            <p className="margin-bottom-2 required-statement margin-top-05 ">
+              *All fields required unless otherwise noted
+            </p>
 
             <SessionInformationForm />
             <LocationInformationForm />
             <SessionAssignmentsForm />
 
             <h2 className="margin-top-4">Session Notes</h2>
-            <div className="blue-container">
+            <div className="blue-container margin-bottom-2">
               <div className="usa-form-group margin-bottom-0">
                 <label className="usa-label" htmlFor="notes">
-                  Trial Session Notes{' '}
+                  Trial session notes{' '}
                   <span className="usa-hint">(optional)</span>
                 </label>
                 <textarea
@@ -74,20 +76,15 @@ export const AddTrialSession = connect(
               </div>
             </div>
 
-            <div className="button-box-container">
-              <button className="usa-button" type="submit">
-                Add Session
-              </button>
-              <button
-                className="usa-button usa-button--outline"
-                type="button"
-                onClick={() => {
-                  formCancelToggleCancelSequence();
-                }}
-              >
-                Cancel
-              </button>
-            </div>
+            <Button type="submit">Add Session</Button>
+            <Button
+              link
+              onClick={() => {
+                formCancelToggleCancelSequence();
+              }}
+            >
+              Cancel
+            </Button>
           </form>
         </section>
       </>

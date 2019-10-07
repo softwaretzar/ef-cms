@@ -1,3 +1,4 @@
+import { Button } from '../../ustc-ui/Button/Button';
 import { Focus } from '../../ustc-ui/Focus/Focus';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Mobile } from '../../ustc-ui/Responsive/Responsive';
@@ -67,7 +68,7 @@ export const CompleteDocumentTypeSectionRemainder = connect(
                 htmlFor="secondary-doc-secondary-document-type"
                 id="secondary-document-type-label"
               >
-                Document Type
+                Document type
               </label>
               <Select
                 aria-describedby="secondary-document-type-label"
@@ -104,8 +105,9 @@ export const CompleteDocumentTypeSectionRemainder = connect(
                 }}
               />
               <Mobile>
-                <button
-                  className="usa-button usa-button--unstyled margin-top-2"
+                <Button
+                  link
+                  className="margin-top-1"
                   onClick={() =>
                     openSelectDocumentWizardOverlaySequence({
                       forSecondary: true,
@@ -114,7 +116,7 @@ export const CompleteDocumentTypeSectionRemainder = connect(
                 >
                   <FontAwesomeIcon icon="question-circle" size="sm" />
                   Need help selecting a document?
-                </button>
+                </Button>
               </Mobile>
               <Text
                 bind="validationErrors.secondaryDocument.documentType"

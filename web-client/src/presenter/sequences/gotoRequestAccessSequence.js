@@ -1,5 +1,4 @@
 import { canRequestAccessAction } from '../actions/CaseAssociationRequest/canRequestAccessAction';
-import { clearAlertsAction } from '../actions/clearAlertsAction';
 import { clearFormAction } from '../actions/clearFormAction';
 import { clearScreenMetadataAction } from '../actions/clearScreenMetadataAction';
 import { getCaseAction } from '../actions/getCaseAction';
@@ -12,12 +11,12 @@ import { set } from 'cerebral/factories';
 import { setCaseAction } from '../actions/setCaseAction';
 import { setCaseAssociationAction } from '../actions/setCaseAssociationAction';
 import { setCurrentPageAction } from '../actions/setCurrentPageAction';
+import { setDefaultFileDocumentFormValuesAction } from '../actions/FileDocument/setDefaultFileDocumentFormValuesAction';
 import { state } from 'cerebral';
 
 const gotoRequestAccess = [
   setCurrentPageAction('Interstitial'),
   set(state.showValidation, false),
-  clearAlertsAction,
   clearFormAction,
   clearScreenMetadataAction,
   getCaseAction,
@@ -27,6 +26,7 @@ const gotoRequestAccess = [
   canRequestAccessAction,
   {
     proceed: [
+      setDefaultFileDocumentFormValuesAction,
       getUserRoleAction,
       {
         practitioner: [

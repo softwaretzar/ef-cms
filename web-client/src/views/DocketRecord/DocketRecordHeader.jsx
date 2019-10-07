@@ -1,3 +1,4 @@
+import { Button } from '../../ustc-ui/Button/Button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { connect } from '@cerebral/react';
 import { sequences, state } from 'cerebral';
@@ -5,54 +6,56 @@ import React from 'react';
 
 export const DocketRecordHeader = connect(
   {
-    caseDetail: state.formattedCaseDetail,
-    helper: state.caseDetailHelper,
+    caseDetailHelper: state.caseDetailHelper,
+    formattedCaseDetail: state.formattedCaseDetail,
+    navigateToPrintableDocketRecordSequence:
+      sequences.navigateToPrintableDocketRecordSequence,
     pdfPreviewUrl: state.pdfPreviewUrl,
-    printDocketRecord: sequences.printDocketRecordSequence,
+    printDocketRecordSequence: sequences.printDocketRecordSequence,
     toggleMobileDocketSortSequence: sequences.toggleMobileDocketSortSequence,
     updateSessionMetadataSequence: sequences.updateSessionMetadataSequence,
   },
   ({
-    caseDetail,
-    helper,
-    printDocketRecord,
+    caseDetailHelper,
+    formattedCaseDetail,
+    navigateToPrintableDocketRecordSequence,
+    printDocketRecordSequence,
     toggleMobileDocketSortSequence,
     updateSessionMetadataSequence,
   }) => {
     const openDocketRecordPrintPreview = (options = {}) => {
       updateSessionMetadataSequence({
-        key: `docketRecordSort.${caseDetail.caseId}`,
+        key: `docketRecordSort.${formattedCaseDetail.caseId}`,
         value: 'byDate',
       });
-      printDocketRecord(options);
+      printDocketRecordSequence(options);
     };
     return (
       <React.Fragment>
         <div className="grid-container padding-0 docket-record-header">
           <div className="grid-row">
             <div className="tablet:grid-col-10">
-              {helper.showAddDocketEntryButton && (
-                <a
-                  className="usa-button"
-                  href={`/case-detail/${caseDetail.docketNumber}/add-docket-entry`}
+              {caseDetailHelper.showAddDocketEntryButton && (
+                <Button
+                  href={`/case-detail/${formattedCaseDetail.docketNumber}/add-docket-entry`}
                   id="button-add-record"
                 >
                   <FontAwesomeIcon icon="plus-circle" size="1x" /> Add Docket
                   Entry
-                </a>
+                </Button>
               )}
-              {helper.showFileDocumentButton && (
-                <a
-                  className="usa-button"
-                  href={`/case-detail/${caseDetail.docketNumber}/before-you-file-a-document`}
+              {caseDetailHelper.showFileDocumentButton && (
+                <Button
+                  href={`/case-detail/${formattedCaseDetail.docketNumber}/before-you-file-a-document`}
                   id="button-file-document"
                 >
                   <FontAwesomeIcon icon="file" size="1x" /> File a Document
-                </a>
+                </Button>
               )}
-              <button
+              <Button
+                link
                 aria-hidden="true"
-                className="show-on-mobile usa-button usa-button--unstyled margin-top-1 margin-left-2"
+                className="show-on-mobile margin-top-1 margin-left-2"
                 onClick={() => {
                   openDocketRecordPrintPreview({
                     openNewTab: true,
@@ -62,25 +65,28 @@ export const DocketRecordHeader = connect(
               >
                 <FontAwesomeIcon icon="print" size="sm" />
                 Printable Docket Record
-              </button>
-              <button
+              </Button>
+              <Button
+                link
                 aria-label="printable docket record"
-                className="hide-on-mobile usa-button usa-button--unstyled margin-top-1 margin-left-2"
+                className="hide-on-mobile margin-top-1 margin-left-2"
                 onClick={() => {
-                  openDocketRecordPrintPreview();
+                  navigateToPrintableDocketRecordSequence({
+                    docketNumber: formattedCaseDetail.docketNumber,
+                  });
                 }}
               >
                 <FontAwesomeIcon icon="print" size="sm" />
                 Printable Docket Record
-              </button>
+              </Button>
             </div>
             <div className="tablet:grid-col-2">
               <div className="only-large-screens">
                 <select
                   aria-label="docket record"
                   className="usa-select margin-top-0 margin-bottom-2 sort"
-                  name={`docketRecordSort.${caseDetail.caseId}`}
-                  value={caseDetail.docketRecordSort}
+                  name={`docketRecordSort.${formattedCaseDetail.caseId}`}
+                  value={formattedCaseDetail.docketRecordSort}
                   onChange={e => {
                     updateSessionMetadataSequence({
                       key: e.target.name,
@@ -114,23 +120,24 @@ export const DocketRecordHeader = connect(
               </div>
               <div className="only-small-screens">
                 <div className="margin-top-3 margin-bottom-1">
-                  <button
+                  <Button
+                    link
                     aria-label="docket record sort"
-                    className="usa-button usa-button--unstyled mobile-sort-docket-button"
+                    className="mobile-sort-docket-button"
                     onClick={() => {
                       toggleMobileDocketSortSequence();
                     }}
                   >
-                    {caseDetail.docketRecordSort === 'byDate' &&
+                    {formattedCaseDetail.docketRecordSort === 'byDate' &&
                       'Oldest to Newest'}
-                    {caseDetail.docketRecordSort === 'byDateDesc' &&
+                    {formattedCaseDetail.docketRecordSort === 'byDateDesc' &&
                       'Newest to Oldest'}
-                    {caseDetail.docketRecordSort === 'byIndex' &&
+                    {formattedCaseDetail.docketRecordSort === 'byIndex' &&
                       'Order Ascending'}
-                    {caseDetail.docketRecordSort === 'byIndexDesc' &&
+                    {formattedCaseDetail.docketRecordSort === 'byIndexDesc' &&
                       'Order Descending'}
                     <FontAwesomeIcon icon="sort" size="sm" />
-                  </button>
+                  </Button>
                 </div>
               </div>
             </div>

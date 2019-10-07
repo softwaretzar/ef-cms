@@ -14,7 +14,6 @@ const { UnauthorizedError } = require('../../../errors/errors');
  * @param {object} providers the providers object
  * @param {object} providers.applicationContext the application context
  * @param {string} providers.trialSessionId the id of the trial session
- * @param {string} providers.caseDetails the case details of the calendared cases
  * @returns {Promise} the promise of the batchDownloadTrialSessionInteractor call
  */
 exports.batchDownloadTrialSessionInteractor = async ({
@@ -24,7 +23,7 @@ exports.batchDownloadTrialSessionInteractor = async ({
   const user = applicationContext.getCurrentUser();
 
   if (!isAuthorized(user, BATCH_DOWNLOAD_TRIAL_SESSION)) {
-    throw new UnauthorizedError('Unauthorized');
+    throw new UnauthorizedError('[403] Unauthorized');
   }
 
   const trialSessionDetails = await applicationContext
@@ -39,6 +38,7 @@ exports.batchDownloadTrialSessionInteractor = async ({
     .getCalendaredCasesForTrialSession({
       applicationContext,
       trialSessionId,
+      userId: user.userId,
     });
 
   let s3Ids = [];
@@ -53,18 +53,20 @@ exports.batchDownloadTrialSessionInteractor = async ({
   const { trialLocation } = trialSessionDetails;
   let zipName = sanitize(`${trialDate}-${trialLocation}.zip`)
     .replace(/\s/g, '_')
-    .replace(/,/g, '');
+    .replace(/,/g, ''); // TODO - create a sanitize utility for s3 ids // TODO - should we make these unique somehow?
 
-  sessionCases = sessionCases.map(caseToBatch => {
-    const caseName = Case.getCaseCaptionNames(caseToBatch.caseCaption);
-    const caseFolder = `${caseToBatch.docketNumber}, ${caseName}`;
+  sessionCases = sessionCases
+    .filter(caseToFilter => caseToFilter.status !== Case.STATUS_TYPES.closed)
+    .map(caseToBatch => {
+      const caseName = Case.getCaseCaptionNames(caseToBatch.caseCaption);
+      const caseFolder = `${caseToBatch.docketNumber}, ${caseName}`;
 
-    return {
-      ...caseToBatch,
-      caseName,
-      caseFolder,
-    };
-  });
+      return {
+        ...caseToBatch,
+        caseName,
+        caseFolder,
+      };
+    });
 
   sessionCases.forEach(caseToBatch => {
     const documentMap = caseToBatch.documents.reduce((acc, document) => {
@@ -106,17 +108,30 @@ exports.batchDownloadTrialSessionInteractor = async ({
     );
   }
 
-  const zipBuffer = await applicationContext
-    .getPersistenceGateway()
-    .zipDocuments({
-      applicationContext,
-      extraFileNames,
-      extraFiles,
-      fileNames,
-      returnBuffer: true,
-      s3Ids,
-      zipName,
-    });
+  await applicationContext.getPersistenceGateway().zipDocuments({
+    applicationContext,
+    extraFileNames,
+    extraFiles,
+    fileNames,
+    s3Ids,
+    uploadToTempBucket: true,
+    zipName,
+  });
 
-  return { zipBuffer, zipName };
+  const {
+    url,
+  } = await applicationContext.getPersistenceGateway().getDownloadPolicyUrl({
+    applicationContext,
+    documentId: zipName,
+    useTempBucket: true,
+  });
+
+  await applicationContext.getNotificationGateway().sendNotificationToUser({
+    applicationContext,
+    message: {
+      action: 'batch_download_ready',
+      url,
+    },
+    userId: user.userId,
+  });
 };

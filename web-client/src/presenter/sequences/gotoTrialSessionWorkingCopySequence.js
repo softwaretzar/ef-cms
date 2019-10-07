@@ -1,5 +1,5 @@
-import { clearAlertsAction } from '../actions/clearAlertsAction';
 import { clearErrorAlertsAction } from '../actions/clearErrorAlertsAction';
+import { extractNotesFromCalendaredCasesAction } from '../actions/TrialSession/extractNotesFromCalendaredCasesAction';
 import { getCalendaredCasesForTrialSessionAction } from '../actions/TrialSession/getCalendaredCasesForTrialSessionAction';
 import { getTrialSessionDetailsAction } from '../actions/TrialSession/getTrialSessionDetailsAction';
 import { getTrialSessionWorkingCopyAction } from '../actions/TrialSession/getTrialSessionWorkingCopyAction';
@@ -18,7 +18,6 @@ import { setTrialSessionWorkingCopyAction } from '../actions/TrialSession/setTri
 
 const gotoTrialSessionDetails = [
   setCurrentPageAction('Interstitial'),
-  clearAlertsAction,
   clearErrorAlertsAction,
   setBaseUrlAction,
   setTrialSessionIdAction,
@@ -37,6 +36,7 @@ const gotoTrialSessionDetails = [
         yes: [
           getCalendaredCasesForTrialSessionAction,
           setCalendaredCasesOnTrialSessionAction,
+          extractNotesFromCalendaredCasesAction,
         ],
       },
       setCurrentPageAction('TrialSessionWorkingCopy'),

@@ -2,6 +2,7 @@ import { AppComponent } from './views/AppComponent';
 import { Container } from '@cerebral/react';
 import { IdleActivityMonitor } from './views/IdleActivityMonitor';
 import {
+  back,
   createObjectURL,
   externalRoute,
   openInNewTab,
@@ -19,6 +20,7 @@ import {
   faEyeSlash,
   faFileAlt,
   faFilePdf as faFilePdfRegular,
+  faTimesCircle as faTimesCircleRegular,
   faUser,
 } from '@fortawesome/free-regular-svg-icons';
 import {
@@ -51,6 +53,7 @@ import {
   faListUl,
   faPaperPlane,
   faPaperclip,
+  faPencilAlt,
   faPlusCircle,
   faPrint,
   faQuestionCircle,
@@ -73,6 +76,7 @@ import {
 import { isFunction, mapValues } from 'lodash';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { presenter } from './presenter/presenter';
+import { socketProvider } from './providers/socket';
 import { withAppContextDecorator } from './withAppContext';
 import App from 'cerebral';
 import React from 'react';
@@ -148,6 +152,7 @@ const app = {
       faExclamationTriangle,
       faEyeSlash,
       faFile,
+      faPencilAlt,
       faFileAlt,
       faFileAltSolid,
       faHome,
@@ -173,21 +178,31 @@ const app = {
       faSync,
       faThumbtack,
       faTimesCircle,
+      faTimesCircleRegular,
       faTrash,
       faUser,
       faUserCheck,
     );
     presenter.providers.applicationContext = applicationContext;
     presenter.providers.router = {
+      back,
       createObjectURL,
       externalRoute,
       openInNewTab,
       revokeObjectURL,
       route,
     };
+    const {
+      initialize: initializeSocketProvider,
+      start,
+      stop,
+    } = socketProvider();
+    presenter.providers.socket = { start, stop };
+
     const cerebralApp = App(presenter, debugTools);
 
     router.initialize(cerebralApp);
+    initializeSocketProvider(cerebralApp);
 
     ReactDOM.render(
       <Container app={cerebralApp}>

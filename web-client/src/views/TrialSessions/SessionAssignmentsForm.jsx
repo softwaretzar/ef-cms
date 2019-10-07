@@ -5,11 +5,11 @@ import React from 'react';
 export const SessionAssignmentsForm = connect(
   {
     form: state.form,
-    judgeUsers: state.users,
     updateTrialSessionFormDataSequence:
       sequences.updateTrialSessionFormDataSequence,
+    users: state.users,
   },
-  ({ form, judgeUsers, updateTrialSessionFormDataSequence }) => {
+  ({ form, updateTrialSessionFormDataSequence, users }) => {
     return (
       <>
         <h2 className="margin-top-4">Session Assignments</h2>
@@ -27,14 +27,12 @@ export const SessionAssignmentsForm = connect(
               onChange={e => {
                 updateTrialSessionFormDataSequence({
                   key: e.target.name,
-                  value: judgeUsers.find(
-                    judge => judge.userId === e.target.value,
-                  ),
+                  value: users.find(judge => judge.userId === e.target.value),
                 });
               }}
             >
               <option value="">- Select -</option>
-              {judgeUsers.map((judge, idx) => (
+              {users.map((judge, idx) => (
                 <option key={idx} value={judge.userId}>
                   {judge.name}
                 </option>
@@ -48,7 +46,7 @@ export const SessionAssignmentsForm = connect(
               htmlFor="trial-clerk"
               id="trial-clerk-label"
             >
-              Trial Clerk <span className="usa-hint">(optional)</span>
+              Trial clerk <span className="usa-hint">(optional)</span>
             </label>
             <select
               aria-describedby="trial-clerk-label"
@@ -73,7 +71,7 @@ export const SessionAssignmentsForm = connect(
 
           <div className="usa-form-group">
             <label className="usa-label" htmlFor="court-reporter">
-              Court Reporter <span className="usa-hint">(optional)</span>
+              Court reporter <span className="usa-hint">(optional)</span>
             </label>
             <input
               autoCapitalize="none"
@@ -93,7 +91,7 @@ export const SessionAssignmentsForm = connect(
 
           <div className="usa-form-group margin-bottom-0">
             <label className="usa-label" htmlFor="irs-calendar-administrator">
-              IRS Calendar Administrator{' '}
+              IRS calendar administrator{' '}
               <span className="usa-hint">(optional)</span>
             </label>
             <input

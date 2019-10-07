@@ -10,6 +10,10 @@ const formatDocument = (applicationContext, document) => {
     .getUtilities()
     .formatDateString(result.servedAt, 'DATE_TIME');
 
+  result.signedAtFormatted = applicationContext
+    .getUtilities()
+    .formatDateString(result.signedAt, 'MMDDYY');
+
   result.showServedAt = !!result.servedAt;
   result.isStatusServed = result.status === 'served';
   result.isPetition = result.documentType === 'Petition';
@@ -167,6 +171,13 @@ const formatCase = (applicationContext, caseDetail) => {
 
   result.draftDocuments = result.draftDocuments.map(document => ({
     ...document,
+    signedAtFormatted: applicationContext
+      .getUtilities()
+      .formatDateString(document.signedAt, 'MMDDYY'),
+    signUrl:
+      document.documentType === 'Stipulated Decision'
+        ? `/case-detail/${caseDetail.docketNumber}/documents/${document.documentId}/sign`
+        : `/case-detail/${caseDetail.docketNumber}/edit-order/${document.documentId}/sign`,
     editUrl:
       document.documentType === 'Stipulated Decision'
         ? `/case-detail/${caseDetail.docketNumber}/documents/${document.documentId}/sign`
@@ -229,6 +240,8 @@ const formatCase = (applicationContext, caseDetail) => {
   result.caseName = applicationContext.getCaseCaptionNames(
     caseDetail.caseCaption || '',
   );
+  result.caseTitleWithoutRespondent =
+    caseDetail.caseTitle && caseDetail.caseTitle.replace('Respondent', '');
 
   result.formattedTrialCity = result.preferredTrialCity || 'Not assigned';
   result.formattedTrialDate = 'Not scheduled';

@@ -23,6 +23,7 @@ const addPetitionDocumentWithWorkItemToCase = ({
       assigneeName: user.name,
       caseId: caseToAdd.caseId,
       caseStatus: caseToAdd.status,
+      caseTitle: Case.getCaseCaptionNames(Case.getCaseCaption(caseToAdd)),
       docketNumber: caseToAdd.docketNumber,
       docketNumberSuffix: caseToAdd.docketNumberSuffix,
       document: {
@@ -44,6 +45,8 @@ const addPetitionDocumentWithWorkItemToCase = ({
       from: user.name,
       fromUserId: user.userId,
       message,
+      to: user.name,
+      toUserId: user.userId,
     },
     { applicationContext },
   );

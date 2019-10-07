@@ -1,7 +1,7 @@
 import { Address } from './Address';
 import { Country } from './Country';
 import { InternationalAddress } from './InternationalAddress';
-import { Text } from '../../ustc-ui/Text/Text';
+import { ValidationText } from '../../ustc-ui/Text/ValidationText';
 import { connect } from '@cerebral/react';
 import { props, sequences, state } from 'cerebral';
 import React from 'react';
@@ -34,9 +34,9 @@ export const ContactSecondary = connect(
     return (
       <>
         {parentView === 'StartCase' ? (
-          <h2 className="margin-top-4">
+          <h3 className="margin-top-4 padding-left-205">
             {contactsHelper.contactSecondary.header}
-          </h2>
+          </h3>
         ) : (
           <h4>{contactsHelper.contactSecondary.header}</h4>
         )}
@@ -70,10 +70,7 @@ export const ContactSecondary = connect(
                 });
               }}
             />
-            <Text
-              bind="validationErrors.contactSecondary.name"
-              className="usa-error-message"
-            />
+            <ValidationText field="contactSecondary.name" />
           </div>
           {contactsHelper.contactSecondary.displayInCareOf && (
             <div
@@ -97,7 +94,7 @@ export const ContactSecondary = connect(
                   </span>
                 ) : (
                   <span>
-                    In Care Of <span className="usa-hint">(optional)</span>
+                    In care of <span className="usa-hint">(optional)</span>
                   </span>
                 )}
               </label>
@@ -118,10 +115,7 @@ export const ContactSecondary = connect(
                   });
                 }}
               />
-              <Text
-                bind="validationErrors.contactSecondary.inCareOf"
-                className="usa-error-message"
-              />
+              <ValidationText field="contactSecondary.inCareOf" />
             </div>
           )}
           <Country
@@ -159,7 +153,7 @@ export const ContactSecondary = connect(
               }
             >
               <label className="usa-label" htmlFor="secondaryPhone">
-                Phone Number
+                Phone number
                 {contactsHelper.contactSecondary.phoneNumberLabelHint && (
                   <>
                     {' '}
@@ -171,7 +165,7 @@ export const ContactSecondary = connect(
               </label>
               <input
                 autoCapitalize="none"
-                className="usa-input"
+                className="usa-input max-width-200"
                 id="secondaryPhone"
                 name="contactSecondary.phone"
                 type="tel"
@@ -186,10 +180,7 @@ export const ContactSecondary = connect(
                   });
                 }}
               />
-              <Text
-                bind="validationErrors.contactSecondary.phone"
-                className="usa-error-message"
-              />
+              <ValidationText field="contactSecondary.phone" />
             </div>
           )}
         </div>

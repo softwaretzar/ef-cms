@@ -1,9 +1,10 @@
+import { Button } from '../../ustc-ui/Button/Button';
 import { CaseTypeSelect } from './CaseTypeSelect';
 import { Focus } from '../../ustc-ui/Focus/Focus';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Hint } from '../../ustc-ui/Hint/Hint';
 import { StateDrivenFileInput } from '../FileDocument/StateDrivenFileInput';
-import { Text } from '../../ustc-ui/Text/Text';
+import { ValidationText } from '../../ustc-ui/Text/ValidationText';
 import { connect } from '@cerebral/react';
 import { sequences, state } from 'cerebral';
 import React from 'react';
@@ -16,6 +17,7 @@ export const StartCaseStep2 = connect(
     constants: state.constants,
     form: state.form,
     formCancelToggleCancelSequence: sequences.formCancelToggleCancelSequence,
+    navigateBackSequence: sequences.navigateBackSequence,
     startCaseHelper: state.startCaseHelper,
     updateStartCaseFormValueSequence:
       sequences.updateStartCaseFormValueSequence,
@@ -28,6 +30,7 @@ export const StartCaseStep2 = connect(
     constants,
     form,
     formCancelToggleCancelSequence,
+    navigateBackSequence,
     startCaseHelper,
     updateStartCaseFormValueSequence,
     validateStartCaseWizardSequence,
@@ -36,14 +39,14 @@ export const StartCaseStep2 = connect(
     return (
       <>
         <Focus>
-          <h1 className="focusable margin-top-5" tabIndex="-1">
+          <h2 className="focusable margin-bottom-105" tabIndex="-1">
             2. Tell Us About Your Petition
-          </h1>
+          </h2>
         </Focus>
-        <p className="required-statement margin-top-05 margin-bottom-2">
-          All fields required unless otherwise noted
+        <p className="margin-bottom-4 margin-top-0 required-statement ">
+          *All fields required unless otherwise noted
         </p>
-        <h2 className="margin-top-4">Upload Your Petition</h2>
+        <h3>Upload Your Petition</h3>
         <Hint>
           Don’t forget to remove or redact your personal information on all your
           documents, including any IRS notice(s).
@@ -64,7 +67,7 @@ export const StartCaseStep2 = connect(
                   htmlFor="petition-file"
                   id="petition-file-label"
                 >
-                  Upload your Petition{' '}
+                  Upload your petition{' '}
                   <span className="success-message">
                     <FontAwesomeIcon icon="check-circle" size="1x" />
                   </span>
@@ -80,21 +83,16 @@ export const StartCaseStep2 = connect(
                   updateFormValueSequence="updateStartCaseFormValueSequence"
                   validationSequence="validateStartCaseWizardSequence"
                 />
-                <Text
-                  bind="validationErrors.petitionFile"
-                  className="usa-error-message"
-                />
-                <Text
-                  bind="validationErrors.petitionFileSize"
-                  className="usa-error-message"
-                />
+
+                <ValidationText field="petitionFile" />
+                <ValidationText field="petitionFileSize" />
               </div>
             </div>
           </div>
         </div>
 
-        <h2 className="margin-top-4">Why are you filing this petition?</h2>
-        <div className="blue-container">
+        <h3 className="margin-top-4">Why are you filing this petition?</h3>
+        <div className="blue-container margin-bottom-5">
           <div className="usa-form-group">
             <fieldset
               className={
@@ -134,10 +132,7 @@ export const StartCaseStep2 = connect(
                     </label>
                   </div>
                 ))}
-                <Text
-                  bind="validationErrors.hasIrsNotice"
-                  className="usa-error-message"
-                />
+                <ValidationText field="hasIrsNotice" />
               </div>
             </fieldset>
 
@@ -145,7 +140,8 @@ export const StartCaseStep2 = connect(
               <CaseTypeSelect
                 allowDefaultOption={true}
                 caseTypes={caseTypeDescriptionHelper.caseTypes}
-                legend="Type of Notice / Case"
+                className="margin-bottom-0"
+                legend="Type of notice / case"
                 validation="validateStartCaseWizardSequence"
                 value={form.caseType}
                 onChange="updateFormValueSequence"
@@ -155,6 +151,7 @@ export const StartCaseStep2 = connect(
               <CaseTypeSelect
                 allowDefaultOption={true}
                 caseTypes={caseTypeDescriptionHelper.caseTypes}
+                className="margin-bottom-0"
                 legend="Which topic most closely matches your complaint with the
                 IRS?"
                 validation="validateStartCaseWizardSequence"
@@ -165,34 +162,25 @@ export const StartCaseStep2 = connect(
           </div>
         </div>
 
-        <div className="button-box-container">
-          <button
-            className="usa-button margin-right-205 margin-bottom-4"
-            id="submit-case"
-            type="button"
-            onClick={() => {
-              completeStartCaseWizardStepSequence({ nextStep: 3 });
-            }}
-          >
-            Continue to Step 3 of 5
-          </button>
-          <button
-            className="usa-button usa-button--outline margin-bottom-1"
-            type="button"
-            onClick={() => history.back()}
-          >
-            Back
-          </button>
-          <button
-            className="usa-button usa-button--unstyled ustc-button--unstyled"
-            type="button"
-            onClick={() => {
-              formCancelToggleCancelSequence();
-            }}
-          >
-            Cancel
-          </button>
-        </div>
+        <Button
+          id="submit-case"
+          onClick={() => {
+            completeStartCaseWizardStepSequence({ nextStep: 3 });
+          }}
+        >
+          Continue to Step 3 of 5
+        </Button>
+        <Button secondary onClick={() => navigateBackSequence()}>
+          Back
+        </Button>
+        <Button
+          link
+          onClick={() => {
+            formCancelToggleCancelSequence();
+          }}
+        >
+          Cancel
+        </Button>
       </>
     );
   },

@@ -8,9 +8,9 @@ CaseSearch.CASE_SEARCH_PAGE_SIZE = 5;
 CaseSearch.validationName = 'CaseSearch';
 
 /**
- * Case Note entity
+ * Case Search entity
  *
- * @param {object} rawProps the raw case note data
+ * @param {object} rawProps the raw case search data
  * @constructor
  */
 function CaseSearch(rawProps) {
@@ -21,7 +21,7 @@ function CaseSearch(rawProps) {
   this.countryType = rawProps.countryType || undefined;
 }
 
-CaseSearch.errorToMessageMap = {
+CaseSearch.VALIDATION_ERROR_MESSAGES = {
   petitionerName: 'Enter a name',
   yearFiledMax: [
     {
@@ -61,7 +61,7 @@ joiValidationDecorator(
   CaseSearch,
   CaseSearch.schema,
   undefined,
-  CaseSearch.errorToMessageMap,
+  CaseSearch.VALIDATION_ERROR_MESSAGES,
 );
 
 module.exports = { CaseSearch };

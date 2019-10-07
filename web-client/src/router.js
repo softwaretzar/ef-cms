@@ -10,8 +10,9 @@ const externalRoute = path => {
   window.location.replace(path);
 };
 
-const openInNewTab = path => {
-  window.open(path, '_blank', 'noopener, noreferrer');
+const openInNewTab = (path, noopener = true) => {
+  const windowFeatures = (noopener && 'noopener, noreferrer') || '';
+  window.open(path, '_blank', windowFeatures);
 };
 
 const createObjectURL = object => {
@@ -20,6 +21,10 @@ const createObjectURL = object => {
 
 const revokeObjectURL = url => {
   return window.URL.revokeObjectURL(url);
+};
+
+const back = () => {
+  window.history.back();
 };
 
 const router = {
@@ -31,6 +36,7 @@ const router = {
           const path = app.getState('cognitoLoginUrl');
           window.location.replace(path);
         } else {
+          app.getSequence('clearAlertSequence')();
           cb.apply(null, arguments);
         }
       };
@@ -40,7 +46,7 @@ const router = {
       '/',
       checkLoggedIn(() => {
         document.title = `Dashboard ${pageTitleSuffix}`;
-        app.getSequence('gotoDashboardSequence')({ baseRoute: 'dashboard' });
+        app.getSequence('gotoDashboardSequence')();
       }),
     );
 
@@ -234,6 +240,18 @@ const router = {
     );
 
     route(
+      '/case-detail/*/edit-order/*/sign',
+      checkLoggedIn((docketNumber, documentId) => {
+        document.title = `Edit an order ${pageTitleSuffix}`;
+        const sequence = app.getSequence('gotoSignOrderSequence');
+        sequence({
+          docketNumber,
+          documentId,
+        });
+      }),
+    );
+
+    route(
       '/case-detail/*/add-docket-entry',
       checkLoggedIn(docketNumber => {
         document.title = `Add docket entry ${pageTitleSuffix}`;
@@ -253,7 +271,37 @@ const router = {
       '/case-detail/*/request-access',
       checkLoggedIn(docketNumber => {
         document.title = `Request access ${pageTitleSuffix}`;
-        app.getSequence('gotoRequestAccessSequence')({ docketNumber });
+        if (app.getState('wizardStep') === 'RequestAccessReview') {
+          app.getSequence('chooseWizardStepSequence')({
+            value: 'RequestAccess',
+          });
+        } else {
+          app.getSequence('gotoRequestAccessSequence')({ docketNumber });
+        }
+      }),
+    );
+
+    route(
+      '/case-detail/*/request-access/review',
+      checkLoggedIn(docketNumber => {
+        document.title = `Request access review ${pageTitleSuffix}`;
+        if (!app.getState('wizardStep')) {
+          app.getSequence('navigateToPathSequence')({
+            path: `/case-detail/${docketNumber}/request-access`,
+          });
+        } else {
+          app.getSequence('chooseWizardStepSequence')({
+            value: 'RequestAccessReview',
+          });
+        }
+      }),
+    );
+
+    route(
+      '/case-detail/*/orders-needed',
+      checkLoggedIn(docketNumber => {
+        document.title = `Orders Needed ${pageTitleSuffix}`;
+        app.getSequence('gotoOrdersNeededSequence')({ docketNumber });
       }),
     );
 
@@ -281,7 +329,6 @@ const router = {
           });
         } else {
           const routeArgs = {
-            baseRoute: 'document-qc',
             workQueueIsInternal: false,
           };
           const pathParts = path.split('/');
@@ -293,9 +340,9 @@ const router = {
             routeArgs.box = pathParts[2];
           }
 
-          app.getSequence('gotoDashboardSequence')(routeArgs);
+          app.getSequence('gotoMessagesSequence')(routeArgs);
         }
-        document.title = `Dashboard ${pageTitleSuffix}`;
+        document.title = `Messages ${pageTitleSuffix}`;
       }),
     );
 
@@ -422,7 +469,6 @@ const router = {
           });
         } else {
           const routeArgs = {
-            baseRoute: 'messages',
             workQueueIsInternal: true,
           };
           const pathParts = path.split('/');
@@ -434,9 +480,9 @@ const router = {
             routeArgs.box = pathParts[2];
           }
 
-          app.getSequence('gotoDashboardSequence')(routeArgs);
+          app.getSequence('gotoMessagesSequence')(routeArgs);
         }
-        document.title = `Dashboard ${pageTitleSuffix}`;
+        document.title = `Messages ${pageTitleSuffix}`;
       }),
     );
 
@@ -507,6 +553,7 @@ const router = {
 };
 
 export {
+  back,
   createObjectURL,
   externalRoute,
   openInNewTab,

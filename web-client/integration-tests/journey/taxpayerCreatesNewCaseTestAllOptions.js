@@ -1,11 +1,12 @@
+import { Case } from '../../../shared/src/business/entities/cases/Case';
+import { ContactFactory } from '../../../shared/src/business/entities/contacts/ContactFactory';
 import { runCompute } from 'cerebral/test';
-const {
-  ContactFactory,
-} = require('../../../shared/src/business/entities/contacts/ContactFactory');
 import { startCaseHelper as startCaseHelperComputed } from '../../src/presenter/computeds/startCaseHelper';
 import { withAppContextDecorator } from '../../src/withAppContext';
 
 const startCaseHelper = withAppContextDecorator(startCaseHelperComputed);
+
+const { VALIDATION_ERROR_MESSAGES } = Case;
 
 export default (test, fakeFile, overrides = {}) => {
   return it('Taxpayer creates a new case, testing all form options', async () => {
@@ -242,7 +243,7 @@ export default (test, fakeFile, overrides = {}) => {
     await test.runSequence('submitFilePetitionSequence');
 
     expect(test.getState('alertError').messages).toContain(
-      'Upload an Ownership Disclosure Statement',
+      VALIDATION_ERROR_MESSAGES.ownershipDisclosureFile,
     );
 
     await test.runSequence('updateStartCaseFormValueSequence', {
@@ -252,7 +253,7 @@ export default (test, fakeFile, overrides = {}) => {
 
     await test.runSequence('submitFilePetitionSequence');
     expect(test.getState('alertError').messages[0]).not.toContain(
-      'Upload an Ownership Disclosure Statement',
+      VALIDATION_ERROR_MESSAGES.ownershipDisclosureFile,
     );
 
     // Partnership other than tax matters party type primary contact
@@ -329,7 +330,7 @@ export default (test, fakeFile, overrides = {}) => {
 
     await test.runSequence('updateStartCaseFormValueSequence', {
       key: 'estateType',
-      value: 'Estate with an Executor/Personal Representative/Fiduciary/etc.',
+      value: ContactFactory.PARTY_TYPES.estate,
     });
 
     result = runCompute(startCaseHelper, {
@@ -361,8 +362,7 @@ export default (test, fakeFile, overrides = {}) => {
 
     await test.runSequence('updateStartCaseFormValueSequence', {
       key: 'estateType',
-      value:
-        'Estate without an Executor/Personal Representative/Fiduciary/etc.',
+      value: ContactFactory.PARTY_TYPES.estateWithoutExecutor,
     });
 
     result = runCompute(startCaseHelper, {
@@ -521,8 +521,7 @@ export default (test, fakeFile, overrides = {}) => {
 
     await test.runSequence('updateStartCaseFormValueSequence', {
       key: 'minorIncompetentType',
-      value:
-        'Next Friend for a Minor (Without a Guardian, Conservator, or other like Fiduciary)',
+      value: ContactFactory.PARTY_TYPES.nextFriendForMinor,
     });
 
     result = runCompute(startCaseHelper, {
@@ -554,8 +553,7 @@ export default (test, fakeFile, overrides = {}) => {
 
     await test.runSequence('updateStartCaseFormValueSequence', {
       key: 'minorIncompetentType',
-      value:
-        'Next Friend for a Legally Incompetent Person (Without a Guardian, Conservator, or other like Fiduciary)',
+      value: ContactFactory.PARTY_TYPES.nextFriendForIncompetentPerson,
     });
 
     result = runCompute(startCaseHelper, {
@@ -628,7 +626,7 @@ export default (test, fakeFile, overrides = {}) => {
     });
     expect(result.showPrimaryContact).toBeTruthy();
     expect(result.showSecondaryContact).toBeFalsy();
-    expect(test.getState('form.partyType')).toEqual('Surviving Spouse');
+    expect(test.getState('form.partyType')).toEqual('Surviving spouse');
 
     await test.runSequence('submitFilePetitionSequence');
 
