@@ -626,41 +626,117 @@ jobs:
           command: |
             ./web-api/run-serverless-notifications.sh ${ENV} us-east-1
 
-  post-deploy:
-    machine:
-      docker_layer_caching: true
+  post-deploy-route-53:
+    docker:
+      - image: sutt0n/ef-cms:experimental
     steps:
-      - checkout
-      - run:
-          name: Build Docker Image
-          command: docker build -t efcms -f Dockerfile .
+      - attach_workspace:
+          at: ~/
       - run:
           name: Setup Env
           command: echo "export ENV=$(./get-env.sh $CIRCLE_BRANCH)" >> $BASH_ENV
       - run:
           name: 'Deploy - Web API - Route53'
-          command: docker run -e "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}" -e "AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}" -e "EFCMS_DOMAIN=${EFCMS_DOMAIN}" --rm efcms /bin/sh -c "cd web-api && ./setup-regional-route53.sh ${ENV}"
+          command: |
+            cd web-api && ./setup-regional-route53.sh ${ENV}
+
+  post-deploy-route-53-ws:
+    docker:
+      - image: sutt0n/ef-cms:experimental
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Setup Env
+          command: echo "export ENV=$(./get-env.sh $CIRCLE_BRANCH)" >> $BASH_ENV
       - run:
           name: 'Deploy - Web WS - Route53'
-          command: docker run -e "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}" -e "AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}" -e "EFCMS_DOMAIN=${EFCMS_DOMAIN}" --rm efcms /bin/sh -c "cd web-api && ./setup-regional-route53-ws.sh ${ENV}"
+          command: |
+            cd web-api && ./setup-regional-route53-ws.sh ${ENV}
+
+  post-deploy-s3-repl:
+    docker:
+      - image: sutt0n/ef-cms:experimental
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Setup Env
+          command: echo "export ENV=$(./get-env.sh $CIRCLE_BRANCH)" >> $BASH_ENV
       - run:
           name: 'Deploy - Web API - S3 Replication'
-          command: docker run -e "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}" -e "AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}" -e "EFCMS_DOMAIN=${EFCMS_DOMAIN}" --rm efcms /bin/sh -c "cd web-api && ./setup-s3-replication.sh ${ENV}"
+          command: |
+            cd web-api && ./setup-s3-replication.sh ${ENV}
+
+  post-deploy-global-tables:
+    docker:
+      - image: sutt0n/ef-cms:experimental
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Setup Env
+          command: echo "export ENV=$(./get-env.sh $CIRCLE_BRANCH)" >> $BASH_ENV
       - run:
           name: 'Deploy - Web API - Global Tables'
-          command: docker run -e "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}" -e "AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}" --rm efcms /bin/sh -c "cd web-api && node setup-global-tables.js efcms-${ENV} us-east-1,us-west-1"
+          command: |
+            cd web-api && node setup-global-tables.js efcms-${ENV} us-east-1,us-west-1
+
+  post-deploy-cognito-customize:
+    docker:
+      - image: sutt0n/ef-cms:experimental
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Setup Env
+          command: echo "export ENV=$(./get-env.sh $CIRCLE_BRANCH)" >> $BASH_ENV
       - run:
           name: 'Deploy - Web API - Cognito Customize'
-          command: docker run -e "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}" -e "AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}" --rm efcms /bin/sh -c "cd web-api && ./setup-cognito-ui.sh ${ENV}"
+          command: |
+            cd web-api && ./setup-cognito-ui.sh ${ENV}
+
+  post-deploy-cognito-users:
+    docker:
+      - image: sutt0n/ef-cms:experimental
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Setup Env
+          command: echo "export ENV=$(./get-env.sh $CIRCLE_BRANCH)" >> $BASH_ENV
       - run:
           name: 'Deploy - Web API - Cognito Create Users'
-          command: docker run -e "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}" -e "AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}" -e "USTC_ADMIN_PASS=${USTC_ADMIN_PASS}" --rm efcms /bin/sh -c "cd web-api && ./setup-cognito-users.sh ${ENV}"
+          command: |
+            cd web-api && ./setup-cognito-users.sh ${ENV}
+
+  post-deploy-east-smoke:
+    docker:
+      - image: sutt0n/ef-cms:experimental
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Setup Env
+          command: echo "export ENV=$(./get-env.sh $CIRCLE_BRANCH)" >> $BASH_ENV
       - run:
           name: 'Deploy - Web API - Smoke Tests - us-east-1'
-          command: docker run -e "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}" -e "AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}" --rm efcms /bin/sh -c "cd web-api && ./run-smoketests.sh ${ENV} us-east-1"
+          command: |
+            cd web-api && ./run-smoketests.sh ${ENV} us-east-1
+
+  post-deploy-west-smoke:
+    docker:
+      - image: sutt0n/ef-cms:experimental
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Setup Env
+          command: echo "export ENV=$(./get-env.sh $CIRCLE_BRANCH)" >> $BASH_ENV
       - run:
           name: 'Deploy - Web API - Smoke Tests - us-west-1'
-          command: docker run -e "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}" -e "AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}" --rm efcms /bin/sh -c "cd web-api && ./run-smoketests.sh ${ENV} us-west-1"
+          command: |
+            cd web-api && ./run-smoketests.sh ${ENV} us-west-1
 
 workflows:
   version: 2
@@ -857,7 +933,7 @@ workflows:
             - deploy-sls-sections-east-1
             - deploy-sls-trial-sessions-east-1
             - deploy-sls-work-items-east-1
-            - deploy-sls-notifications-west-1
+            - deploy-sls-notifications-east-1
       - deploy-sls-cases-west-1:
           requires:
             - deploy-sls-api-east-1
@@ -870,7 +946,7 @@ workflows:
             - deploy-sls-sections-east-1
             - deploy-sls-trial-sessions-east-1
             - deploy-sls-work-items-east-1
-            - deploy-sls-notifications-west-1
+            - deploy-sls-notifications-east-1
       - deploy-sls-case-documents-west-1:
           requires:
             - deploy-sls-api-east-1
@@ -883,7 +959,7 @@ workflows:
             - deploy-sls-sections-east-1
             - deploy-sls-trial-sessions-east-1
             - deploy-sls-work-items-east-1
-            - deploy-sls-notifications-west-1
+            - deploy-sls-notifications-east-1
       - deploy-sls-case-deadlines-west-1:
           requires:
             - deploy-sls-api-east-1
@@ -896,7 +972,7 @@ workflows:
             - deploy-sls-sections-east-1
             - deploy-sls-trial-sessions-east-1
             - deploy-sls-work-items-east-1
-            - deploy-sls-notifications-west-1
+            - deploy-sls-notifications-east-1
       - deploy-sls-case-notes-west-1:
           requires:
             - deploy-sls-api-east-1
@@ -909,7 +985,7 @@ workflows:
             - deploy-sls-sections-east-1
             - deploy-sls-trial-sessions-east-1
             - deploy-sls-work-items-east-1
-            - deploy-sls-notifications-west-1
+            - deploy-sls-notifications-east-1
       - deploy-sls-documents-west-1:
           requires:
             - deploy-sls-api-east-1
@@ -922,7 +998,7 @@ workflows:
             - deploy-sls-sections-east-1
             - deploy-sls-trial-sessions-east-1
             - deploy-sls-work-items-east-1
-            - deploy-sls-notifications-west-1
+            - deploy-sls-notifications-east-1
       - deploy-sls-users-west-1:
           requires:
             - deploy-sls-api-east-1
@@ -935,7 +1011,7 @@ workflows:
             - deploy-sls-sections-east-1
             - deploy-sls-trial-sessions-east-1
             - deploy-sls-work-items-east-1
-            - deploy-sls-notifications-west-1
+            - deploy-sls-notifications-east-1
       - deploy-sls-sections-west-1:
           requires:
             - deploy-sls-api-east-1
@@ -948,7 +1024,7 @@ workflows:
             - deploy-sls-sections-east-1
             - deploy-sls-trial-sessions-east-1
             - deploy-sls-work-items-east-1
-            - deploy-sls-notifications-west-1
+            - deploy-sls-notifications-east-1
       - deploy-sls-trial-sessions-west-1:
           requires:
             - deploy-sls-api-east-1
@@ -961,7 +1037,7 @@ workflows:
             - deploy-sls-sections-east-1
             - deploy-sls-trial-sessions-east-1
             - deploy-sls-work-items-east-1
-            - deploy-sls-notifications-west-1
+            - deploy-sls-notifications-east-1
       - deploy-sls-work-items-west-1:
           requires:
             - deploy-sls-api-east-1
@@ -974,7 +1050,7 @@ workflows:
             - deploy-sls-sections-east-1
             - deploy-sls-trial-sessions-east-1
             - deploy-sls-work-items-east-1
-            - deploy-sls-notifications-west-1
+            - deploy-sls-notifications-east-1
       - deploy-sls-notifications-west-1:
           requires:
             - deploy-sls-api-east-1
@@ -987,6 +1063,110 @@ workflows:
             - deploy-sls-sections-east-1
             - deploy-sls-trial-sessions-east-1
             - deploy-sls-work-items-east-1
+            - deploy-sls-notifications-east-1
+      - post-deploy-route-53:
+          requires:
+            - deploy-sls-api-west-1
+            - deploy-sls-cases-west-1
+            - deploy-sls-case-documents-west-1
+            - deploy-sls-case-deadlines-west-1
+            - deploy-sls-case-notes-west-1
+            - deploy-sls-documents-west-1
+            - deploy-sls-users-west-1
+            - deploy-sls-sections-west-1
+            - deploy-sls-trial-sessions-west-1
+            - deploy-sls-work-items-west-1
+            - deploy-sls-notifications-west-1
+      - post-deploy-route-53-ws:
+          requires:
+            - deploy-sls-api-west-1
+            - deploy-sls-cases-west-1
+            - deploy-sls-case-documents-west-1
+            - deploy-sls-case-deadlines-west-1
+            - deploy-sls-case-notes-west-1
+            - deploy-sls-documents-west-1
+            - deploy-sls-users-west-1
+            - deploy-sls-sections-west-1
+            - deploy-sls-trial-sessions-west-1
+            - deploy-sls-work-items-west-1
+            - deploy-sls-notifications-west-1
+      - post-deploy-s3-repl:
+          requires:
+            - deploy-sls-api-west-1
+            - deploy-sls-cases-west-1
+            - deploy-sls-case-documents-west-1
+            - deploy-sls-case-deadlines-west-1
+            - deploy-sls-case-notes-west-1
+            - deploy-sls-documents-west-1
+            - deploy-sls-users-west-1
+            - deploy-sls-sections-west-1
+            - deploy-sls-trial-sessions-west-1
+            - deploy-sls-work-items-west-1
+            - deploy-sls-notifications-west-1
+      - post-deploy-global-tables:
+          requires:
+            - deploy-sls-api-west-1
+            - deploy-sls-cases-west-1
+            - deploy-sls-case-documents-west-1
+            - deploy-sls-case-deadlines-west-1
+            - deploy-sls-case-notes-west-1
+            - deploy-sls-documents-west-1
+            - deploy-sls-users-west-1
+            - deploy-sls-sections-west-1
+            - deploy-sls-trial-sessions-west-1
+            - deploy-sls-work-items-west-1
+            - deploy-sls-notifications-west-1
+      - post-deploy-cognito-customize:
+          requires:
+            - deploy-sls-api-west-1
+            - deploy-sls-cases-west-1
+            - deploy-sls-case-documents-west-1
+            - deploy-sls-case-deadlines-west-1
+            - deploy-sls-case-notes-west-1
+            - deploy-sls-documents-west-1
+            - deploy-sls-users-west-1
+            - deploy-sls-sections-west-1
+            - deploy-sls-trial-sessions-west-1
+            - deploy-sls-work-items-west-1
+            - deploy-sls-notifications-west-1
+      - post-deploy-cognito-users:
+          requires:
+            - deploy-sls-api-west-1
+            - deploy-sls-cases-west-1
+            - deploy-sls-case-documents-west-1
+            - deploy-sls-case-deadlines-west-1
+            - deploy-sls-case-notes-west-1
+            - deploy-sls-documents-west-1
+            - deploy-sls-users-west-1
+            - deploy-sls-sections-west-1
+            - deploy-sls-trial-sessions-west-1
+            - deploy-sls-work-items-west-1
+            - deploy-sls-notifications-west-1
+      - post-deploy-east-smoke:
+          requires:
+            - deploy-sls-api-west-1
+            - deploy-sls-cases-west-1
+            - deploy-sls-case-documents-west-1
+            - deploy-sls-case-deadlines-west-1
+            - deploy-sls-case-notes-west-1
+            - deploy-sls-documents-west-1
+            - deploy-sls-users-west-1
+            - deploy-sls-sections-west-1
+            - deploy-sls-trial-sessions-west-1
+            - deploy-sls-work-items-west-1
+            - deploy-sls-notifications-west-1
+      - post-deploy-west-smoke:
+          requires:
+            - deploy-sls-api-west-1
+            - deploy-sls-cases-west-1
+            - deploy-sls-case-documents-west-1
+            - deploy-sls-case-deadlines-west-1
+            - deploy-sls-case-notes-west-1
+            - deploy-sls-documents-west-1
+            - deploy-sls-users-west-1
+            - deploy-sls-sections-west-1
+            - deploy-sls-trial-sessions-west-1
+            - deploy-sls-work-items-west-1
             - deploy-sls-notifications-west-1
           # filters:
           #   branches:
