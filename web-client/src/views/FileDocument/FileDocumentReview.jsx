@@ -8,6 +8,7 @@ import { PDFPreviewButton } from '../PDFPreviewButton';
 import { connect } from '@cerebral/react';
 import { sequences, state } from 'cerebral';
 import React from 'react';
+import classNames from 'classnames';
 
 export const FileDocumentReview = connect(
   {
@@ -31,7 +32,11 @@ export const FileDocumentReview = connect(
     return (
       <React.Fragment>
         <Focus>
-          <h1 className="heading-1" id="file-a-document-header" tabIndex="-1">
+          <h1
+            className="heading-1 margin-bottom-0"
+            id="file-a-document-header"
+            tabIndex="-1"
+          >
             Review Your Filing
           </h1>
         </Focus>
@@ -77,11 +82,11 @@ export const FileDocumentReview = connect(
                     <div className="tablet:grid-col-6 margin-bottom-1">
                       {fileDocumentHelper.showFilingIncludes && (
                         <div
-                          className={` ${
+                          className={classNames(
                             !fileDocumentHelper.primaryDocument.showObjection
                               ? 'margin-bottom-0'
-                              : 'margin-bottom-5'
-                          }`}
+                              : 'margin-bottom-5',
+                          )}
                         >
                           <label
                             className="usa-label"
@@ -211,12 +216,12 @@ export const FileDocumentReview = connect(
                       <div className="tablet:grid-col-6 margin-bottom-1">
                         {fileDocumentHelper.showSecondaryFilingIncludes && (
                           <div
-                            className={` ${
+                            className={classNames(
                               !fileDocumentHelper.secondaryDocument
                                 .showObjection
                                 ? 'margin-bottom-0'
-                                : 'margin-bottom-5'
-                            }`}
+                                : 'margin-bottom-5',
+                            )}
                           >
                             <label
                               className="usa-label"
@@ -354,16 +359,23 @@ export const FileDocumentReview = connect(
                 A Few Reminders Before You Submit
               </div>
               <div className="content-wrapper">
-                <p>
-                  1. Double check that the PDF files you’ve selected are
-                  correct. <br />
-                  2. Be sure you’ve removed or redacted all personal information
-                  from your documents. <br />
-                  3. Indicate any related documents that you’ve included with
-                  your filing. <br />
-                  4. Confirm everything appears as you want it to—you can’t edit
-                  your filing after you submit it.
-                </p>
+                <ol className="numbered-list">
+                  <li>
+                    Double check that the PDF files you’ve selected are correct.
+                  </li>
+                  <li>
+                    Be sure you’ve removed or redacted all personal information
+                    from your documents.
+                  </li>
+                  <li>
+                    Indicate any related documents that you’ve included with
+                    your filing.
+                  </li>
+                  <li>
+                    Confirm everything appears as you want it to—you can’t edit
+                    your filing after you submit it.
+                  </li>
+                </ol>
               </div>
             </div>
           </div>

@@ -10,7 +10,6 @@ import petitionsClerkCreatesNewCase from './journey/petitionsClerkCreatesNewCase
 import petitionsClerkLogIn from './journey/petitionsClerkLogIn';
 import petitionsClerkRunsBatchProcess from './journey/petitionsClerkRunsBatchProcess';
 import petitionsClerkSendsCaseToIRSHoldingQueue from './journey/petitionsClerkSendsCaseToIRSHoldingQueue';
-import petitionsClerkUpdatesCaseWithOrders from './journey/petitionsClerkUpdatesCaseWithOrders';
 const {
   ContactFactory,
 } = require('../../shared/src/business/entities/contacts/ContactFactory');
@@ -52,6 +51,7 @@ describe('Case journey', () => {
   beforeEach(() => {
     jest.setTimeout(30000);
     global.window = {
+      document: {},
       localStorage: {
         removeItem: () => null,
         setItem: () => null,
@@ -71,5 +71,4 @@ describe('Case journey', () => {
   petitionsClerkCreatesNewCase(test, fakeFile);
   petitionsClerkSendsCaseToIRSHoldingQueue(test);
   petitionsClerkRunsBatchProcess(test);
-  petitionsClerkUpdatesCaseWithOrders(test);
 });

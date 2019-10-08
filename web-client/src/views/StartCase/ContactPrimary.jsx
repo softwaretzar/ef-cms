@@ -43,13 +43,12 @@ export const ContactPrimary = connect(
         )}
         <div className="blue-container contact-group">
           <div
-            className={
-              'usa-form-group ' +
-              (validationErrors.contactPrimary &&
-              validationErrors.contactPrimary.name
-                ? 'usa-form-group--error'
-                : '')
-            }
+            className={classNames(
+              'usa-form-group',
+              validationErrors.contactPrimary &&
+                validationErrors.contactPrimary.name &&
+                'usa-form-group--error',
+            )}
           >
             <label className="usa-label" htmlFor="name">
               {contactsHelper.contactPrimary.nameLabel}
@@ -115,7 +114,7 @@ export const ContactPrimary = connect(
                   </span>
                 )}
               </label>
-              <span className="usa-hint">For example, Executor, PR, etc.</span>
+              <span className="usa-hint">For example, executor, PR, etc.</span>
               <input
                 autoCapitalize="none"
                 className="usa-input"
@@ -135,13 +134,12 @@ export const ContactPrimary = connect(
 
           {contactsHelper.contactPrimary.displayInCareOf && (
             <div
-              className={
-                'usa-form-group ' +
-                (validationErrors.contactPrimary &&
-                validationErrors.contactPrimary.inCareOf
-                  ? 'usa-form-group--error'
-                  : '')
-              }
+              className={classNames(
+                'usa-form-group',
+                validationErrors.contactPrimary &&
+                  validationErrors.contactPrimary.inCareOf &&
+                  'usa-form-group--error',
+              )}
             >
               <label className="usa-label" htmlFor="inCareOf">
                 {contactsHelper.contactPrimary.inCareOfLabel ? (
@@ -206,13 +204,12 @@ export const ContactPrimary = connect(
             />
           )}
           <div
-            className={
-              'usa-form-group phone-input ' +
-              (validationErrors.contactPrimary &&
-              validationErrors.contactPrimary.phone
-                ? 'usa-form-group--error'
-                : '')
-            }
+            className={classNames(
+              'usa-form-group phone-input',
+              validationErrors.contactPrimary &&
+                validationErrors.contactPrimary.phone &&
+                'usa-form-group--error',
+            )}
           >
             <label className="usa-label" htmlFor="phone">
               Phone number

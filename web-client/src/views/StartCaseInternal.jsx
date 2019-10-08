@@ -5,6 +5,7 @@ import { Contacts } from './StartCase/Contacts';
 import { ErrorNotification } from './ErrorNotification';
 import { FileUploadErrorModal } from './FileUploadErrorModal';
 import { FileUploadStatusModal } from './FileUploadStatusModal';
+import { Focus } from '../ustc-ui/Focus/Focus';
 import { FormCancelModalDialog } from './FormCancelModalDialog';
 import { ProcedureType } from './StartCase/ProcedureType';
 import { ScanBatchPreviewer } from './ScanBatchPreviewer';
@@ -69,8 +70,10 @@ export const StartCaseInternal = connect(
             <ErrorNotification />
             <div className="grid-row grid-gap">
               <div className="grid-col-12">
-                <h1 className="margin-bottom-105">Case Information</h1>
-                <p className="required-statement margin-top-0 margin-bottom-4">
+                <Focus>
+                  <h2 className="margin-bottom-105">Case Information</h2>
+                </Focus>
+                <p className="margin-bottom-4 margin-top-0 required-statement">
                   *All fields required unless otherwise noted
                 </p>
               </div>
@@ -78,15 +81,13 @@ export const StartCaseInternal = connect(
               <div className="grid-col-5">
                 <div className="blue-container margin-bottom-4 document-detail-one-third">
                   <div
-                    className={`usa-form-group ${
-                      validationErrors.receivedAt ? 'usa-form-group--error' : ''
-                    }`}
+                    className={classNames(
+                      'usa-form-group',
+                      validationErrors.receivedAt && 'usa-form-group--error',
+                    )}
                   >
                     <fieldset className="usa-fieldset margin-bottom-0">
-                      <legend
-                        className="usa-legend with-hint"
-                        id="date-received-legend"
-                      >
+                      <legend className="usa-legend" id="date-received-legend">
                         Date received
                       </legend>
                       <div className="usa-memorable-date">
@@ -162,12 +163,10 @@ export const StartCaseInternal = connect(
                   </div>
 
                   <div
-                    className={
-                      'usa-form-group ' +
-                      (validationErrors.caseCaption
-                        ? 'usa-form-group--error'
-                        : '')
-                    }
+                    className={classNames(
+                      'usa-form-group',
+                      validationErrors.caseCaption && 'usa-form-group--error',
+                    )}
                   >
                     <label className="usa-label" htmlFor="case-caption">
                       Case caption
@@ -246,6 +245,7 @@ export const StartCaseInternal = connect(
                   <div
                     className={classNames(
                       'usa-form-group',
+                      !form.partyType && 'margin-bottom-0',
                       validationErrors.partyType && 'usa-form-group--error',
                     )}
                   >

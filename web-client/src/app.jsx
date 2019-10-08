@@ -20,6 +20,7 @@ import {
   faEyeSlash,
   faFileAlt,
   faFilePdf as faFilePdfRegular,
+  faTimesCircle as faTimesCircleRegular,
   faUser,
 } from '@fortawesome/free-regular-svg-icons';
 import {
@@ -52,6 +53,7 @@ import {
   faListUl,
   faPaperPlane,
   faPaperclip,
+  faPencilAlt,
   faPlusCircle,
   faPrint,
   faQuestionCircle,
@@ -150,6 +152,7 @@ const app = {
       faExclamationTriangle,
       faEyeSlash,
       faFile,
+      faPencilAlt,
       faFileAlt,
       faFileAltSolid,
       faHome,
@@ -175,6 +178,7 @@ const app = {
       faSync,
       faThumbtack,
       faTimesCircle,
+      faTimesCircleRegular,
       faTrash,
       faUser,
       faUserCheck,

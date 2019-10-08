@@ -8,6 +8,7 @@ import { reactSelectValue } from '../../ustc-ui/utils/documentTypeSelectHelper';
 import { sequences, state } from 'cerebral';
 import React from 'react';
 import Select from 'react-select';
+import classNames from 'classnames';
 
 export const RequestAccess = connect(
   {
@@ -42,7 +43,7 @@ export const RequestAccess = connect(
             Request Access to This Case
           </h1>
         </Focus>
-        <p className="required-statement margin-top-0 margin-bottom-4">
+        <p className="margin-bottom-4 margin-top-0 required-statement">
           *All fields required unless otherwise noted
         </p>
         <div>
@@ -52,9 +53,10 @@ export const RequestAccess = connect(
         </div>
         <div className="blue-container">
           <div
-            className={`usa-form-group margin-bottom-0 ${
-              validationErrors.documentType ? 'usa-form-group--error' : ''
-            }`}
+            className={classNames(
+              'usa-form-group margin-bottom-0',
+              validationErrors.documentType && 'usa-form-group--error',
+            )}
           >
             <label
               className="usa-label"
@@ -65,9 +67,10 @@ export const RequestAccess = connect(
             </label>
             <Select
               aria-describedby="document-type-label"
-              className={`select-react-element ${
-                validationErrors.documentType ? 'usa-select--error' : ''
-              }`}
+              className={classNames(
+                'select-react-element',
+                validationErrors.documentType && 'usa-select--error',
+              )}
               classNamePrefix="select-react-element"
               id="document-type"
               name="documentType"

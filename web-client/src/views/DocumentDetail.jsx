@@ -1,8 +1,10 @@
 import { ArchiveDraftDocumentModal } from './DraftDocuments/ArchiveDraftDocumentModal';
+import { Button } from '../ustc-ui/Button/Button';
 import { CaseDetailEdit } from './CaseDetailEdit/CaseDetailEdit';
 import { CaseDetailHeader } from './CaseDetailHeader';
 import { CaseDetailReadOnly } from './CaseDetailReadOnly';
 import { CompletedMessages } from './DocumentDetail/CompletedMessages';
+import { ConfirmEditModal } from './DraftDocuments/ConfirmEditModal';
 import { CreateMessageModalDialog } from './DocumentDetail/CreateMessageModalDialog';
 import { ErrorNotification } from './ErrorNotification';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -15,6 +17,7 @@ import { Tab, Tabs } from '../ustc-ui/Tabs/Tabs';
 import { connect } from '@cerebral/react';
 import { sequences, state } from 'cerebral';
 import React from 'react';
+import classNames from 'classnames';
 
 export const DocumentDetail = connect(
   {
@@ -25,11 +28,15 @@ export const DocumentDetail = connect(
     caseHelper: state.caseDetailHelper,
     clickServeToIrsSequence: sequences.clickServeToIrsSequence,
     documentDetailHelper: state.documentDetailHelper,
+    formattedCaseDetail: state.formattedCaseDetail,
     gotoOrdersNeededSequence: sequences.gotoOrdersNeededSequence,
     messageId: state.messageId,
     navigateToPathSequence: sequences.navigateToPathSequence,
+    openConfirmEditModalSequence: sequences.openConfirmEditModalSequence,
     openServeConfirmModalDialogSequence:
       sequences.openServeConfirmModalDialogSequence,
+    removeSignatureFromOrderSequence:
+      sequences.removeSignatureFromOrderSequence,
     setModalDialogNameSequence: sequences.setModalDialogNameSequence,
     showModal: state.showModal,
     token: state.token,
@@ -41,10 +48,13 @@ export const DocumentDetail = connect(
     caseHelper,
     clickServeToIrsSequence,
     documentDetailHelper,
+    formattedCaseDetail,
     gotoOrdersNeededSequence,
     messageId,
     navigateToPathSequence,
+    openConfirmEditModalSequence,
     openServeConfirmModalDialogSequence,
+    removeSignatureFromOrderSequence,
     setModalDialogNameSequence,
     showModal,
     token,
@@ -120,11 +130,11 @@ export const DocumentDetail = connect(
 
       return (
         <div className="document-detail__action-buttons">
-          <div className="float-right">
+          <div className="float-left">
             {caseHelper.hasOrders &&
               documentDetailHelper.showViewOrdersNeededButton && (
-                <button
-                  className="usa-button usa-button--unstyled"
+                <Button
+                  link
                   onClick={() => {
                     gotoOrdersNeededSequence({
                       docketNumber: caseDetail.docketNumber,
@@ -132,23 +142,81 @@ export const DocumentDetail = connect(
                   }}
                 >
                   View Orders Needed
-                </button>
+                </Button>
               )}
 
             {documentDetailHelper.isDraftDocument && (
+              <div>
+                {!documentDetailHelper.formattedDocument.signedAt && (
+                  <Button
+                    link
+                    href={documentDetailHelper.formattedDocument.signUrl}
+                  >
+                    <FontAwesomeIcon icon={['fas', 'pencil-alt']} /> Apply
+                    Signature
+                  </Button>
+                )}
+                {documentDetailHelper.showRemoveSignature && (
+                  <>
+                    Signed{' '}
+                    {documentDetailHelper.formattedDocument.signedAtFormattedTZ}
+                    <Button
+                      link
+                      className="margin-left-2"
+                      onClick={() =>
+                        removeSignatureFromOrderSequence({
+                          caseDetail,
+                          documentIdToEdit:
+                            documentDetailHelper.formattedDocument.documentId,
+                        })
+                      }
+                    >
+                      <FontAwesomeIcon icon="times-circle" size="sm" /> Remove
+                      Signature
+                    </Button>
+                  </>
+                )}
+              </div>
+            )}
+          </div>
+          <div className="float-right">
+            {documentDetailHelper.isDraftDocument && (
               <div
-                className={`display-inline-block margin-right-2${
-                  showingAnyButton ? '' : ' margin-top-2'
-                }`}
+                className={classNames(
+                  'display-inline-block margin-right-2',
+                  !showingAnyButton && 'margin-top-1',
+                )}
               >
                 <>
-                  <a href={documentDetailHelper.documentEditUrl}>
-                    {' '}
-                    <FontAwesomeIcon icon={['fas', 'edit']} /> Edit
-                  </a>
+                  {documentDetailHelper.showConfirmEditOrder ? (
+                    <Button
+                      link
+                      icon="edit"
+                      onClick={() => {
+                        openConfirmEditModalSequence({
+                          caseId: formattedCaseDetail.caseId,
+                          docketNumber: formattedCaseDetail.docketNumber,
+                          documentIdToEdit:
+                            documentDetailHelper.formattedDocument.documentId,
+                          path: documentDetailHelper.formattedDocument.editUrl,
+                        });
+                      }}
+                    >
+                      Edit
+                    </Button>
+                  ) : (
+                    <Button
+                      link
+                      href={documentDetailHelper.formattedDocument.editUrl}
+                      icon="edit"
+                    >
+                      Edit
+                    </Button>
+                  )}
 
-                  <button
-                    className="usa-button usa-button--unstyled red-warning margin-left-2"
+                  <Button
+                    link
+                    className="red-warning margin-right-0"
                     onClick={() => {
                       archiveDraftDocumentModalSequence({
                         caseId: caseDetail.caseId,
@@ -162,37 +230,37 @@ export const DocumentDetail = connect(
                   >
                     <FontAwesomeIcon icon="times-circle" size="sm" />
                     Delete
-                  </button>
+                  </Button>
                 </>
               </div>
             )}
 
             {caseHelper.showServeToIrsButton &&
               documentDetailHelper.formattedDocument.isPetition && (
-                <button
-                  className="usa-button serve-to-irs margin-right-0"
+                <Button
+                  className="serve-to-irs margin-right-0"
                   onClick={() => clickServeToIrsSequence()}
                 >
                   <FontAwesomeIcon icon={['fas', 'clock']} />
                   Serve to IRS
-                </button>
+                </Button>
               )}
             {documentDetailHelper.showServeDocumentButton && (
-              <button
-                className="usa-button serve-to-irs margin-right-0"
+              <Button
+                className="serve-to-irs margin-right-0"
                 onClick={() => openServeConfirmModalDialogSequence()}
               >
                 <FontAwesomeIcon icon={['fas', 'paper-plane']} />
                 Serve Document
-              </button>
+              </Button>
             )}
             {caseHelper.showRecallButton &&
               documentDetailHelper.formattedDocument.isPetition && (
                 <span className="recall-button-box">
                   <FontAwesomeIcon icon={['far', 'clock']} size="lg" />
                   <span className="batched-message">Batched for IRS</span>
-                  <button
-                    className="usa-button recall-petition"
+                  <Button
+                    className="recall-petition"
                     onClick={() =>
                       setModalDialogNameSequence({
                         showModal: 'RecallPetitionModalDialog',
@@ -200,12 +268,12 @@ export const DocumentDetail = connect(
                     }
                   >
                     Recall
-                  </button>
+                  </Button>
                 </span>
               )}
             {documentDetailHelper.showSignDocumentButton && (
-              <button
-                className="usa-button serve-to-irs margin-right-0"
+              <Button
+                className="serve-to-irs margin-right-0"
                 onClick={() =>
                   navigateToPathSequence({
                     path: messageId
@@ -216,7 +284,7 @@ export const DocumentDetail = connect(
               >
                 <FontAwesomeIcon icon={['fas', 'edit']} />
                 Sign This Document
-              </button>
+              </Button>
             )}
           </div>
         </div>
@@ -228,7 +296,8 @@ export const DocumentDetail = connect(
         <CaseDetailHeader />
         <section className="usa-section grid-container DocumentDetail">
           <h2 className="heading-1">
-            {documentDetailHelper.formattedDocument.documentType}
+            {documentDetailHelper.formattedDocument.documentTitle ||
+              documentDetailHelper.formattedDocument.documentType}
             {documentDetailHelper.isDraftDocument && ' - DRAFT'}
           </h2>
           <div className="filed-by">
@@ -258,6 +327,7 @@ export const DocumentDetail = connect(
                 {/* we can't show the iframe in cypress or else cypress will pause and ask for a save location for the file */}
                 {!process.env.CI && (
                   <iframe
+                    key={documentDetailHelper.formattedDocument.signedAt}
                     src={`${baseUrl}/documents/${documentDetailHelper.formattedDocument.documentId}/document-download-url?token=${token}`}
                     title={`Document type: ${documentDetailHelper.formattedDocument.documentType}`}
                   />
@@ -281,6 +351,7 @@ export const DocumentDetail = connect(
         {showModal === 'ArchiveDraftDocumentModal' && (
           <ArchiveDraftDocumentModal />
         )}
+        {showModal === 'ConfirmEditModal' && <ConfirmEditModal />}
       </>
     );
   },
