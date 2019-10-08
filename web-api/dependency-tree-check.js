@@ -18,7 +18,7 @@ const stackMap = {
   workItems: './web-api/src/workItemsHandlers.js',
 };
 
-(async () => {
+(async function() {
   if (!stackMap[stack]) {
     return;
   }
