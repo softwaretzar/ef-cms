@@ -1,7 +1,9 @@
+import { Button } from '../ustc-ui/Button/Button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { connect } from '@cerebral/react';
 import { sequences, state } from 'cerebral';
 import React from 'react';
+import classNames from 'classnames';
 
 export const PDFSignerPageButtons = connect(
   {
@@ -40,21 +42,23 @@ export const PDFSignerPageButtons = connect(
 
     return (
       <>
-        <FontAwesomeIcon
-          className={'icon-button' + (disablePrevious ? ' disabled' : '')}
-          icon={['fas', 'caret-left']}
-          size="2x"
-          onClick={getPreviousPage}
-        />
+        <Button link aria-label="previous page" onClick={getPreviousPage}>
+          <FontAwesomeIcon
+            className={classNames('icon-button', disablePrevious && 'disabled')}
+            icon={['fas', 'caret-left']}
+            size="2x"
+          />
+        </Button>
         <span className="pages">
           Page {currentPageNumber} of {totalPages}
         </span>
-        <FontAwesomeIcon
-          className={'icon-button' + (disableNext ? ' disabled' : '')}
-          icon={['fas', 'caret-right']}
-          size="2x"
-          onClick={getNextPage}
-        />
+        <Button link aria-label="next page" onClick={getNextPage}>
+          <FontAwesomeIcon
+            className={classNames('icon-button', disableNext && ' disabled')}
+            icon={['fas', 'caret-right']}
+            size="2x"
+          />
+        </Button>
       </>
     );
   },
