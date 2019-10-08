@@ -18,27 +18,27 @@ const stackMap = {
   workItems: './web-api/src/workItemsHandlers.js',
 };
 
-(async function() {
+(function() {
   if (!stackMap[stack]) {
     return;
   }
 
-  const dependencies = await madge(stackMap[stack]);
-
   process.stdin.on('data', data => {
     let numberOfDependencies = 0;
 
-    Buffer.from(data)
-      .toString()
-      .split('\n')
-      .filter(v => v)
-      .forEach(file => {
-        const { length } = dependencies.depends(`../../${file}`);
-        numberOfDependencies += length;
-      });
+    madge(stackMap[stack]).then(function(res) {
+      Buffer.from(data)
+        .toString()
+        .split('\n')
+        .filter(v => v)
+        .forEach(file => {
+          const { length } = res.depends(`../../${file}`);
+          numberOfDependencies += length;
+        });
 
-    if (numberOfDependencies) {
-      console.log(numberOfDependencies);
-    }
+      if (numberOfDependencies) {
+        console.log(numberOfDependencies);
+      }
+    });
   });
 })();
