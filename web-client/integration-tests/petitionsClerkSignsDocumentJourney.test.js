@@ -7,7 +7,6 @@ import { isFunction, mapValues } from 'lodash';
 import { presenter } from '../src/presenter/presenter';
 import { setupTest } from './helpers';
 import { withAppContextDecorator } from '../src/withAppContext';
-import FormData from 'form-data';
 import petitionsClerkAddsOrderToCase from './journey/petitionsClerkAddsOrderToCase';
 import petitionsClerkAppliesSignatureToDraftDocument from './journey/petitionsClerkAppliesSignatureToDraftDocument';
 import petitionsClerkClearsSignatureFromDraftDocument from './journey/petitionsClerkClearsSignatureFromDraftDocument';
