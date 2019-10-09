@@ -6,6 +6,7 @@ export const workQueueHelper = get => {
   const workQueueToDisplay = get(state.workQueueToDisplay);
   const userSection = get(state.user.section);
   const userRole = get(state.user.role);
+  const isJudge = userRole === 'judge';
   const userRoleMap = mapValueHelper(userRole);
   const { myInboxUnreadCount, qcUnreadCount } = get(state.notifications);
   const { workQueueIsInternal } = workQueueToDisplay;
@@ -60,7 +61,10 @@ export const workQueueHelper = get => {
         (showInbox || showInProgress) &&
         !userIsOther) ||
       !isDisplayingQC,
+    showBatchedByColumn: isDisplayingQC && userIsPetitionsClerk && showOutbox,
     showBatchedForIRSTab: userIsPetitionsClerk && workQueueIsInternal === false,
+    showCaseStatusColumn: isJudge,
+    showFromColumn: isJudge,
     showInProgressTab: isDisplayingQC && userIsDocketClerk,
     showInbox,
     showIndividualWorkQueue,
