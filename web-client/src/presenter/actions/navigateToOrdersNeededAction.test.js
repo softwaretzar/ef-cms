@@ -27,7 +27,7 @@ describe('navigateToOrdersNeededAction', () => {
     expect(routeStub).toHaveBeenCalledWith('/case-detail/123-19/orders-needed');
   });
 
-  it('does not navigate to orders needed summary url  when there is no docketNumber', async () => {
+  it('does not navigate to orders needed summary url when there is no docketNumber', async () => {
     await runAction(navigateToOrdersNeededAction, {
       modules: {
         presenter,
