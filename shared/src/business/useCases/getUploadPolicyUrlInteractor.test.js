@@ -43,7 +43,7 @@ describe('getUploadPolicyInteractor', () => {
     expect(url).toEqual('policy');
   });
 
-  it('returns the expected policy', async () => {
+  it('throws an unauthorized exception', async () => {
     const applicationContext = {
       getCurrentUser: () => {
         return {
