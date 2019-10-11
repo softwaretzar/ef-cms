@@ -19,13 +19,7 @@ describe('setPDFPageForSigningAction', () => {
   });
 
   it('uses the default value if no pageNumber is provided', async () => {
-    const result = await runAction(setPDFPageForSigningAction, {
-      state: {
-        pdfForSigning: {
-          pageNumber: 1,
-        },
-      },
-    });
+    const result = await runAction(setPDFPageForSigningAction);
 
     expect(result.state.pdfForSigning.pageNumber).toEqual(1);
   });
