@@ -275,6 +275,10 @@ jobs:
           name: 'Deploy - Web API - Serverless - Notifications - us-east-1'
           command: |
             ./check-deploy-stack.sh notifications serverless-notifications ${COMPARE_BRANCH} ${ENV} us-east-1
+      - run:
+          name: 'Deploy - Web API - Serverless - Streams - us-east-1 (east only)'
+          command: |
+            ./check-deploy-stack.sh streams serverless-streams ${COMPARE_BRANCH} ${ENV} us-east-1
 
   deploy-api-west:
     docker:
@@ -395,23 +399,6 @@ jobs:
 
 workflows:
   version: 2
-  hourly:
-    jobs:
-      - deploy-ui
-      - deploy-api-west
-      - deploy-api-east
-      - post-deploy:
-          requires:
-            - deploy-ui
-            - deploy-api-west
-            - deploy-api-east
-    triggers:
-      - schedule:
-          cron: '0 12-23 * * 1-5'
-          filters:
-            branches:
-              only:
-                - develop
   build-and-deploy:
     jobs:
       - bundle
@@ -443,6 +430,7 @@ workflows:
                 - staging
                 - master
                 - experimental
+                - develop
       - deploy-api-east:
           requires:
             - build-shared
@@ -456,6 +444,7 @@ workflows:
                 - staging
                 - master
                 - experimental
+                - develop
       - deploy-api-west:
           requires:
             - build-shared
@@ -469,6 +458,7 @@ workflows:
                 - staging
                 - master
                 - experimental
+                - develop
       - post-deploy:
           requires:
             - deploy-ui
