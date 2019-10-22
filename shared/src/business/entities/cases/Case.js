@@ -17,6 +17,7 @@ const { find, includes } = require('lodash');
 const { MAX_FILE_SIZE_MB } = require('../../../persistence/s3/getUploadPolicy');
 const { Practitioner } = require('../Practitioner');
 const { Respondent } = require('../Respondent');
+const { User } = require('../User');
 
 Case.STATUS_TYPES = {
   batchedForIRS: 'Batched for IRS',
@@ -51,8 +52,13 @@ Case.CASE_TYPES = [
 Case.PROCEDURE_TYPES = ['Regular', 'Small'];
 
 Case.FILING_TYPES = {
-  petitioner: ['Myself', 'Myself and my spouse', 'A business', 'Other'],
-  practitioner: [
+  [User.ROLES.petitioner]: [
+    'Myself',
+    'Myself and my spouse',
+    'A business',
+    'Other',
+  ],
+  [User.ROLES.practitioner]: [
     'Individual petitioner',
     'Petitioner and spouse',
     'A business',
@@ -168,6 +174,7 @@ function Case(rawCase, { applicationContext }) {
     throw new TypeError('applicationContext must be defined');
   }
   this.blocked = rawCase.blocked;
+  this.blockedDate = rawCase.blockedDate;
   this.blockedReason = rawCase.blockedReason;
   this.caseCaption = rawCase.caseCaption;
   this.caseId = rawCase.caseId || applicationContext.getUniqueId();
@@ -175,12 +182,13 @@ function Case(rawCase, { applicationContext }) {
   this.contactPrimary = rawCase.contactPrimary;
   this.contactSecondary = rawCase.contactSecondary;
   this.createdAt = rawCase.createdAt || createISODateString();
-  this.currentVersion = rawCase.currentVersion;
   this.docketNumber = rawCase.docketNumber;
   this.docketNumberSuffix = getDocketNumberSuffix(rawCase);
   this.filingType = rawCase.filingType;
   this.hasIrsNotice = rawCase.hasIrsNotice;
   this.hasVerifiedIrsNotice = rawCase.hasVerifiedIrsNotice;
+  this.highPriority = rawCase.highPriority;
+  this.highPriorityReason = rawCase.highPriorityReason;
   this.irsNoticeDate = rawCase.irsNoticeDate;
   this.irsSendDate = rawCase.irsSendDate;
   this.isPaper = rawCase.isPaper;
@@ -270,6 +278,14 @@ joiValidationDecorator(
   Case,
   joi.object().keys({
     blocked: joi.boolean().optional(),
+    blockedDate: joi.when('blocked', {
+      is: true,
+      otherwise: joi.optional().allow(null),
+      then: joi
+        .date()
+        .iso()
+        .required(),
+    }),
     blockedReason: joi.when('blocked', {
       is: true,
       otherwise: joi.optional().allow(null),
@@ -302,6 +318,12 @@ joiValidationDecorator(
       .boolean()
       .optional()
       .allow(null),
+    highPriority: joi.boolean().optional(),
+    highPriorityReason: joi.when('highPriority', {
+      is: true,
+      otherwise: joi.optional().allow(null),
+      then: joi.string().required(),
+    }),
     initialDocketNumberSuffix: joi
       .string()
       .allow(null)
@@ -348,7 +370,6 @@ joiValidationDecorator(
     receivedAt: joi
       .date()
       .iso()
-      .max('now')
       .optional()
       .allow(null),
     respondents: joi.array().optional(),
@@ -899,6 +920,7 @@ Case.prototype.generateTrialSortTags = function() {
   const {
     caseId,
     caseType,
+    highPriority,
     preferredTrialCity,
     procedureType,
     receivedAt,
@@ -907,12 +929,14 @@ Case.prototype.generateTrialSortTags = function() {
   const caseProcedureSymbol =
     procedureType.toLowerCase() === 'regular' ? 'R' : 'S';
 
-  let casePrioritySymbol = 'C';
+  let casePrioritySymbol = 'D';
 
-  if (caseType.toLowerCase() === 'cdp (lien/levy)') {
+  if (highPriority === true) {
     casePrioritySymbol = 'A';
-  } else if (caseType.toLowerCase() === 'passport') {
+  } else if (caseType.toLowerCase() === 'cdp (lien/levy)') {
     casePrioritySymbol = 'B';
+  } else if (caseType.toLowerCase() === 'passport') {
+    casePrioritySymbol = 'C';
   }
 
   const formattedFiledTime = formatDateString(receivedAt, 'YYYYMMDDHHmmss');
@@ -959,6 +983,15 @@ Case.prototype.setAsCalendared = function(trialSessionEntity) {
 };
 
 /**
+ * returns true if the case status is already calendared
+ *
+ * @returns {boolean} if the case is calendared
+ */
+Case.prototype.isCalendared = function() {
+  return this.status === Case.STATUS_TYPES.calendared;
+};
+
+/**
  * getDefaultOrderDesignatingPlaceOfTrialValue
  *
  * @returns {boolean} the value of if an order is needed for place of trial.
@@ -988,6 +1021,7 @@ Case.getDefaultOrderDesignatingPlaceOfTrialValue = function({
 Case.prototype.setAsBlocked = function(blockedReason) {
   this.blocked = true;
   this.blockedReason = blockedReason;
+  this.blockedDate = createISODateString();
   return this;
 };
 
@@ -999,6 +1033,45 @@ Case.prototype.setAsBlocked = function(blockedReason) {
 Case.prototype.unsetAsBlocked = function() {
   this.blocked = false;
   this.blockedReason = undefined;
+  this.blockedDate = undefined;
+  return this;
+};
+
+/**
+ * set as high priority with a highPriorityReason
+ *
+ * @param {string} highPriorityReason - the reason the case was set to high priority
+ * @returns {Case} the updated case entity
+ */
+Case.prototype.setAsHighPriority = function(highPriorityReason) {
+  this.highPriority = true;
+  this.highPriorityReason = highPriorityReason;
+  return this;
+};
+
+/**
+ * unset as high priority and remove the highPriorityReason
+ *
+ * @returns {Case} the updated case entity
+ */
+Case.prototype.unsetAsHighPriority = function() {
+  this.highPriority = false;
+  this.highPriorityReason = undefined;
+  return this;
+};
+
+/**
+ * remove from trial, setting case status back to generalDocketReadyForTrial
+ *
+ * @returns {Case} the updated case entity
+ */
+Case.prototype.removeFromTrial = function() {
+  this.status = Case.STATUS_TYPES.generalDocketReadyForTrial;
+  this.trialDate = undefined;
+  this.trialJudge = undefined;
+  this.trialLocation = undefined;
+  this.trialSessionId = undefined;
+  this.trialTime = undefined;
   return this;
 };
 

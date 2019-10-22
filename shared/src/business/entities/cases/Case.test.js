@@ -2,11 +2,13 @@ const moment = require('moment');
 const { Case } = require('./Case');
 const { ContactFactory } = require('../contacts/ContactFactory');
 const { DocketRecord } = require('../DocketRecord');
+const { TrialSession } = require('../trialSessions/TrialSession');
 const { MOCK_CASE } = require('../../../test/mockCase');
 const { MOCK_DOCUMENTS } = require('../../../test/mockDocuments');
 const { Practitioner } = require('../Practitioner');
 const { Respondent } = require('../Respondent');
 const { WorkItem } = require('../WorkItem');
+const { User } = require('../User');
 
 describe('Case entity', () => {
   let applicationContext;
@@ -179,11 +181,40 @@ describe('Case entity', () => {
       expect(myCase.isValid()).toBeFalsy();
     });
 
-    it('Creates an invalid case with blocked set to true but no blockedReason', () => {
+    it('Creates an invalid case with blocked set to true but no blockedReason or blockedDate', () => {
       const myCase = new Case(
         {
           ...MOCK_CASE,
           blocked: true,
+        },
+        {
+          applicationContext,
+        },
+      );
+      expect(myCase.isValid()).toBeFalsy();
+    });
+
+    it('Creates an invalid case with blocked set to true and a blockedDate but no blockedReason', () => {
+      const myCase = new Case(
+        {
+          ...MOCK_CASE,
+          blocked: true,
+          blockedDate: '2019-03-01T21:42:29.073Z',
+        },
+        {
+          applicationContext,
+        },
+      );
+      expect(myCase.isValid()).toBeFalsy();
+    });
+
+    it('Creates an invalid case with blocked set to true and an invalid blockedDate', () => {
+      const myCase = new Case(
+        {
+          ...MOCK_CASE,
+          blocked: true,
+          blockedDate: 'undefined-undefined-undefined',
+          blockedReason: 'something',
         },
         {
           applicationContext,
@@ -197,6 +228,48 @@ describe('Case entity', () => {
         {
           ...MOCK_CASE,
           blocked: false,
+        },
+        {
+          applicationContext,
+        },
+      );
+      expect(myCase.isValid()).toBeTruthy();
+    });
+
+    it('Creates a valid case with blocked set to true and a blockedReason and blockedDate', () => {
+      const myCase = new Case(
+        {
+          ...MOCK_CASE,
+          blocked: true,
+          blockedReason: 'something',
+          blockedDate: '2019-03-01T21:42:29.073Z',
+        },
+        {
+          applicationContext,
+        },
+      );
+      expect(myCase.isValid()).toBeTruthy();
+    });
+
+    it('Creates an invalid case with highPriority set to true but no highPriorityReason', () => {
+      const myCase = new Case(
+        {
+          ...MOCK_CASE,
+          highPriority: true,
+        },
+        {
+          applicationContext,
+        },
+      );
+      expect(myCase.isValid()).toBeFalsy();
+    });
+
+    it('Creates a valid case with highPriority set to true and a highPriorityReason', () => {
+      const myCase = new Case(
+        {
+          ...MOCK_CASE,
+          highPriority: true,
+          highPriorityReason: 'something',
         },
         {
           applicationContext,
@@ -785,7 +858,7 @@ describe('Case entity', () => {
 
   describe('getFilingTypes', () => {
     it('returns the filing types for user role petitioner', () => {
-      const filingTypes = Case.getFilingTypes('petitioner');
+      const filingTypes = Case.getFilingTypes(User.ROLES.petitioner);
       expect(filingTypes).not.toBeNull();
       expect(filingTypes.length).toEqual(4);
       expect(filingTypes[0]).toEqual('Myself');
@@ -806,7 +879,7 @@ describe('Case entity', () => {
     });
 
     it('returns the filing types for user role practitioner', () => {
-      const filingTypes = Case.getFilingTypes('practitioner');
+      const filingTypes = Case.getFilingTypes(User.ROLES.practitioner);
       expect(filingTypes).not.toBeNull();
       expect(filingTypes.length).toEqual(4);
       expect(filingTypes[0]).toEqual('Individual petitioner');
@@ -987,6 +1060,7 @@ describe('Case entity', () => {
           caseTitle: 'testing',
           docketNumber: '101-18',
           document: {},
+          isQC: true,
           sentBy: 'bob',
         },
         { applicationContext },
@@ -1003,6 +1077,7 @@ describe('Case entity', () => {
           caseTitle: 'testing',
           docketNumber: '101-18',
           document: {},
+          isQC: true,
           sentBy: 'bob',
         },
       ]);
@@ -1146,9 +1221,9 @@ describe('Case entity', () => {
       );
       expect(myCase.generateTrialSortTags()).toEqual({
         hybrid:
-          'WashingtonDC-H-C-20181212000000-c54ba5a9-b37b-479d-9201-067ec6e335bb',
+          'WashingtonDC-H-D-20181212000000-c54ba5a9-b37b-479d-9201-067ec6e335bb',
         nonHybrid:
-          'WashingtonDC-R-C-20181212000000-c54ba5a9-b37b-479d-9201-067ec6e335bb',
+          'WashingtonDC-R-D-20181212000000-c54ba5a9-b37b-479d-9201-067ec6e335bb',
       });
     });
 
@@ -1165,9 +1240,9 @@ describe('Case entity', () => {
       );
       expect(myCase.generateTrialSortTags()).toEqual({
         hybrid:
-          'WashingtonDC-H-C-20181212000000-c54ba5a9-b37b-479d-9201-067ec6e335bb',
+          'WashingtonDC-H-D-20181212000000-c54ba5a9-b37b-479d-9201-067ec6e335bb',
         nonHybrid:
-          'WashingtonDC-S-C-20181212000000-c54ba5a9-b37b-479d-9201-067ec6e335bb',
+          'WashingtonDC-S-D-20181212000000-c54ba5a9-b37b-479d-9201-067ec6e335bb',
       });
     });
 
@@ -1184,9 +1259,9 @@ describe('Case entity', () => {
       );
       expect(myCase.generateTrialSortTags()).toEqual({
         hybrid:
-          'WashingtonDC-H-B-20181212000000-c54ba5a9-b37b-479d-9201-067ec6e335bb',
+          'WashingtonDC-H-C-20181212000000-c54ba5a9-b37b-479d-9201-067ec6e335bb',
         nonHybrid:
-          'WashingtonDC-R-B-20181212000000-c54ba5a9-b37b-479d-9201-067ec6e335bb',
+          'WashingtonDC-R-C-20181212000000-c54ba5a9-b37b-479d-9201-067ec6e335bb',
       });
     });
 
@@ -1203,15 +1278,35 @@ describe('Case entity', () => {
       );
       expect(myCase.generateTrialSortTags()).toEqual({
         hybrid:
+          'WashingtonDC-H-B-20181212000000-c54ba5a9-b37b-479d-9201-067ec6e335bb',
+        nonHybrid:
+          'WashingtonDC-R-B-20181212000000-c54ba5a9-b37b-479d-9201-067ec6e335bb',
+      });
+    });
+
+    it('should generate sort tags for a prioritized high priority case', () => {
+      const myCase = new Case(
+        {
+          ...MOCK_CASE,
+          receivedAt: '2018-12-12T05:00:00Z',
+          procedureType: 'Small',
+          highPriority: true,
+        },
+        {
+          applicationContext,
+        },
+      );
+      expect(myCase.generateTrialSortTags()).toEqual({
+        hybrid:
           'WashingtonDC-H-A-20181212000000-c54ba5a9-b37b-479d-9201-067ec6e335bb',
         nonHybrid:
-          'WashingtonDC-R-A-20181212000000-c54ba5a9-b37b-479d-9201-067ec6e335bb',
+          'WashingtonDC-S-A-20181212000000-c54ba5a9-b37b-479d-9201-067ec6e335bb',
       });
     });
   });
 
   describe('setAsCalendared', () => {
-    it('should set case as calendared', () => {
+    it('should set case as calendared with only judge and trialSessionId', () => {
       const myCase = new Case(MOCK_CASE, {
         applicationContext,
       });
@@ -1223,6 +1318,37 @@ describe('Case entity', () => {
       });
       expect(myCase.trialSessionId).toBeTruthy();
       expect(myCase.status).toEqual(Case.STATUS_TYPES.calendared);
+    });
+
+    it('should set case as calendared with all trial session fields', () => {
+      const myCase = new Case(
+        {
+          ...MOCK_CASE,
+        },
+        {
+          applicationContext,
+        },
+      );
+      const trialSession = new TrialSession(
+        {
+          judge: { name: 'Judge Buch' },
+          maxCases: 100,
+          sessionType: 'Regular',
+          startDate: '2025-03-01T00:00:00.000Z',
+          term: 'Fall',
+          termYear: '2025',
+          trialLocation: 'Birmingham, AL',
+        },
+        { applicationContext },
+      );
+      myCase.setAsCalendared(trialSession);
+
+      expect(myCase.status).toEqual(Case.STATUS_TYPES.calendared);
+      expect(myCase.trialDate).toBeTruthy();
+      expect(myCase.trialJudge).toBeTruthy();
+      expect(myCase.trialLocation).toBeTruthy();
+      expect(myCase.trialSessionId).toBeTruthy();
+      expect(myCase.trialTime).toBeTruthy();
     });
   });
 
@@ -1420,6 +1546,7 @@ describe('Case entity', () => {
 
       expect(caseToUpdate.blocked).toEqual(true);
       expect(caseToUpdate.blockedReason).toEqual('because reasons');
+      expect(caseToUpdate.blockedDate).toBeDefined();
     });
   });
 
@@ -1442,6 +1569,93 @@ describe('Case entity', () => {
 
       expect(caseToUpdate.blocked).toBeFalsy();
       expect(caseToUpdate.blockedReason).toBeUndefined();
+      expect(caseToUpdate.blockedDate).toBeUndefined();
+    });
+  });
+
+  describe('setAsHighPriority', () => {
+    it('sets the case as high priority with a high priority reason', () => {
+      const caseToUpdate = new Case(
+        {
+          ...MOCK_CASE,
+        },
+        {
+          applicationContext,
+        },
+      );
+
+      expect(caseToUpdate.highPriority).toBeFalsy();
+
+      caseToUpdate.setAsHighPriority('because reasons');
+
+      expect(caseToUpdate.highPriority).toEqual(true);
+      expect(caseToUpdate.highPriorityReason).toEqual('because reasons');
+    });
+  });
+
+  describe('unsetAsHighPriority', () => {
+    it('unsets the case as high priority', () => {
+      const caseToUpdate = new Case(
+        {
+          ...MOCK_CASE,
+          highPriority: true,
+          highPriorityReason: 'because reasons',
+        },
+        {
+          applicationContext,
+        },
+      );
+
+      expect(caseToUpdate.highPriority).toBeTruthy();
+
+      caseToUpdate.unsetAsHighPriority();
+
+      expect(caseToUpdate.highPriority).toBeFalsy();
+      expect(caseToUpdate.highPriorityReason).toBeUndefined();
+    });
+  });
+
+  describe('removeFromTrial', () => {
+    it('removes the case from trial, unsetting trial details and setting status to general docket ready for trial', () => {
+      const caseToUpdate = new Case(
+        {
+          ...MOCK_CASE,
+        },
+        {
+          applicationContext,
+        },
+      );
+      const trialSession = new TrialSession(
+        {
+          judge: { name: 'Judge Buch' },
+          maxCases: 100,
+          sessionType: 'Regular',
+          startDate: '2025-03-01T00:00:00.000Z',
+          term: 'Fall',
+          termYear: '2025',
+          trialLocation: 'Birmingham, AL',
+        },
+        { applicationContext },
+      );
+      caseToUpdate.setAsCalendared(trialSession);
+
+      expect(caseToUpdate.status).toEqual(Case.STATUS_TYPES.calendared);
+      expect(caseToUpdate.trialDate).toBeTruthy();
+      expect(caseToUpdate.trialJudge).toBeTruthy();
+      expect(caseToUpdate.trialLocation).toBeTruthy();
+      expect(caseToUpdate.trialSessionId).toBeTruthy();
+      expect(caseToUpdate.trialTime).toBeTruthy();
+
+      caseToUpdate.removeFromTrial();
+
+      expect(caseToUpdate.status).toEqual(
+        Case.STATUS_TYPES.generalDocketReadyForTrial,
+      );
+      expect(caseToUpdate.trialDate).toBeFalsy();
+      expect(caseToUpdate.trialJudge).toBeFalsy();
+      expect(caseToUpdate.trialLocation).toBeFalsy();
+      expect(caseToUpdate.trialSessionId).toBeFalsy();
+      expect(caseToUpdate.trialTime).toBeFalsy();
     });
   });
 });

@@ -313,6 +313,18 @@ const router = {
     );
 
     route(
+      '/case-detail/*/confirmation',
+      checkLoggedIn(docketNumber => {
+        setPageTitle(
+          `${getPageTitleDocketPrefix(docketNumber)} Case Confirmation`,
+        );
+        app.getSequence('gotoPrintableCaseConfirmationSequence')({
+          docketNumber,
+        });
+      }),
+    );
+
+    route(
       '/case-detail/*/request-access',
       checkLoggedIn(docketNumber => {
         setPageTitle(
@@ -540,6 +552,14 @@ const router = {
       checkLoggedIn(() => {
         setPageTitle('Case deadlines');
         app.getSequence('gotoAllCaseDeadlinesSequence')();
+      }),
+    );
+
+    route(
+      '/reports/blocked-cases',
+      checkLoggedIn(() => {
+        setPageTitle('Blocked cases');
+        app.getSequence('gotoBlockedCasesReportSequence')();
       }),
     );
 

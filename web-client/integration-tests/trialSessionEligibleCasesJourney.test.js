@@ -190,6 +190,89 @@ describe('Trial Session Eligible Cases Journey', () => {
     userSignsOut(test);
   });
 
+  describe(`Mark case #2 as high priority for '${trialLocation}' session`, () => {
+    petitionsClerkLogIn(test);
+
+    it(`Case #2 should show as first case eligible for '${trialLocation}' session`, async () => {
+      await test.runSequence('gotoCaseDetailSequence', {
+        docketNumber: createdDocketNumbers[1],
+      });
+      expect(test.getState('caseDetail.status')).not.toEqual('Calendared');
+      expect(test.getState('caseDetail').highPriority).toBeFalsy();
+
+      await test.runSequence('updateModalValueSequence', {
+        key: 'reason',
+        value: 'just because',
+      });
+
+      await test.runSequence('prioritizeCaseSequence');
+      expect(test.getState('caseDetail').highPriority).toBeTruthy();
+      expect(test.getState('caseDetail').highPriorityReason).toEqual(
+        'just because',
+      );
+
+      await test.runSequence('gotoTrialSessionDetailSequence', {
+        trialSessionId: test.trialSessionId,
+      });
+
+      expect(test.getState('trialSession.eligibleCases').length).toEqual(4);
+      expect(test.getState('trialSession.eligibleCases.0.caseId')).toEqual(
+        createdCases[1],
+      );
+      expect(test.getState('trialSession.eligibleCases.1.caseId')).toEqual(
+        createdCases[3],
+      );
+      expect(test.getState('trialSession.eligibleCases.2.caseId')).toEqual(
+        createdCases[4],
+      );
+      expect(test.getState('trialSession.eligibleCases.3.caseId')).toEqual(
+        createdCases[0],
+      );
+      expect(test.getState('trialSession.status')).toEqual('Upcoming');
+      expect(test.getState('trialSession.isCalendared')).toEqual(false);
+    });
+
+    userSignsOut(test);
+  });
+
+  describe(`Remove high priority from case #2 for '${trialLocation}' session`, () => {
+    petitionsClerkLogIn(test);
+
+    it(`Case #2 should show as last case eligible for '${trialLocation}' session`, async () => {
+      await test.runSequence('gotoCaseDetailSequence', {
+        docketNumber: createdDocketNumbers[1],
+      });
+      expect(test.getState('caseDetail.status')).not.toEqual('Calendared');
+      expect(test.getState('caseDetail').highPriority).toBeTruthy();
+
+      await test.runSequence('unprioritizeCaseSequence');
+      expect(test.getState('caseDetail').highPriority).toBeFalsy();
+      expect(test.getState('caseDetail').highPriorityReason).toBeFalsy();
+
+      await test.runSequence('gotoTrialSessionDetailSequence', {
+        trialSessionId: test.trialSessionId,
+      });
+
+      expect(test.getState('trialSession.eligibleCases').length).toEqual(4);
+      expect(test.getState('trialSession.eligibleCases.0.caseId')).toEqual(
+        createdCases[3],
+      );
+      expect(test.getState('trialSession.eligibleCases.1.caseId')).toEqual(
+        createdCases[4],
+      );
+      expect(test.getState('trialSession.eligibleCases.2.caseId')).toEqual(
+        createdCases[0],
+      );
+      expect(test.getState('trialSession.eligibleCases.3.caseId')).toEqual(
+        createdCases[1],
+      );
+      expect(test.getState('trialSession.status')).toEqual('Upcoming');
+      expect(test.getState('trialSession.isCalendared')).toEqual(false);
+    });
+
+    userSignsOut(test);
+  });
+
   describe(`Set calendar for '${trialLocation}' session`, () => {
     petitionsClerkLogIn(test);
     petitionsClerkSetsATrialSessionsSchedule(test);
@@ -255,6 +338,72 @@ describe('Trial Session Eligible Cases Journey', () => {
         docketNumber: createdDocketNumbers[4],
       });
       expect(test.getState('caseDetail.status')).toEqual('Calendared');
+    });
+
+    it(`verify case #1 can be manually removed from '${trialLocation}' session`, async () => {
+      await test.runSequence('gotoCaseDetailSequence', {
+        docketNumber: createdDocketNumbers[0],
+      });
+
+      await test.runSequence('removeFromTrialSessionSequence');
+
+      expect(test.getState('validationErrors')).toEqual({
+        disposition: 'Enter a disposition',
+      });
+
+      await test.runSequence('updateModalValueSequence', {
+        key: 'disposition',
+        value: 'testing',
+      });
+
+      await test.runSequence('removeFromTrialSessionSequence');
+
+      await test.runSequence('gotoCaseDetailSequence', {
+        docketNumber: createdDocketNumbers[0],
+      });
+      expect(test.getState('caseDetail.status')).not.toEqual('Calendared');
+
+      await test.runSequence('gotoTrialSessionDetailSequence', {
+        trialSessionId: test.trialSessionId,
+      });
+
+      expect(
+        test.getState('trialSession.calendaredCases.2.removedFromTrial'),
+      ).toBeTruthy();
+    });
+
+    it(`verify case #1 can be manually added back to the '${trialLocation}' session`, async () => {
+      await test.runSequence('gotoCaseDetailSequence', {
+        docketNumber: createdDocketNumbers[0],
+      });
+      expect(test.getState('caseDetail.status')).not.toEqual('Calendared');
+
+      await test.runSequence('addToTrialSessionSequence');
+
+      expect(test.getState('validationErrors')).toEqual({
+        trialSessionId: 'Select a Trial Session',
+      });
+
+      test.setState('modal.trialSessionId', test.trialSessionId);
+
+      await test.runSequence('addToTrialSessionSequence');
+
+      await test.runSequence('gotoCaseDetailSequence', {
+        docketNumber: createdDocketNumbers[0],
+      });
+      expect(test.getState('caseDetail.status')).toEqual('Calendared');
+
+      await test.runSequence('gotoTrialSessionDetailSequence', {
+        trialSessionId: test.trialSessionId,
+      });
+
+      expect(
+        test.getState('trialSession.calendaredCases.2.removedFromTrial'),
+      ).toBeFalsy();
+
+      expect(
+        test.getState('trialSession.calendaredCases.2.isManuallyAdded'),
+      ).toBeTruthy();
     });
 
     userSignsOut(test);

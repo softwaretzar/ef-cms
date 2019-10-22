@@ -143,8 +143,9 @@ export const SectionWorkQueueInProgress = connect(
                         docketNumber: item.docketNumber,
                         documentId: item.document.documentId,
                         messageId: item.currentMessage.messageId,
-                        shouldLinkToComplete: true,
-                        shouldLinkToEdit: true,
+                        shouldLinkToComplete:
+                          item.document.isFileAttached === false,
+                        shouldLinkToEdit: item.document.eventCode !== 'P',
                       })}
                       onClick={e => {
                         e.stopPropagation();

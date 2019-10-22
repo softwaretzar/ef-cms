@@ -14,6 +14,12 @@ const docketNumberGenerator = require('../../shared/src/persistence/dynamo/cases
 const util = require('util');
 const uuidv4 = require('uuid/v4');
 const {
+  unblockCaseInteractor,
+} = require('../../shared/src/business/useCases/unblockCaseInteractor');
+const {
+  blockCaseInteractor,
+} = require('../../shared/src/business/useCases/blockCaseInteractor');
+const {
   addCoversheetInteractor,
 } = require('../../shared/src/business/useCases/addCoversheetInteractor');
 const {
@@ -80,6 +86,9 @@ const {
 const {
   createCaseTrialSortMappingRecords,
 } = require('../../shared/src/persistence/dynamo/cases/createCaseTrialSortMappingRecords');
+const {
+  addCaseToTrialSessionInteractor,
+} = require('../../shared/src/business/useCases/trialSessions/addCaseToTrialSessionInteractor');
 const {
   createCourtIssuedOrderPdfFromHtmlInteractor,
 } = require('../../shared/src/business/useCases/courtIssuedOrder/createCourtIssuedOrderPdfFromHtmlInteractor');
@@ -188,6 +197,9 @@ const {
 const {
   getAllCatalogCases,
 } = require('../../shared/src/persistence/dynamo/cases/getAllCatalogCases');
+const {
+  getBlockedCasesInteractor,
+} = require('../../shared/src/business/useCases/getBlockedCasesInteractor');
 const {
   getCalendaredCasesForTrialSession,
 } = require('../../shared/src/persistence/dynamo/trialSessions/getCalendaredCasesForTrialSession');
@@ -370,6 +382,9 @@ const {
   WORKITEM,
 } = require('../../shared/src/authorization/authorizationClientService');
 const {
+  prioritizeCaseInteractor,
+} = require('../../shared/src/business/useCases/prioritizeCaseInteractor');
+const {
   processStreamRecordsInteractor,
 } = require('../../shared/src/business/useCases/processStreamRecordsInteractor');
 const {
@@ -381,6 +396,9 @@ const {
 const {
   recallPetitionFromIRSHoldingQueueInteractor,
 } = require('../../shared/src/business/useCases/recallPetitionFromIRSHoldingQueueInteractor');
+const {
+  removeCaseFromTrialInteractor,
+} = require('../../shared/src/business/useCases/trialSessions/removeCaseFromTrialInteractor');
 const {
   runBatchProcessInteractor,
 } = require('../../shared/src/business/useCases/runBatchProcessInteractor');
@@ -426,11 +444,9 @@ const {
 const {
   createUserInboxRecord,
 } = require('../../shared/src/persistence/dynamo/workitems/createUserInboxRecord');
-
 const {
   createSectionInboxRecord,
 } = require('../../shared/src/persistence/dynamo/workitems/createSectionInboxRecord');
-
 const {
   deleteUserOutboxRecord,
 } = require('../../shared/src/persistence/dynamo/workitems/deleteUserOutboxRecord');
@@ -467,6 +483,9 @@ const {
 const {
   archiveDraftDocumentInteractor,
 } = require('../../shared/src/business/useCases/archiveDraftDocumentInteractor');
+const {
+  unprioritizeCaseInteractor,
+} = require('../../shared/src/business/useCases/unprioritizeCaseInteractor');
 const {
   updateCaseDeadline,
 } = require('../../shared/src/persistence/dynamo/caseDeadlines/updateCaseDeadline');
@@ -571,6 +590,9 @@ const {
 } = require('../../shared/src/persistence/s3/zipDocuments');
 const elasticsearch = require('elasticsearch');
 const { exec } = require('child_process');
+const {
+  generateCaseConfirmationPdfInteractor,
+} = require('../../shared/src/business/useCases/caseConfirmation/generateCaseConfirmationPdfInteractor');
 const { User } = require('../../shared/src/business/entities/User');
 const { Order } = require('../../shared/src/business/entities/orders/Order');
 const connectionClass = require('http-aws-es');
@@ -759,12 +781,10 @@ module.exports = (appContextUser = {}) => {
     },
     getSearchClient: () => {
       if (!searchClientCache) {
-        if (environment.stage === 'local' && process.env.CI !== 'true') {
+        if (environment.stage === 'local') {
           searchClientCache = new elasticsearch.Client({
             host: environment.elasticsearchEndpoint,
           });
-        } else if (environment.stage === 'local' && process.env.CI === 'true') {
-          searchClientCache = { index: () => {}, search: () => {} };
         } else {
           searchClientCache = new elasticsearch.Client({
             amazonES: {
@@ -811,12 +831,14 @@ module.exports = (appContextUser = {}) => {
     },
     getUseCases: () => {
       return {
+        addCaseToTrialSessionInteractor,
         addCoversheetInteractor,
         archiveDraftDocumentInteractor,
         assignWorkItemsInteractor,
         associatePractitionerWithCaseInteractor,
         associateRespondentWithCaseInteractor,
         batchDownloadTrialSessionInteractor,
+        blockCaseInteractor,
         caseSearchInteractor,
         checkForReadyForTrialCasesInteractor,
         completeDocketEntryQCInteractor,
@@ -836,12 +858,14 @@ module.exports = (appContextUser = {}) => {
         fileDocketEntryInteractor,
         fileExternalDocumentInteractor,
         forwardWorkItemInteractor,
+        generateCaseConfirmationPdfInteractor,
         generateDocketRecordPdfInteractor,
         generatePDFFromJPGDataInteractor,
         generatePdfFromHtmlInteractor,
         generatePrintableFilingReceiptInteractor,
         generateTrialCalendarPdfInteractor,
         getAllCaseDeadlinesInteractor,
+        getBlockedCasesInteractor,
         getCalendaredCasesForTrialSessionInteractor,
         getCaseDeadlinesForCaseInteractor,
         getCaseInteractor,
@@ -872,8 +896,10 @@ module.exports = (appContextUser = {}) => {
         getWorkItemInteractor,
         onConnectInteractor,
         onDisconnectInteractor,
+        prioritizeCaseInteractor,
         processStreamRecordsInteractor,
         recallPetitionFromIRSHoldingQueueInteractor,
+        removeCaseFromTrialInteractor,
         runBatchProcessInteractor,
         sanitizePdfInteractor: args =>
           process.env.SKIP_SANITIZE ? null : sanitizePdfInteractor(args),
@@ -887,6 +913,8 @@ module.exports = (appContextUser = {}) => {
         setWorkItemAsReadInteractor,
         submitCaseAssociationRequestInteractor,
         submitPendingCaseAssociationRequestInteractor,
+        unblockCaseInteractor,
+        unprioritizeCaseInteractor,
         updateCaseDeadlineInteractor,
         updateCaseInteractor,
         updateCaseNoteInteractor,
