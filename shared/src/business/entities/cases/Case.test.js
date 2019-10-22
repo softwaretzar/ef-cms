@@ -178,6 +178,32 @@ describe('Case entity', () => {
       );
       expect(myCase.isValid()).toBeFalsy();
     });
+
+    it('Creates an invalid case with blocked set to true but no blockedReason', () => {
+      const myCase = new Case(
+        {
+          ...MOCK_CASE,
+          blocked: true,
+        },
+        {
+          applicationContext,
+        },
+      );
+      expect(myCase.isValid()).toBeFalsy();
+    });
+
+    it('Creates a valid case with blocked set to false but no blockedReason', () => {
+      const myCase = new Case(
+        {
+          ...MOCK_CASE,
+          blocked: false,
+        },
+        {
+          applicationContext,
+        },
+      );
+      expect(myCase.isValid()).toBeTruthy();
+    });
   });
 
   describe('validate', () => {
@@ -1262,6 +1288,160 @@ describe('Case entity', () => {
         processingStatus: 'success',
       });
       expect(myCase.documents[0].processingStatus).toEqual('success');
+    });
+  });
+
+  describe('updatePractitioner', () => {
+    it('updates the given practioner on the case', () => {
+      const caseToVerify = new Case(
+        {
+          practitioners: [
+            new Practitioner({
+              representingPrimary: true,
+              userId: 'practitioner',
+            }),
+          ],
+        },
+        {
+          applicationContext,
+        },
+      );
+
+      expect(caseToVerify.practitioners).not.toBeNull();
+      expect(caseToVerify.practitioners[0].representingPrimary).toBeTruthy();
+
+      caseToVerify.updatePractitioner({
+        representingPrimary: false,
+        userId: 'practitioner',
+      });
+      expect(caseToVerify.practitioners[0].representingPrimary).toBeFalsy();
+    });
+  });
+
+  describe('removePractitioner', () => {
+    it('removes the user from associated case practitioners array', () => {
+      const caseToVerify = new Case(
+        {
+          practitioners: [
+            new Practitioner({ userId: 'practitioner1' }),
+            new Practitioner({ userId: 'practitioner2' }),
+            new Practitioner({ userId: 'practitioner3' }),
+          ],
+        },
+        {
+          applicationContext,
+        },
+      );
+
+      expect(caseToVerify.practitioners).not.toBeNull();
+      expect(caseToVerify.practitioners.length).toEqual(3);
+
+      caseToVerify.removePractitioner({ userId: 'practitioner2' });
+      expect(caseToVerify.practitioners.length).toEqual(2);
+      expect(
+        caseToVerify.practitioners.find(
+          practitioner => practitioner.userId === 'practitioner2',
+        ),
+      ).toBeFalsy();
+    });
+  });
+
+  describe('updateRespondent', () => {
+    it('updates the given respondent on the case', () => {
+      const caseToVerify = new Case(
+        {
+          respondents: [
+            new Practitioner({
+              email: 'rspndnt',
+              userId: 'respondent',
+            }),
+          ],
+        },
+        {
+          applicationContext,
+        },
+      );
+
+      expect(caseToVerify.respondents).not.toBeNull();
+      expect(caseToVerify.respondents[0].email).toEqual('rspndnt');
+
+      caseToVerify.updateRespondent({
+        email: 'respondent@example.com',
+        userId: 'respondent',
+      });
+      expect(caseToVerify.respondents[0].email).toEqual(
+        'respondent@example.com',
+      );
+    });
+  });
+
+  describe('removeRespondent', () => {
+    it('removes the user from associated case respondents array', () => {
+      const caseToVerify = new Case(
+        {
+          respondents: [
+            new Respondent({ userId: 'respondent1' }),
+            new Respondent({ userId: 'respondent2' }),
+            new Respondent({ userId: 'respondent3' }),
+          ],
+        },
+        {
+          applicationContext,
+        },
+      );
+
+      expect(caseToVerify.respondents).not.toBeNull();
+      expect(caseToVerify.respondents.length).toEqual(3);
+
+      caseToVerify.removeRespondent({ userId: 'respondent2' });
+      expect(caseToVerify.respondents.length).toEqual(2);
+      expect(
+        caseToVerify.respondents.find(
+          respondent => respondent.userId === 'respondent2',
+        ),
+      ).toBeFalsy();
+    });
+  });
+
+  describe('setAsBlocked', () => {
+    it('sets the case as blocked with a blocked reason', () => {
+      const caseToUpdate = new Case(
+        {
+          ...MOCK_CASE,
+        },
+        {
+          applicationContext,
+        },
+      );
+
+      expect(caseToUpdate.blocked).toBeFalsy();
+
+      caseToUpdate.setAsBlocked('because reasons');
+
+      expect(caseToUpdate.blocked).toEqual(true);
+      expect(caseToUpdate.blockedReason).toEqual('because reasons');
+    });
+  });
+
+  describe('unsetAsBlocked', () => {
+    it('unsets the case as blocked', () => {
+      const caseToUpdate = new Case(
+        {
+          ...MOCK_CASE,
+          blocked: true,
+          blockedReason: 'because reasons',
+        },
+        {
+          applicationContext,
+        },
+      );
+
+      expect(caseToUpdate.blocked).toBeTruthy();
+
+      caseToUpdate.unsetAsBlocked();
+
+      expect(caseToUpdate.blocked).toBeFalsy();
+      expect(caseToUpdate.blockedReason).toBeUndefined();
     });
   });
 });

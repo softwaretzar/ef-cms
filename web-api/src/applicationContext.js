@@ -94,7 +94,9 @@ const {
   formatCase: formatCaseForTrialSession,
   formattedTrialSessionDetails,
 } = require('../../shared/src/business/utilities/getFormattedTrialSessionDetails');
-
+const {
+  completeDocketEntryQCInteractor,
+} = require('../../shared/src/business/useCases/editDocketEntry/completeDocketEntryQCInteractor');
 const {
   createTrialSession,
 } = require('../../shared/src/persistence/dynamo/trialSessions/createTrialSession');
@@ -132,6 +134,9 @@ const {
   deleteCaseTrialSortMappingRecords,
 } = require('../../shared/src/persistence/dynamo/cases/deleteCaseTrialSortMappingRecords');
 const {
+  deleteCounselFromCaseInteractor,
+} = require('../../shared/src/business/useCases/caseAssociation/deleteCounselFromCaseInteractor');
+const {
   deleteDocument,
 } = require('../../shared/src/persistence/s3/deleteDocument');
 const {
@@ -156,6 +161,7 @@ const {
   generateChangeOfAddressTemplate,
   generateHTMLTemplateForPDF,
   generatePrintableDocketRecordTemplate,
+  generatePrintableFilingReceiptTemplate,
   generateTrialCalendarTemplate,
 } = require('../../shared/src/business/utilities/generateHTMLTemplateForPDF');
 const {
@@ -167,6 +173,9 @@ const {
 const {
   generatePdfFromHtmlInteractor,
 } = require('../../shared/src/business/useCases/generatePdfFromHtmlInteractor');
+const {
+  generatePrintableFilingReceiptInteractor,
+} = require('../../shared/src/business/useCases/generatePrintableFilingReceiptInteractor');
 const {
   generatePDFFromJPGDataInteractor,
 } = require('../../shared/src/business/useCases/generatePDFFromJPGDataInteractor');
@@ -382,6 +391,9 @@ const {
   saveDocument,
 } = require('../../shared/src/persistence/s3/saveDocument');
 const {
+  saveIntermediateDocketEntryInteractor,
+} = require('../../shared/src/business/useCases/editDocketEntry/saveIntermediateDocketEntryInteractor');
+const {
   saveSignedDocumentInteractor,
 } = require('../../shared/src/business/useCases/saveSignedDocumentInteractor');
 const {
@@ -422,6 +434,9 @@ const {
 const {
   deleteUserOutboxRecord,
 } = require('../../shared/src/persistence/dynamo/workitems/deleteUserOutboxRecord');
+const {
+  deleteUserFromCase,
+} = require('../../shared/src/persistence/dynamo/cases/deleteUserFromCase');
 const {
   setServiceIndicatorsForCase,
 } = require('../../shared/src/business/utilities/setServiceIndicatorsForCase');
@@ -473,6 +488,9 @@ const {
 const {
   updateCaseTrialSortTagsInteractor,
 } = require('../../shared/src/business/useCases/updateCaseTrialSortTagsInteractor');
+const {
+  updateCounselOnCaseInteractor,
+} = require('../../shared/src/business/useCases/caseAssociation/updateCounselOnCaseInteractor');
 const {
   updateDocketEntryInteractor,
 } = require('../../shared/src/business/useCases/docketEntry/updateDocketEntryInteractor');
@@ -677,6 +695,7 @@ module.exports = (appContextUser = {}) => {
         deleteDocument,
         deleteSectionOutboxRecord,
         deleteUserConnection,
+        deleteUserFromCase,
         deleteUserOutboxRecord,
         deleteWorkItemFromInbox,
         deleteWorkItemFromSection,
@@ -783,6 +802,7 @@ module.exports = (appContextUser = {}) => {
         generateChangeOfAddressTemplate,
         generateHTMLTemplateForPDF,
         generatePrintableDocketRecordTemplate,
+        generatePrintableFilingReceiptTemplate,
         generateTrialCalendarTemplate,
       };
     },
@@ -799,6 +819,7 @@ module.exports = (appContextUser = {}) => {
         batchDownloadTrialSessionInteractor,
         caseSearchInteractor,
         checkForReadyForTrialCasesInteractor,
+        completeDocketEntryQCInteractor,
         completeWorkItemInteractor,
         createCaseDeadlineInteractor,
         createCaseFromPaperInteractor,
@@ -810,6 +831,7 @@ module.exports = (appContextUser = {}) => {
         createWorkItemInteractor,
         deleteCaseDeadlineInteractor,
         deleteCaseNoteInteractor,
+        deleteCounselFromCaseInteractor,
         fileCourtIssuedOrderInteractor,
         fileDocketEntryInteractor,
         fileExternalDocumentInteractor,
@@ -817,6 +839,7 @@ module.exports = (appContextUser = {}) => {
         generateDocketRecordPdfInteractor,
         generatePDFFromJPGDataInteractor,
         generatePdfFromHtmlInteractor,
+        generatePrintableFilingReceiptInteractor,
         generateTrialCalendarPdfInteractor,
         getAllCaseDeadlinesInteractor,
         getCalendaredCasesForTrialSessionInteractor,
@@ -854,6 +877,7 @@ module.exports = (appContextUser = {}) => {
         runBatchProcessInteractor,
         sanitizePdfInteractor: args =>
           process.env.SKIP_SANITIZE ? null : sanitizePdfInteractor(args),
+        saveIntermediateDocketEntryInteractor,
         saveSignedDocumentInteractor,
         sendPetitionToIRSHoldingQueueInteractor,
         serveSignedStipDecisionInteractor,
@@ -867,6 +891,7 @@ module.exports = (appContextUser = {}) => {
         updateCaseInteractor,
         updateCaseNoteInteractor,
         updateCaseTrialSortTagsInteractor,
+        updateCounselOnCaseInteractor,
         updateCourtIssuedOrderInteractor,
         updateDocketEntryInteractor,
         updatePrimaryContactInteractor,

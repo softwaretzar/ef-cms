@@ -167,6 +167,8 @@ function Case(rawCase, { applicationContext }) {
   if (!applicationContext) {
     throw new TypeError('applicationContext must be defined');
   }
+  this.blocked = rawCase.blocked;
+  this.blockedReason = rawCase.blockedReason;
   this.caseCaption = rawCase.caseCaption;
   this.caseId = rawCase.caseId || applicationContext.getUniqueId();
   this.caseType = rawCase.caseType;
@@ -267,6 +269,12 @@ function Case(rawCase, { applicationContext }) {
 joiValidationDecorator(
   Case,
   joi.object().keys({
+    blocked: joi.boolean().optional(),
+    blockedReason: joi.when('blocked', {
+      is: true,
+      otherwise: joi.optional().allow(null),
+      then: joi.string().required(),
+    }),
     caseId: joi
       .string()
       .uuid({
@@ -456,8 +464,67 @@ Case.prototype.attachRespondent = function(respondent) {
   this.respondents.push(respondent);
 };
 
+/**
+ * updates a respondent on the case
+ *
+ * @param {string} respondentToUpdate the respondent user object with updated info
+ * @returns {void} modfies the respondents array on the case
+ */
+Case.prototype.updateRespondent = function(respondentToUpdate) {
+  this.respondents.some(respondent => {
+    if (respondent.userId === respondentToUpdate.userId) {
+      Object.assign(respondent, respondentToUpdate);
+      return true;
+    }
+  });
+};
+
+/**
+ * removes the given respondent from the case
+ *
+ * @param {string} respondentToRemove the respondent user object to remove from the case
+ * @returns {void} modfies the respondents array on the case
+ */
+Case.prototype.removeRespondent = function(respondentToRemove) {
+  this.respondents.some((respondent, idx) => {
+    if (respondent.userId === respondentToRemove.userId) {
+      this.respondents.splice(idx, 1);
+    }
+  });
+  return this;
+};
+
 Case.prototype.attachPractitioner = function(practitioner) {
   this.practitioners.push(practitioner);
+};
+
+/**
+ * updates a practitioner on the case
+ *
+ * @param {string} practitionerToUpdate the practitioner user object with updated info
+ * @returns {void} modfies the practitioners array on the case
+ */
+Case.prototype.updatePractitioner = function(practitionerToUpdate) {
+  this.practitioners.some(practitioner => {
+    if (practitioner.userId === practitionerToUpdate.userId) {
+      Object.assign(practitioner, practitionerToUpdate);
+      return true;
+    }
+  });
+};
+
+/**
+ * removes the given practitioner from the case
+ *
+ * @param {string} practitionerToRemove the practitioner user object to remove from the case
+ * @returns {void} modfies the practitioners array on the case
+ */
+Case.prototype.removePractitioner = function(practitionerToRemove) {
+  this.practitioners.some((practitioner, idx) => {
+    if (practitioner.userId === practitionerToRemove.userId) {
+      this.practitioners.splice(idx, 1);
+    }
+  });
 };
 
 /**
@@ -910,6 +977,29 @@ Case.getDefaultOrderDesignatingPlaceOfTrialValue = function({
     orderDesignatingPlaceOfTrial = false;
   }
   return orderDesignatingPlaceOfTrial;
+};
+
+/**
+ * set as blocked with a blockedReason
+ *
+ * @param {string} blockedReason - the reason the case was blocked
+ * @returns {Case} the updated case entity
+ */
+Case.prototype.setAsBlocked = function(blockedReason) {
+  this.blocked = true;
+  this.blockedReason = blockedReason;
+  return this;
+};
+
+/**
+ * unblock the case and remove the blockedReason
+ *
+ * @returns {Case} the updated case entity
+ */
+Case.prototype.unsetAsBlocked = function() {
+  this.blocked = false;
+  this.blockedReason = undefined;
+  return this;
 };
 
 module.exports = { Case };
