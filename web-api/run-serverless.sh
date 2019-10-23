@@ -37,7 +37,7 @@ export SLS_DEPLOYMENT_BUCKET="${EFCMS_DOMAIN}.efcms.${slsStage}.${region}.deploy
   --verbose
 echo "done running create_domain"
 
-ENVIRONMENT="${slsStage}" ./node_modules/.bin/sls deploy \
+ENVIRONMENT="${slsStage}" SLS_DEBUG="*" ./node_modules/.bin/sls deploy \
   --accountId "${ACCOUNT_ID}" \
   --config "./web-api/${config}" \
   --domain "${EFCMS_DOMAIN}"  \
