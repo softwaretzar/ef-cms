@@ -177,7 +177,7 @@ package:
     - ./**
   include:
     - web-api/src/streamsHandlers.js
-  individually: true
+
   excludeDevDependencies: true
 
 functions:

@@ -154,7 +154,6 @@ package:
   include:
     - web-api/src/workItemsHandlers.js
 
-  individually: true
   excludeDevDependencies: true
 
 resources:
