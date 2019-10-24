@@ -15,7 +15,6 @@ custom:
 
   jetpack:
     mode: yarn
-    individually: true
 
   prune:
     automatic: true
@@ -39,15 +38,15 @@ custom:
       - errorExceptions
     definitions:
       errorExceptions:
-        description: 'Internal Error Exception Alarm'
-        namespace: 'AWS/Lambda'
+        description: "Internal Error Exception Alarm"
+        namespace: "AWS/Lambda"
         metric: Errors
         threshold: 1
         statistic: Sum
         period: 60
         evaluationPeriods: 1
         comparisonOperator: GreaterThanThreshold
-        pattern: 'ERROR'
+        pattern: "ERROR"
     topics:
       alarm:
         topic: ${self:provider.stage}-cloudwatch-alerts
@@ -57,8 +56,8 @@ custom:
 
   customDomain:
     - domainName: efcms-${self:provider.stage}.${opt:domain}
-      basePath: 'case-deadlines'
-      endpointType: 'regional'
+      basePath: "case-deadlines"
+      endpointType: "regional"
       certificateName: efcms-${self:provider.stage}.${opt:domain}
       certificateRegion: ${opt:region}
       stage: ${self:provider.stage}
@@ -90,7 +89,7 @@ provider:
     serverSideEncryption: AES256
   apiGateway:
     binaryMediaTypes:
-      - 'application/pdf'
+      - "application/pdf"
 
   environment:
     S3_ENDPOINT: ${self:custom.vars.s3Endpoint, self:provider.s3Endpoint}
@@ -106,33 +105,33 @@ provider:
     EFCMS_DOMAIN: ${opt:domain}
 
   iamRoleStatements:
-    - Effect: 'Allow'
+    - Effect: "Allow"
       Action:
-        - 'xray:PutTraceSegments'
-        - 'xray:PutTelemetryRecords'
+        - "xray:PutTraceSegments"
+        - "xray:PutTelemetryRecords"
       Resource:
-        - '*'
-    - Effect: 'Allow'
+        - "*"
+    - Effect: "Allow"
       Action:
-        - 'lambda:InvokeFunction'
+        - "lambda:InvokeFunction"
       Resource:
         - arn:aws:lambda:${opt:region}:${opt:accountId}:function:${self:service}-${opt:stage, self:provider.stage}-*
-    - Effect: 'Allow'
+    - Effect: "Allow"
       Action:
         - cognito-idp:AdminCreateUser
         - cognito-idp:AdminGetUser
       Resource:
         - arn:aws:cognito-idp:${opt:region}:${opt:accountId}:userpool/${self:provider.environment.USER_POOL_ID}
-    - Effect: 'Allow'
+    - Effect: "Allow"
       Action:
-        - 's3:*'
+        - "s3:*"
       Resource:
         Fn::Join:
-          - ''
-          - - 'arn:aws:s3:::'
+          - ""
+          - - "arn:aws:s3:::"
             - ${self:provider.environment.DOCUMENTS_BUCKET_NAME}
-            - '/*'
-    - Effect: 'Allow'
+            - "/*"
+    - Effect: "Allow"
       Action:
         - dynamodb:Query
         - dynamodb:Scan
@@ -147,18 +146,18 @@ provider:
         - arn:aws:dynamodb:${opt:region}:${opt:accountId}:table/${opt:efcmsTableName}/index/*
         - arn:aws:dynamodb:${self:provider.environment.MASTER_REGION}:${opt:accountId}:table/${opt:efcmsTableName}
         - arn:aws:dynamodb:${self:provider.environment.MASTER_REGION}:${opt:accountId}:table/${opt:efcmsTableName}/index/*
-    - Effect: 'Allow'
+    - Effect: "Allow"
       Action:
-        - 'ses:*'
+        - "ses:*"
       Resource:
-        - '*'
+        - "*"
 
 package:
   exclude:
     - ./**
   include:
     - web-api/src/caseDeadlinesHandlers.js
-
+  individually: true
   excludeDevDependencies: true
 
 resources:
@@ -190,9 +189,9 @@ resources:
         StageName: ${opt:stage}
         MethodSettings:
           - DataTraceEnabled: true
-            HttpMethod: '*'
+            HttpMethod: "*"
             LoggingLevel: INFO
-            ResourcePath: '/*'
+            ResourcePath: "/*"
             MetricsEnabled: true
 
 functions:
