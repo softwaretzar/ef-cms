@@ -1,6 +1,6 @@
 const {
   isAuthorized,
-  UPLOAD_DOCUMENT,
+  ROLE_PERMISSIONS,
 } = require('../../../authorization/authorizationClientService');
 const { UnauthorizedError } = require('../../../errors/errors');
 
@@ -18,7 +18,7 @@ exports.generateCaseConfirmationPdfInteractor = async ({
 }) => {
   const user = applicationContext.getCurrentUser();
 
-  if (!isAuthorized(user, UPLOAD_DOCUMENT)) {
+  if (!isAuthorized(user, ROLE_PERMISSIONS.UPLOAD_DOCUMENT)) {
     throw new UnauthorizedError('Unauthorized');
   }
 
@@ -45,40 +45,12 @@ exports.generateCaseConfirmationPdfInteractor = async ({
     let page = await browser.newPage();
 
     await page.setContent(
-      ' <div style="font-size: 10px; font-family: serif; width: 100%; margin: 20px 62px 20px 62px;">' +
-        JSON.stringify(caseToUpdate, null, 2) +
-        '</div>',
+      `<pre>${JSON.stringify(caseToUpdate, null, 2)}</pre>`,
     );
 
-    const headerTemplate = `
-      <!doctype html>
-      <html>
-        <head>
-          <style>
-          </style>
-        </head>
-        <body>
-          <div style="font-size: 10px; font-family: 'nimbus_roman', serif; width: 100%; margin: 20px 62px 20px 62px;">
-          </div>
-        </body>
-      </html>
-    `;
-
-    const footerTemplate = `
-      <!doctype html>
-      <html>
-        <body>
-          <div style="font-size: 10px; font-family: serif; width: 100%; margin: 20px 62px 20px 62px;">
-          </div>
-        </body>
-      </html>
-    `;
-
     result = await page.pdf({
-      displayHeaderFooter: true,
-      footerTemplate,
+      displayHeaderFooter: false,
       format: 'letter',
-      headerTemplate,
     });
   } catch (error) {
     applicationContext.logger.error(error);

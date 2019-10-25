@@ -9,7 +9,7 @@ const startCaseHelper = withAppContextDecorator(startCaseHelperComputed);
 const { VALIDATION_ERROR_MESSAGES } = Case;
 
 export default (test, fakeFile, overrides = {}) => {
-  return it('Taxpayer creates a new case, testing all form options', async () => {
+  return it('petitioner creates a new case, testing all form options', async () => {
     await test.runSequence('updateStartCaseFormValueSequence', {
       key: 'petitionFile',
       value: fakeFile,
@@ -733,7 +733,8 @@ export default (test, fakeFile, overrides = {}) => {
     expect(test.getState('validationErrors')).toEqual({});
     expect(test.getState('alertError')).toBeUndefined();
 
-    expect(test.getState('alertSuccess')).toEqual({
+    expect(test.getState('alertSuccess')).toMatchObject({
+      linkText: 'Print receipt.',
       message: 'You can access your case at any time from the case list below.',
       title: 'Your petition has been successfully submitted.',
     });

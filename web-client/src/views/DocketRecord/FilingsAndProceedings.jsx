@@ -10,6 +10,7 @@ export const FilingsAndProceedings = connect(
     arrayIndex: props.arrayIndex,
     baseUrl: state.baseUrl,
     caseDetailHelper: state.caseDetailHelper,
+    docketRecordHelper: state.docketRecordHelper,
     document: props.document,
     documentHelper: state.documentHelper,
     formattedCaseDetail: state.formattedCaseDetail,
@@ -17,17 +18,20 @@ export const FilingsAndProceedings = connect(
     showDocketRecordDetailModalSequence:
       sequences.showDocketRecordDetailModalSequence,
     token: state.token,
+    userIsDocketClerk: state.mappedUserHelper.role.docketclerk,
   },
   ({
     arrayIndex,
     baseUrl,
     caseDetailHelper,
+    docketRecordHelper,
     document,
     documentHelper,
     formattedCaseDetail,
     record,
     showDocketRecordDetailModalSequence,
     token,
+    userIsDocketClerk,
   }) => {
     const renderDocumentLink = (
       documentId,
@@ -79,7 +83,7 @@ export const FilingsAndProceedings = connect(
     return (
       <React.Fragment>
         {document &&
-          caseDetailHelper.showDirectDownloadLink &&
+          docketRecordHelper.showDirectDownloadLink &&
           document.processingStatus === 'complete' &&
           renderDocumentLink(
             document.documentId,
@@ -89,7 +93,7 @@ export const FilingsAndProceedings = connect(
           )}
 
         {document &&
-          caseDetailHelper.showDirectDownloadLink &&
+          docketRecordHelper.showDirectDownloadLink &&
           document.processingStatus !== 'complete' && (
             <React.Fragment>
               {caseDetailHelper.showDocketRecordInProgressState && (
@@ -104,14 +108,14 @@ export const FilingsAndProceedings = connect(
             </React.Fragment>
           )}
 
-        {document && caseDetailHelper.showDocumentDetailLink && (
+        {document && docketRecordHelper.showDocumentDetailLink && (
           <a
             aria-label="View PDF"
             href={documentHelper({
               docketNumber: formattedCaseDetail.docketNumber,
               documentId: document.documentId,
               shouldLinkToComplete: document.isFileAttached === false,
-              shouldLinkToEdit: document.canEdit,
+              shouldLinkToEdit: userIsDocketClerk && document.canEdit,
             })}
           >
             {document && document.isPaper && (

@@ -3,8 +3,10 @@ import { formattedCaseDetail } from '../../src/presenter/computeds/formattedCase
 import { runCompute } from 'cerebral/test';
 import { withAppContextDecorator } from '../../src/withAppContext';
 
+const caseDetailHelper = withAppContextDecorator(caseDetailHelperComputed);
+
 export default (test, overrides = {}) => {
-  return it('Taxpayer views case detail', async () => {
+  return it('petitioner views case detail', async () => {
     await test.runSequence('gotoCaseDetailSequence', {
       docketNumber: test.docketNumber,
     });
@@ -18,7 +20,6 @@ export default (test, overrides = {}) => {
         state: test.getState(),
       },
     );
-    const caseDetailHelper = withAppContextDecorator(caseDetailHelperComputed);
 
     expect(test.getState('currentPage')).toEqual('CaseDetail');
     expect(caseDetail.docketNumber).toEqual(test.docketNumber);

@@ -34,12 +34,12 @@ describe('generateCaseConfirmationPdfInteractor', () => {
         },
         getChromium: () => chromiumMock,
         getCurrentUser: () => {
-          return { role: User.ROLES.petitioner, userId: 'taxpayer' };
+          return { role: User.ROLES.petitioner, userId: 'petitioner' };
         },
         getPersistenceGateway: () => ({
           getCaseByCaseId: () => ({ docketNumber: '101-19' }),
           getDownloadPolicyUrl: () => ({
-            url: 'https://www.hello.com',
+            url: 'https://www.example.com',
           }),
         }),
         getStorageClient: () => ({
@@ -50,6 +50,6 @@ describe('generateCaseConfirmationPdfInteractor', () => {
       htmlString: 'Hello World from the use case',
     });
 
-    expect(result).toEqual('https://www.hello.com');
+    expect(result).toEqual('https://www.example.com');
   });
 });

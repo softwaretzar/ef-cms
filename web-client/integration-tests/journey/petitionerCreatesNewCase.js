@@ -1,5 +1,5 @@
 export default (test, fakeFile, overrides = {}) => {
-  return it('Taxpayer creates a new case', async () => {
+  return it('petitioner creates a new case', async () => {
     await test.runSequence('gotoStartCaseWizardSequence');
 
     await test.runSequence('updateStartCaseFormValueSequence', {
@@ -114,7 +114,8 @@ export default (test, fakeFile, overrides = {}) => {
     expect(test.getState('validationErrors')).toEqual({});
     expect(test.getState('alertError')).toBeUndefined();
 
-    expect(test.getState('alertSuccess')).toEqual({
+    expect(test.getState('alertSuccess')).toMatchObject({
+      linkText: 'Print receipt.',
       message: 'You can access your case at any time from the case list below.',
       title: 'Your petition has been successfully submitted.',
     });
