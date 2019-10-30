@@ -1,6 +1,3 @@
-import { props, state } from 'cerebral';
-import { set } from 'cerebral/factories';
+import { updatePetitionValueAction } from '../actions/updatePetitionValueAction';
 
-export const updatePetitionValueSequence = [
-  set(state.petition[props.key], props.value),
-];
+export const updatePetitionValueSequence = [updatePetitionValueAction];

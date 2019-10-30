@@ -7,12 +7,11 @@ import { redirectToCognitoAction } from '../actions/redirectToCognitoAction';
 import { setCaseAction } from '../actions/setCaseAction';
 import { setCurrentPageAction } from '../actions/setCurrentPageAction';
 import { setDocumentToEditAction } from '../actions/setDocumentToEditAction';
-import { state } from 'cerebral';
 import { stopShowValidationAction } from '../actions/stopShowValidationAction';
-import { unset } from 'cerebral/factories';
+import { unsetDocumentToEditAction } from '../actions/unsetDocumentToEditAction';
 
 const gotoEditOrder = [
-  unset(state.documentToEdit),
+  unsetDocumentToEditAction,
   clearModalAction,
   setCurrentPageAction('Interstitial'),
   stopShowValidationAction,

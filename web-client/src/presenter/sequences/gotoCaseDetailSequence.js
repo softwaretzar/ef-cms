@@ -5,7 +5,6 @@ import { getCaseAssociationAction } from '../actions/getCaseAssociationAction';
 import { getCaseDeadlinesForCaseAction } from '../actions/CaseDeadline/getCaseDeadlinesForCaseAction';
 import { getCaseNoteForCaseAction } from '../actions/TrialSession/getCaseNoteForCaseAction';
 import { runPathForUserRoleAction } from '../actions/runPathForUserRoleAction';
-import { set } from 'cerebral/factories';
 import { setBaseUrlAction } from '../actions/setBaseUrlAction';
 import { setCaseAction } from '../actions/setCaseAction';
 import { setCaseAssociationAction } from '../actions/setCaseAssociationAction';
@@ -13,7 +12,7 @@ import { setCaseNoteOnCaseDetailAction } from '../actions/TrialSession/setCaseNo
 import { setCurrentPageAction } from '../actions/setCurrentPageAction';
 import { setDefaultCaseDetailTabAction } from '../actions/setDefaultCaseDetailTabAction';
 import { setDefaultDocketRecordSortAction } from '../actions/DocketRecord/setDefaultDocketRecordSortAction';
-import { state } from 'cerebral';
+import { setDocumentEditEntryPointAction } from '../actions/setDocumentEditEntryPointAction';
 import { takePathForRoles } from './takePathForRoles';
 
 const gotoCaseDetailInternal = [setCurrentPageAction('CaseDetailInternal')];
@@ -39,7 +38,7 @@ export const gotoCaseDetailSequence = [
   getCaseDeadlinesForCaseAction,
   setDefaultDocketRecordSortAction,
   setBaseUrlAction,
-  set(state.editDocumentEntryPoint, 'CaseDetail'),
+  setDocumentEditEntryPointAction,
   runPathForUserRoleAction,
   {
     ...takePathForRoles(

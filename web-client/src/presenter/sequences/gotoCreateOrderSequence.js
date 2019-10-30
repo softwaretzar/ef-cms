@@ -8,13 +8,12 @@ import { openCreateOrderChooseTypeModalSequence } from './openCreateOrderChooseT
 import { redirectToCognitoAction } from '../actions/redirectToCognitoAction';
 import { setCasePropFromStateAction } from '../actions/setCasePropFromStateAction';
 import { setCurrentPageAction } from '../actions/setCurrentPageAction';
-import { state } from 'cerebral';
 import { stopShowValidationAction } from '../actions/stopShowValidationAction';
-import { unset } from 'cerebral/factories';
+import { unsetDocumentToEditAction } from '../actions/unsetDocumentToEditAction';
 import { unstashCreateOrderModalDataAction } from '../actions/CourtIssuedOrder/unstashCreateOrderModalDataAction';
 
 const gotoCreateOrder = [
-  unset(state.documentToEdit),
+  unsetDocumentToEditAction,
   clearModalAction,
   setCurrentPageAction('Interstitial'),
   stopShowValidationAction,

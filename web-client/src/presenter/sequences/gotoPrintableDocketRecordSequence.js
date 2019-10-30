@@ -1,10 +1,9 @@
 import { generateDocketRecordPdfUrlAction } from '../actions/generateDocketRecordPdfUrlAction';
 import { getCaseAction } from '../actions/getCaseAction';
-import { set } from 'cerebral/factories';
 import { setCaseAction } from '../actions/setCaseAction';
+import { setCurrentPageAction } from '../actions/setCurrentPageAction';
 import { setPdfPreviewUrlSequence } from './setPdfPreviewUrlSequence';
 import { setWaitingForResponseAction } from '../actions/setWaitingForResponseAction';
-import { state } from 'cerebral';
 import { unsetWaitingForResponseAction } from '../actions/unsetWaitingForResponseAction';
 
 export const gotoPrintableDocketRecordSequence = [
@@ -13,6 +12,6 @@ export const gotoPrintableDocketRecordSequence = [
   setCaseAction,
   generateDocketRecordPdfUrlAction,
   ...setPdfPreviewUrlSequence,
-  set(state.currentPage, 'PrintableDocketRecord'),
+  setCurrentPageAction('PrintableDocketRecord'),
   unsetWaitingForResponseAction,
 ];

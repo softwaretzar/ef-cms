@@ -1,6 +1,3 @@
-import { props, state } from 'cerebral';
-import { set } from 'cerebral/factories';
+import { updateModalValueAction } from '../actions/updateModalValueAction';
 
-export const updateModalValueSequence = [
-  set(state.modal[props.key], props.value),
-];
+export const updateModalValueSequence = [updateModalValueAction];
