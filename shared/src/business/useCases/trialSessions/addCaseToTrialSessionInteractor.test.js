@@ -1,6 +1,6 @@
 import { addCaseToTrialSessionInteractor } from './addCaseToTrialSessionInteractor';
-const { User } = require('../../entities/User');
 const { MOCK_CASE } = require('../../../test/mockCase');
+const { User } = require('../../entities/User');
 
 const MOCK_TRIAL = {
   maxCases: 100,
@@ -68,36 +68,6 @@ describe('addCaseToTrialSessionInteractor', () => {
     expect(error.message).toEqual('The case is already calendared');
   });
 
-  it('throws an error if the trial session is not calendared', async () => {
-    let error;
-    try {
-      await addCaseToTrialSessionInteractor({
-        applicationContext: {
-          getCurrentUser: () => ({
-            role: User.ROLES.petitionsClerk,
-            userId: '8675309b-18d0-43ec-bafb-654e83405411',
-          }),
-          getPersistenceGateway: () => ({
-            deleteCaseTrialSortMappingRecords: () => null,
-            getCaseByCaseId: () => MOCK_CASE,
-            getTrialSessionById: () => MOCK_TRIAL,
-            updateCase: obj => obj.caseToUpdate,
-            updateTrialSession: () => null,
-          }),
-          getUniqueId: () => '8675309b-18d0-43ec-bafb-654e83405411',
-        },
-        caseId: '8675309b-18d0-43ec-bafb-654e83405411',
-        trialSessionId: '8675309b-18d0-43ec-bafb-654e83405411',
-      });
-    } catch (e) {
-      error = e;
-    }
-
-    expect(error.message).toEqual(
-      'The trial session must already be calendared to manually add a case.',
-    );
-  });
-
   it('throws an error if the case is already part of the trial session', async () => {
     let error;
     try {
@@ -132,7 +102,7 @@ describe('addCaseToTrialSessionInteractor', () => {
     );
   });
 
-  it('returns the expected casee with new trial session info', async () => {
+  it('returns the expected case with new trial session info', async () => {
     const latestCase = await addCaseToTrialSessionInteractor({
       applicationContext: {
         getCurrentUser: () => ({

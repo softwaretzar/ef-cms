@@ -1,8 +1,8 @@
 const {
-  generateCaseConfirmationPdfInteractor,
-} = require('./generateCaseConfirmationPdfInteractor');
+  generateCaseConfirmationPdf,
+} = require('./generateCaseConfirmationPdf');
+const { MOCK_CASE } = require('../../../test/mockCase');
 const { User } = require('../../entities/User');
-
 const PDF_MOCK_BUFFER = 'Hello World';
 
 const pageMock = {
@@ -25,17 +25,20 @@ const chromiumMock = {
   },
 };
 
-describe('generateCaseConfirmationPdfInteractor', () => {
+describe('generateCaseConfirmationPdf', () => {
   it('returns the pdf buffer produced by chromium', async () => {
-    const result = await generateCaseConfirmationPdfInteractor({
+    const result = await generateCaseConfirmationPdf({
       applicationContext: {
         environment: {
           documentsBucketName: 'something',
         },
         getChromium: () => chromiumMock,
+
         getCurrentUser: () => {
           return { role: User.ROLES.petitioner, userId: 'petitioner' };
         },
+        getHandlebars: () => ({ compile: () => () => '' }),
+        getNodeSass: () => ({ render: (data, cb) => cb(data, { css: '' }) }),
         getPersistenceGateway: () => ({
           getCaseByCaseId: () => ({ docketNumber: '101-19' }),
           getDownloadPolicyUrl: () => ({
@@ -47,7 +50,7 @@ describe('generateCaseConfirmationPdfInteractor', () => {
         }),
         logger: { error: () => {}, info: () => {} },
       },
-      htmlString: 'Hello World from the use case',
+      caseEntity: { ...MOCK_CASE, documents: [{ servedAt: 'servedAt' }] },
     });
 
     expect(result).toEqual('https://www.example.com');

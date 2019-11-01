@@ -1,5 +1,6 @@
 import { Button } from '../../ustc-ui/Button/Button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { If } from '../../ustc-ui/If/If';
 import { connect } from '@cerebral/react';
 import { sequences } from 'cerebral';
 import { state } from 'cerebral';
@@ -194,6 +195,36 @@ const TrialInformation = ({
         </div>
       </>
     )}
+    {caseDetail.showScheduled && (
+      <>
+        <h3 className="underlined">Trial - Scheduled</h3>
+        <div className="grid-row">
+          <div className="grid-col-4">
+            <p className="label">Place of Trial</p>
+            <p>{caseDetail.formattedTrialCity}</p>
+          </div>
+          <div className="grid-col-4">
+            <p className="label">Trial Date</p>
+            <p>{caseDetail.formattedTrialDate}</p>
+          </div>
+          <div className="grid-col-4">
+            <p className="label">Assigned Judge</p>
+            <p>{caseDetail.formattedTrialJudge}</p>
+          </div>
+        </div>
+        <Button
+          link
+          className="red-warning"
+          icon="trash"
+          id="remove-from-trial-session-btn"
+          onClick={() => {
+            openRemoveFromTrialSessionModalSequence();
+          }}
+        >
+          Remove from Trial Session
+        </Button>
+      </>
+    )}
   </React.Fragment>
 );
 
@@ -233,22 +264,24 @@ export const CaseInformationInternal = connect(
                 <div className="content-wrapper">
                   <h3 className="underlined">
                     Petition Details
-                    <Button
-                      link
-                      className="margin-right-0 margin-top-1 padding-0 float-right"
-                      onClick={() => {
-                        navigateToPrintableCaseConfirmationSequence({
-                          docketNumber: formattedCaseDetail.docketNumber,
-                        });
-                      }}
-                    >
-                      <FontAwesomeIcon
-                        className="margin-right-05"
-                        icon="print"
-                        size="1x"
-                      />
-                      Print confirmation
-                    </Button>
+                    <If bind="caseDetail.irsSendDate">
+                      <Button
+                        link
+                        className="margin-right-0 margin-top-1 padding-0 float-right"
+                        onClick={() => {
+                          navigateToPrintableCaseConfirmationSequence({
+                            docketNumber: formattedCaseDetail.docketNumber,
+                          });
+                        }}
+                      >
+                        <FontAwesomeIcon
+                          className="margin-right-05"
+                          icon="print"
+                          size="1x"
+                        />
+                        Print confirmation
+                      </Button>
+                    </If>
                   </h3>
 
                   <PetitionDetails

@@ -1,35 +1,34 @@
-const pug = require('pug');
-const sass = require('node-sass');
-const fs = require('fs');
 const DateHandler = require('../../utilities/DateHandler');
+const staticResources = require('./caseConfirmationResources');
+
 const {
   isAuthorized,
   ROLE_PERMISSIONS,
 } = require('../../../authorization/authorizationClientService');
 const { UnauthorizedError } = require('../../../errors/errors');
 
-const confirmSassContent = fs.readFileSync(
-  './shared/src/business/useCases/caseConfirmation/caseConfirmation.scss',
-  'utf-8',
-);
-const confirmPugContent = fs.readFileSync(
-  './shared/src/business/useCases/caseConfirmation/caseConfirmation.pug',
-  'utf-8',
-);
-const ustcLogoBuffer = fs.readFileSync('./shared/static/images/ustc_seal.png');
-
+/**
+ *
+ * @param {object} caseInfo a case entity
+ * @returns {object} the formatted information needed by the PDF
+ */
 const formattedCaseInfo = caseInfo => {
+  const { servedAt } = caseInfo.documents.find(doc => doc.servedAt);
+  const countryName =
+    caseInfo.contactPrimary.countryType != 'domestic' &&
+    caseInfo.contactPrimary.country;
   const formattedInfo = Object.assign(
     {
+      caseTitle: caseInfo.caseTitle,
+      countryName,
       docketNumber: `${caseInfo.docketNumber}${caseInfo.docketNumberSuffix ||
         ''}`,
-      initialTitle: caseInfo.initialTitle,
       preferredTrialCity: caseInfo.preferredTrialCity,
       receivedAtFormatted: DateHandler.formatDateString(
         caseInfo.receivedAt,
         'MONTH_DAY_YEAR',
       ),
-      servedDate: '(SERVED ON DATE)',
+      servedDate: DateHandler.formatDateString(servedAt, 'MONTH_DAY_YEAR'),
       todaysDate: DateHandler.formatNow('MONTH_DAY_YEAR'),
     },
     caseInfo.contactPrimary,
@@ -38,42 +37,16 @@ const formattedCaseInfo = caseInfo => {
 };
 
 /**
- * NOTE: to make this work, you must save the petition as a petitionsclerk
- *
- * @param {object} caseInfo a raw object representing a petition
- * @returns {string} an html string resulting from rendering template with caseInfo
- */
-
-const generateCaseConfirmationPage = async caseInfo => {
-  const logoBase64 = `data:image/png;base64,${ustcLogoBuffer.toString(
-    'base64',
-  )}`;
-  const { css } = await new Promise(resolve => {
-    sass.render({ data: confirmSassContent }, (err, result) => {
-      return resolve(result);
-    });
-  });
-  const compiledFunction = pug.compile(confirmPugContent);
-  const html = compiledFunction({
-    ...formattedCaseInfo(caseInfo),
-    css,
-    raw: JSON.stringify(caseInfo, null, 4),
-    logo: logoBase64,
-  });
-  return html;
-};
-
-/**
  * generateCaseConfirmationPdfInteractor
  *
  * @param {object} providers the providers object
  * @param {object} providers.applicationContext the application context
- * @param {string} providers.caseId the id of the case
+ * @param {string} providers.caseEntity a case entity with its documents
  * @returns {Promise<*>} the promise of the document having been uploaded
  */
-exports.generateCaseConfirmationPdfInteractor = async ({
+exports.generateCaseConfirmationPdf = async ({
   applicationContext,
-  caseId,
+  caseEntity,
 }) => {
   const user = applicationContext.getCurrentUser();
 
@@ -81,17 +54,39 @@ exports.generateCaseConfirmationPdfInteractor = async ({
     throw new UnauthorizedError('Unauthorized');
   }
 
-  const caseToUpdate = await applicationContext
-    .getPersistenceGateway()
-    .getCaseByCaseId({
-      applicationContext,
-      caseId,
-    });
-
   let browser = null;
   let result = null;
 
   try {
+    const Handlebars = applicationContext.getHandlebars();
+    const sass = applicationContext.getNodeSass();
+
+    /**
+     *
+     * @param {object} caseInfo a raw object representing a petition
+     * @returns {string} an html string resulting from rendering template with caseInfo
+     */
+    const generateCaseConfirmationPage = async caseInfo => {
+      const { css } = await new Promise(resolve => {
+        sass.render(
+          { data: staticResources.confirmSassContent },
+          (err, result) => {
+            return resolve(result);
+          },
+        );
+      });
+      const compiledFunction = Handlebars.compile(
+        staticResources.confirmTemplateContent,
+      );
+      const contenthtml = compiledFunction({
+        ...formattedCaseInfo(caseInfo),
+        styles: `<style>${css}</style>`,
+        logo: staticResources.ustcLogoBufferBase64,
+      });
+      formattedCaseInfo(caseInfo); // putting this here for lint
+      return contenthtml;
+    };
+
     const chromium = applicationContext.getChromium();
 
     browser = await chromium.puppeteer.launch({
@@ -103,7 +98,8 @@ exports.generateCaseConfirmationPdfInteractor = async ({
 
     let page = await browser.newPage();
 
-    await page.setContent(await generateCaseConfirmationPage(caseToUpdate));
+    const contentResult = await generateCaseConfirmationPage(caseEntity);
+    await page.setContent(contentResult);
 
     result = await page.pdf({
       displayHeaderFooter: false,
@@ -118,7 +114,7 @@ exports.generateCaseConfirmationPdfInteractor = async ({
     }
   }
 
-  const documentId = `case-${caseToUpdate.docketNumber}-confirmation.pdf`;
+  const documentId = `case-${caseEntity.docketNumber}-confirmation.pdf`;
 
   await new Promise(resolve => {
     const documentsBucket = applicationContext.environment.documentsBucketName;

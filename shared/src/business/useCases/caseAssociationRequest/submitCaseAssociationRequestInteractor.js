@@ -4,12 +4,12 @@ const {
 const {
   associateRespondentToCase,
 } = require('../../useCaseHelper/caseAssociation/associateRespondentToCase');
-const { UnauthorizedError } = require('../../../errors/errors');
-const { User } = require('../../entities/User');
 const {
   isAuthorized,
   ROLE_PERMISSIONS,
 } = require('../../../authorization/authorizationClientService');
+const { UnauthorizedError } = require('../../../errors/errors');
+const { User } = require('../../entities/User');
 
 /**
  * submitCaseAssociationRequestInteractor
@@ -21,7 +21,7 @@ const {
  * the primary contact on the case, false otherwise
  * @param {string} providers.representingSecondary true if the user is representing
  * the secondary contact on the case, false otherwise
- * @returns {Promise<*>} the promise of the case assocation request
+ * @returns {Promise<*>} the promise of the case association request
  */
 exports.submitCaseAssociationRequestInteractor = async ({
   applicationContext,

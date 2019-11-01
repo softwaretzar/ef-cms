@@ -1,10 +1,10 @@
 import { BindedSelect } from '../../ustc-ui/BindedSelect/BindedSelect';
+import { FormGroup } from '../../ustc-ui/FormGroup/FormGroup';
+import { Hint } from '../../ustc-ui/Hint/Hint';
 import { ModalDialog } from '../ModalDialog';
-import { Text } from '../../ustc-ui/Text/Text';
 import { connect } from '@cerebral/react';
 import { sequences, state } from 'cerebral';
 import React from 'react';
-import classNames from 'classnames';
 
 export const AddToTrialModal = connect(
   {
@@ -85,12 +85,7 @@ export const AddToTrialModal = connect(
             </fieldset>
           </div>
 
-          <div
-            className={classNames(
-              'usa-form-group margin-bottom-0',
-              validationErrors.trialSessionId && 'usa-form-group--error',
-            )}
-          >
+          <FormGroup errorText={validationErrors.trialSessionId}>
             <label className="usa-label" htmlFor="trial-session">
               Select Trial Session
             </label>
@@ -132,11 +127,14 @@ export const AddToTrialModal = connect(
                   ),
                 )}
             </BindedSelect>
-            <Text
-              bind="validationErrors.trialSessionId"
-              className="usa-error-message"
-            />
-          </div>
+          </FormGroup>
+          {addToTrialSessionModalHelper.showSessionNotSetAlert && (
+            <Hint>
+              This trial session has not been set. This case will be added to
+              the eligible cases for this session and prioritized when the
+              calendar is set.{' '}
+            </Hint>
+          )}
         </div>
       </ModalDialog>
     );
