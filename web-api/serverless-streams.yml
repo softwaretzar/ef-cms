@@ -22,6 +22,7 @@ custom:
   serverless-offline:
     host: 0.0.0.0
     port: 3012
+    useChildProcesses: true
 
   serverless-offline-dynamodb-streams:
     apiVersion: '2013-12-02'

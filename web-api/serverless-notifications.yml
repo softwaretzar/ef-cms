@@ -23,6 +23,7 @@ custom:
     host: 0.0.0.0
     port: 3020 # this port really isn't used, but needs to be unique to prevent address in use errors
     websocketPort: 3011
+    useChildProcesses: true
 
   alerts:
     stages:
