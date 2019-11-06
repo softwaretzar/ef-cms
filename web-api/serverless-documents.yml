@@ -25,6 +25,7 @@ custom:
   serverless-offline:
     host: 0.0.0.0
     port: 3004
+    useChildProcesses: true
 
   alerts:
     stages:
@@ -230,7 +231,6 @@ functions:
           cors: true
 
   generatePrintableFilingReceiptLambda:
-    runtime: nodejs8.10
     handler: web-api/src/documentsHandlers.generatePrintableFilingReceiptLambda
     layers:
       - arn:aws:lambda:${opt:region}:${opt:accountId}:layer:${opt:stage}-puppeteer:latest

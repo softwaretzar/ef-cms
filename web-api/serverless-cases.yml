@@ -25,6 +25,7 @@ custom:
   serverless-offline:
     host: 0.0.0.0
     port: 3002
+    useChildProcesses: true
 
   alerts:
     stages:
@@ -229,7 +230,6 @@ functions:
               Ref: ApiGatewayAuthorizer
 
   updatePrimaryContact:
-    runtime: nodejs8.10
     handler: web-api/src/casesHandlers.updatePrimaryContactLambda
     layers:
       - arn:aws:lambda:${opt:region}:${opt:accountId}:layer:${opt:stage}-puppeteer:latest

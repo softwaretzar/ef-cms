@@ -26,6 +26,7 @@ custom:
   serverless-offline:
     host: 0.0.0.0
     port: 3001
+    useChildProcesses: true
 
   alerts:
     stages:
@@ -191,7 +192,6 @@ resources:
 
 functions:
   runBatchProcess:
-    runtime: nodejs8.10
     handler: web-api/src/apiHandlers.runBatchProcessLambda
     layers:
       - arn:aws:lambda:${opt:region}:${opt:accountId}:layer:${opt:stage}-puppeteer:latest
@@ -241,7 +241,6 @@ functions:
           cors: true
 
   createCourtIssuedOrderPdfFromHtml:
-    runtime: nodejs8.10
     handler: web-api/src/apiHandlers.createCourtIssuedOrderPdfFromHtmlLambda
     layers:
       - arn:aws:lambda:${opt:region}:${opt:accountId}:layer:${opt:stage}-puppeteer:latest
@@ -258,7 +257,6 @@ functions:
               Ref: ApiGatewayAuthorizer
 
   generateDocketRecordPdfLambda:
-    runtime: nodejs8.10
     handler: web-api/src/apiHandlers.generateDocketRecordPdfLambda
     layers:
       - arn:aws:lambda:${opt:region}:${opt:accountId}:layer:${opt:stage}-puppeteer:latest
@@ -275,7 +273,6 @@ functions:
               Ref: ApiGatewayAuthorizer
 
   generateTrialCalendarPdfLambda:
-    runtime: nodejs8.10
     handler: web-api/src/apiHandlers.generateTrialCalendarPdfLambda
     layers:
       - arn:aws:lambda:${opt:region}:${opt:accountId}:layer:${opt:stage}-puppeteer:latest
