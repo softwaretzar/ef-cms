@@ -10,19 +10,15 @@ import { DocumentMessages } from './DocumentMessages';
 import { ErrorNotification } from '../ErrorNotification';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { RecallPetitionModalDialog } from '../RecallPetitionModalDialog';
-import { ServeConfirmModalDialog } from '../ServeConfirmModalDialog';
 import { ServeToIrsModalDialog } from '../ServeToIrsModalDialog';
 import { SuccessNotification } from '../SuccessNotification';
 import { Tab, Tabs } from '../../ustc-ui/Tabs/Tabs';
 import { connect } from '@cerebral/react';
 import { sequences, state } from 'cerebral';
 import React from 'react';
-import classNames from 'classnames';
 
 export const DocumentDetail = connect(
   {
-    archiveDraftDocumentModalSequence:
-      sequences.archiveDraftDocumentModalSequence,
     caseDetail: state.caseDetail,
     caseDetailHelper: state.caseDetailHelper,
     clickServeToIrsSequence: sequences.clickServeToIrsSequence,
@@ -33,16 +29,12 @@ export const DocumentDetail = connect(
     navigateToPathSequence: sequences.navigateToPathSequence,
     navigateToPrintableCaseConfirmationSequence:
       sequences.navigateToPrintableCaseConfirmationSequence,
-    openConfirmEditModalSequence: sequences.openConfirmEditModalSequence,
-    openServeConfirmModalDialogSequence:
-      sequences.openServeConfirmModalDialogSequence,
     removeSignatureFromOrderSequence:
       sequences.removeSignatureFromOrderSequence,
     setModalDialogNameSequence: sequences.setModalDialogNameSequence,
     showModal: state.showModal,
   },
   ({
-    archiveDraftDocumentModalSequence,
     caseDetail,
     caseDetailHelper,
     clickServeToIrsSequence,
@@ -52,8 +44,6 @@ export const DocumentDetail = connect(
     messageId,
     navigateToPathSequence,
     navigateToPrintableCaseConfirmationSequence,
-    openConfirmEditModalSequence,
-    openServeConfirmModalDialogSequence,
     removeSignatureFromOrderSequence,
     setModalDialogNameSequence,
     showModal,
@@ -102,17 +92,6 @@ export const DocumentDetail = connect(
     };
 
     const renderButtons = () => {
-      const showingAnyButton = [
-        documentDetailHelper.showServeToIrsButton &&
-          documentDetailHelper.formattedDocument.isPetition,
-        documentDetailHelper.showServeDocumentButton,
-        documentDetailHelper.showRecallButton &&
-          documentDetailHelper.formattedDocument.isPetition,
-        documentDetailHelper.showSignDocumentButton,
-        documentDetailHelper.showEditDocketEntry,
-        documentDetailHelper.showPrintCaseConfirmationButton,
-      ].some(val => val);
-
       return (
         <div className="document-detail__action-buttons">
           <div className="float-left">
@@ -147,7 +126,8 @@ export const DocumentDetail = connect(
                     {documentDetailHelper.formattedDocument.signedAtFormattedTZ}
                     <Button
                       link
-                      className="margin-left-2"
+                      className="margin-left-2 no-wrap"
+                      icon="trash"
                       onClick={() =>
                         removeSignatureFromOrderSequence({
                           caseDetail,
@@ -156,7 +136,6 @@ export const DocumentDetail = connect(
                         })
                       }
                     >
-                      <FontAwesomeIcon icon="trash" size="sm" />
                       Delete Signature
                     </Button>
                   </>
@@ -165,59 +144,29 @@ export const DocumentDetail = connect(
             )}
           </div>
           <div className="float-right">
-            {documentDetailHelper.isDraftDocument && (
-              <div
-                className={classNames(
-                  'display-inline-block margin-right-2',
-                  !showingAnyButton && 'margin-top-1',
-                )}
+            {documentDetailHelper.showAddDocketEntryButton && (
+              <Button
+                className="margin-right-0"
+                href={`/case-detail/${caseDetail.docketNumber}/documents/${documentDetailHelper.formattedDocument.documentId}/add-court-issued-docket-entry`}
               >
-                <>
-                  {documentDetailHelper.showConfirmEditOrder ? (
-                    <Button
-                      link
-                      icon="edit"
-                      onClick={() => {
-                        openConfirmEditModalSequence({
-                          caseId: formattedCaseDetail.caseId,
-                          docketNumber: formattedCaseDetail.docketNumber,
-                          documentIdToEdit:
-                            documentDetailHelper.formattedDocument.documentId,
-                          path: documentDetailHelper.formattedDocument.editUrl,
-                        });
-                      }}
-                    >
-                      Edit
-                    </Button>
-                  ) : (
-                    <Button
-                      link
-                      href={documentDetailHelper.formattedDocument.editUrl}
-                      icon="edit"
-                    >
-                      Edit
-                    </Button>
-                  )}
+                <FontAwesomeIcon
+                  className="margin-right-05"
+                  icon="plus-circle"
+                  size="1x"
+                />
+                Add Docket Entry
+              </Button>
+            )}
 
-                  <Button
-                    link
-                    className="red-warning margin-right-0"
-                    onClick={() => {
-                      archiveDraftDocumentModalSequence({
-                        caseId: caseDetail.caseId,
-                        documentId:
-                          documentDetailHelper.formattedDocument.documentId,
-                        documentTitle:
-                          documentDetailHelper.formattedDocument.documentType,
-                        redirectToCaseDetail: true,
-                      });
-                    }}
-                  >
-                    <FontAwesomeIcon icon="trash" size="sm" />
-                    Delete
-                  </Button>
-                </>
-              </div>
+            {documentDetailHelper.showEditDocketEntry && (
+              <Button
+                link
+                className="margin-right-0 padding-bottom-0"
+                href={`/case-detail/${caseDetail.docketNumber}/documents/${documentDetailHelper.formattedDocument.documentId}/edit`}
+              >
+                <FontAwesomeIcon icon={['fas', 'edit']} />
+                Edit
+              </Button>
             )}
 
             {documentDetailHelper.showPrintCaseConfirmationButton && (
@@ -238,17 +187,6 @@ export const DocumentDetail = connect(
               </Button>
             )}
 
-            {documentDetailHelper.showEditDocketEntry && (
-              <Button
-                link
-                className="margin-right-0 padding-bottom-0"
-                href={`/case-detail/${caseDetail.docketNumber}/documents/${documentDetailHelper.formattedDocument.documentId}/edit`}
-              >
-                <FontAwesomeIcon icon={['fas', 'edit']} />
-                Edit
-              </Button>
-            )}
-
             {documentDetailHelper.showServeToIrsButton && (
               <Button
                 className="serve-to-irs margin-right-0"
@@ -256,15 +194,6 @@ export const DocumentDetail = connect(
               >
                 <FontAwesomeIcon icon={['fas', 'clock']} />
                 Serve to IRS
-              </Button>
-            )}
-            {documentDetailHelper.showServeDocumentButton && (
-              <Button
-                className="serve-to-irs margin-right-0"
-                onClick={() => openServeConfirmModalDialogSequence()}
-              >
-                <FontAwesomeIcon icon={['fas', 'paper-plane']} />
-                Serve Document
               </Button>
             )}
             {documentDetailHelper.showRecallButton && (
@@ -327,11 +256,6 @@ export const DocumentDetail = connect(
         {showModal === 'ServeToIrsModalDialog' && <ServeToIrsModalDialog />}
         {showModal === 'RecallPetitionModalDialog' && (
           <RecallPetitionModalDialog />
-        )}
-        {showModal === 'ServeConfirmModalDialog' && (
-          <ServeConfirmModalDialog
-            documentType={documentDetailHelper.formattedDocument.documentType}
-          />
         )}
         {showModal === 'ArchiveDraftDocumentModal' && (
           <ArchiveDraftDocumentModal />

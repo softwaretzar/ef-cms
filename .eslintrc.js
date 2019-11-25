@@ -53,6 +53,10 @@ module.exports = {
     'jsdoc/require-returns': 1,
     'jsdoc/valid-types': 1,
     'no-underscore-dangle': ['error', { allowAfterThis: true }],
+    'no-warning-comments': [
+      'error',
+      { terms: ['fixme', 'xxx'], location: 'anywhere' },
+    ],
     'prettier/prettier': 'error',
     quotes: ['error', 'single', { avoidEscape: true }],
     'jsx-a11y/anchor-is-valid': [
@@ -284,7 +288,7 @@ module.exports = {
   },
   settings: {
     react: {
-      version: '16.8.3',
+      version: '16.12.0',
     },
   },
   env: {
@@ -299,4 +303,5 @@ module.exports = {
     jsx: true,
     sourceType: 'module',
   },
+  parser: "babel-eslint",
 };

@@ -82,6 +82,8 @@ provider:
   memorySize: 768
   timeout: 30
   logRetentionInDays: 7
+  role: arn:aws:iam::${opt:accountId}:role/lambda_role_${opt:stage}
+  dir: ${opt:run_dir, 'src'}
   s3Endpoint: s3.us-east-1.amazonaws.com
   dynamodbEndpoint: dynamodb.${opt:region}.amazonaws.com
   masterRegion: us-east-1
@@ -107,55 +109,11 @@ provider:
     NODE_ENV: ${self:custom.vars.nodeEnv}
     CLAMAV_DEF_DIR: ${self:custom.vars.clamavDefDir, self:provider.clamavDefDir}
 
-  iamRoleStatements:
-    - Effect: 'Allow'
-      Action:
-        - 'xray:PutTraceSegments'
-        - 'xray:PutTelemetryRecords'
-      Resource:
-        - '*'
-    - Effect: 'Allow'
-      Action:
-        - 'lambda:InvokeFunction'
-      Resource:
-        - arn:aws:lambda:${opt:region}:${opt:accountId}:function:${self:service}-${opt:stage, self:provider.stage}-*
-    - Effect: 'Allow'
-      Action:
-        - cognito-idp:AdminCreateUser
-        - cognito-idp:AdminGetUser
-        - cognito-idp:AdminUpdateUserAttributes
-      Resource:
-        - arn:aws:cognito-idp:${opt:region}:${opt:accountId}:userpool/${self:provider.environment.USER_POOL_ID}
-    - Effect: 'Allow'
-      Action:
-        - 's3:*'
-      Resource:
-        Fn::Join:
-          - ''
-          - - 'arn:aws:s3:::'
-            - ${self:provider.environment.DOCUMENTS_BUCKET_NAME}
-            - '/*'
-    - Effect: 'Allow'
-      Action:
-        - dynamodb:Query
-        - dynamodb:Scan
-        - dynamodb:GetItem
-        - dynamodb:PutItem
-        - dynamodb:BatchGetItem
-        - dynamodb:UpdateItem
-        - dynamodb:DeleteItem
-        - dynamodb:BatchWriteItem
-      Resource:
-        - arn:aws:dynamodb:${opt:region}:${opt:accountId}:table/${opt:efcmsTableName}
-        - arn:aws:dynamodb:${opt:region}:${opt:accountId}:table/${opt:efcmsTableName}/index/*
-        - arn:aws:dynamodb:${self:provider.environment.MASTER_REGION}:${opt:accountId}:table/${opt:efcmsTableName}
-        - arn:aws:dynamodb:${self:provider.environment.MASTER_REGION}:${opt:accountId}:table/${opt:efcmsTableName}/index/*
-
 package:
   exclude:
     - ./**
   include:
-    - web-api/src/usersHandlers.js
+    - web-api/${self:provider.dir}/usersHandlers.js
   excludeDevDependencies: true
 
 resources:
@@ -194,7 +152,7 @@ resources:
 
 functions:
   getUser:
-    handler: web-api/src/usersHandlers.getUserLambda
+    handler: web-api/${self:provider.dir}/usersHandlers.getUserLambda
     events:
       - http:
           path: /
@@ -206,7 +164,7 @@ functions:
               Ref: ApiGatewayAuthorizer
 
   getInternalUsers:
-    handler: web-api/src/usersHandlers.getInternalUsersLambda
+    handler: web-api/${self:provider.dir}/usersHandlers.getInternalUsersLambda
     events:
       - http:
           path: /internal
@@ -218,7 +176,7 @@ functions:
               Ref: ApiGatewayAuthorizer
 
   createUser:
-    handler: web-api/src/usersHandlers.createUserLambda
+    handler: web-api/${self:provider.dir}/usersHandlers.createUserLambda
     events:
       - http:
           path: /
@@ -230,7 +188,7 @@ functions:
               Ref: ApiGatewayAuthorizer
 
   getCasesByUser:
-    handler: web-api/src/usersHandlers.getCasesByUserLambda
+    handler: web-api/${self:provider.dir}/usersHandlers.getCasesByUserLambda
     events:
       - http:
           path: /{userId}/cases
@@ -241,20 +199,8 @@ functions:
             authorizerId:
               Ref: ApiGatewayAuthorizer
 
-  verifyCaseForUser:
-    handler: web-api/src/usersHandlers.verifyCaseForUserLambda
-    events:
-      - http:
-          path: /{userId}/case/{caseId}
-          method: get
-          cors: true
-          authorizer:
-            type: COGNITO_USER_POOLS
-            authorizerId:
-              Ref: ApiGatewayAuthorizer
-
   verifyPendingCaseForUser:
-    handler: web-api/src/usersHandlers.verifyPendingCaseForUserLambda
+    handler: web-api/${self:provider.dir}/usersHandlers.verifyPendingCaseForUserLambda
     events:
       - http:
           path: /{userId}/case/{caseId}/pending
@@ -266,7 +212,7 @@ functions:
               Ref: ApiGatewayAuthorizer
 
   practitionerCaseAssociation:
-    handler: web-api/src/usersHandlers.practitionerCaseAssociationLambda
+    handler: web-api/${self:provider.dir}/usersHandlers.practitionerCaseAssociationLambda
     events:
       - http:
           path: /{userId}/case/{caseId}
@@ -278,7 +224,7 @@ functions:
               Ref: ApiGatewayAuthorizer
 
   practitionerPendingCaseAssociation:
-    handler: web-api/src/usersHandlers.practitionerPendingCaseAssociationLambda
+    handler: web-api/${self:provider.dir}/usersHandlers.practitionerPendingCaseAssociationLambda
     events:
       - http:
           path: /{userId}/case/{caseId}/pending
@@ -290,7 +236,7 @@ functions:
               Ref: ApiGatewayAuthorizer
 
   getInboxMessagesForUser:
-    handler: web-api/src/usersHandlers.getInboxMessagesForUserLambda
+    handler: web-api/${self:provider.dir}/usersHandlers.getInboxMessagesForUserLambda
     events:
       - http:
           path: /{userId}/messages/inbox
@@ -302,7 +248,7 @@ functions:
               Ref: ApiGatewayAuthorizer
 
   getSentMessagesForUser:
-    handler: web-api/src/usersHandlers.getSentMessagesForUserLambda
+    handler: web-api/${self:provider.dir}/usersHandlers.getSentMessagesForUserLambda
     events:
       - http:
           path: /{userId}/messages/sent
@@ -314,7 +260,7 @@ functions:
               Ref: ApiGatewayAuthorizer
 
   getDocumentQCInboxForUser:
-    handler: web-api/src/usersHandlers.getDocumentQCInboxForUserLambda
+    handler: web-api/${self:provider.dir}/usersHandlers.getDocumentQCInboxForUserLambda
     events:
       - http:
           path: /{userId}/document-qc/inbox
@@ -326,7 +272,7 @@ functions:
               Ref: ApiGatewayAuthorizer
 
   getDocumentQCBatchedForUser:
-    handler: web-api/src/usersHandlers.getDocumentQCBatchedForUserLambda
+    handler: web-api/${self:provider.dir}/usersHandlers.getDocumentQCBatchedForUserLambda
     events:
       - http:
           path: /{userId}/document-qc/batched
@@ -338,7 +284,7 @@ functions:
               Ref: ApiGatewayAuthorizer
 
   getDocumentQCServedForUser:
-    handler: web-api/src/usersHandlers.getDocumentQCServedForUserLambda
+    handler: web-api/${self:provider.dir}/usersHandlers.getDocumentQCServedForUserLambda
     events:
       - http:
           path: /{userId}/document-qc/served
@@ -350,7 +296,7 @@ functions:
               Ref: ApiGatewayAuthorizer
 
   updateUserContactInformation:
-    handler: web-api/src/usersHandlers.updateUserContactInformationLambda
+    handler: web-api/${self:provider.dir}/usersHandlers.updateUserContactInformationLambda
     layers:
       - arn:aws:lambda:${opt:region}:${opt:accountId}:layer:${opt:stage}-puppeteer:latest
     memorySize: 3008
@@ -367,7 +313,7 @@ functions:
               Ref: ApiGatewayAuthorizer
 
   getPractitionersBySearchKey:
-    handler: web-api/src/usersHandlers.getPractitionersBySearchKeyLambda
+    handler: web-api/${self:provider.dir}/usersHandlers.getPractitionersBySearchKeyLambda
     events:
       - http:
           path: /practitioners/search
@@ -379,7 +325,7 @@ functions:
               Ref: ApiGatewayAuthorizer
 
   getRespondentsBySearchKey:
-    handler: web-api/src/usersHandlers.getRespondentsBySearchKeyLambda
+    handler: web-api/${self:provider.dir}/usersHandlers.getRespondentsBySearchKeyLambda
     events:
       - http:
           path: /respondents/search
