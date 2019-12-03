@@ -12,6 +12,7 @@ import { assignSelectedWorkItemsSequence } from './sequences/assignSelectedWorkI
 import { associatePractitionerWithCaseSequence } from './sequences/caseAssociation/associatePractitionerWithCaseSequence';
 import { associateRespondentWithCaseSequence } from './sequences/caseAssociation/associateRespondentWithCaseSequence';
 import { autoSaveTrialSessionWorkingCopySequence } from './sequences/autoSaveTrialSessionWorkingCopySequence';
+import { batchDownloadErrorSequence } from './sequences/batchDownloadErrorSequence';
 import { batchDownloadReadySequence } from './sequences/batchDownloadReadySequence';
 import { batchDownloadTrialSessionSequence } from './sequences/batchDownloadTrialSessionSequence';
 import { blockCaseFromTrialSequence } from './sequences/blockCaseFromTrialSequence';
@@ -25,6 +26,7 @@ import { chooseWizardStepSequence } from './sequences/chooseWizardStepSequence';
 import { chooseWorkQueueSequence } from './sequences/chooseWorkQueueSequence';
 import { clearAdvancedSearchFormSequence } from './sequences/clearAdvancedSearchFormSequence';
 import { clearAlertSequence } from './sequences/clearAlertSequence';
+import { clearDocketNumberSearchFormSequence } from './sequences/clearDocketNumberSearchFormSequence';
 import { clearDocumentSequence } from './sequences/clearDocumentSequence';
 import { clearModalFormSequence } from './sequences/clearModalFormSequence';
 import { clearModalSequence } from './sequences/clearModalSequence';
@@ -210,6 +212,7 @@ import { state } from './state';
 import { submitCaseAdvancedSearchSequence } from './sequences/submitCaseAdvancedSearchSequence';
 import { submitCaseAssociationRequestSequence } from './sequences/submitCaseAssociationRequestSequence';
 import { submitCaseDetailEditSaveSequence } from './sequences/submitCaseDetailEditSaveSequence';
+import { submitCaseDocketNumberSearchSequence } from './sequences/submitCaseDocketNumberSearchSequence';
 import { submitCaseSearchSequence } from './sequences/submitCaseSearchSequence';
 import { submitCompleteSequence } from './sequences/submitCompleteSequence';
 import { submitCourtIssuedDocketEntrySequence } from './sequences/submitCourtIssuedDocketEntrySequence';
@@ -246,6 +249,7 @@ import { unsetFormSaveSuccessSequence } from './sequences/unsetFormSaveSuccessSe
 import { unsetFormSubmittingSequence } from './sequences/unsetFormSubmittingSequence';
 import { unsetWorkQueueIsInternalSequence } from './sequences/unsetWorkQueueIsInternalSequence';
 import { updateAdvancedSearchFormValueSequence } from './sequences/updateAdvancedSearchFormValueSequence';
+import { updateBatchDownloadProgressSequence } from './sequences/updateBatchDownloadProgressSequence';
 import { updateCaseAssociationFormValueSequence } from './sequences/updateCaseAssociationFormValueSequence';
 import { updateCaseDeadlineSequence } from './sequences/updateCaseDeadlineSequence';
 import { updateCaseNoteOnCaseDetailSequence } from './sequences/updateCaseNoteOnCaseDetailSequence';
@@ -259,6 +263,7 @@ import { updateCourtIssuedDocketEntryFormValueSequence } from './sequences/updat
 import { updateCreateOrderModalFormValueSequence } from './sequences/updateCreateOrderModalFormValueSequence';
 import { updateCurrentTabSequence } from './sequences/updateCurrentTabSequence';
 import { updateDocketEntryFormValueSequence } from './sequences/updateDocketEntryFormValueSequence';
+import { updateDocketNumberSearchFormSequence } from './sequences/updateDocketNumberSearchFormSequence';
 import { updateDocumentValueSequence } from './sequences/updateDocumentValueSequence';
 import { updateFileDocumentWizardFormValueSequence } from './sequences/updateFileDocumentWizardFormValueSequence';
 import { updateFormValueSequence } from './sequences/updateFormValueSequence';
@@ -326,6 +331,7 @@ export const presenter = {
     associatePractitionerWithCaseSequence,
     associateRespondentWithCaseSequence,
     autoSaveTrialSessionWorkingCopySequence,
+    batchDownloadErrorSequence,
     batchDownloadReadySequence,
     batchDownloadTrialSessionSequence,
     blockCaseFromTrialSequence,
@@ -339,6 +345,7 @@ export const presenter = {
     chooseWorkQueueSequence,
     clearAdvancedSearchFormSequence,
     clearAlertSequence,
+    clearDocketNumberSearchFormSequence,
     clearDocumentSequence,
     clearModalFormSequence,
     clearModalSequence,
@@ -522,6 +529,7 @@ export const presenter = {
     submitCaseAdvancedSearchSequence,
     submitCaseAssociationRequestSequence,
     submitCaseDetailEditSaveSequence,
+    submitCaseDocketNumberSearchSequence,
     submitCaseSearchSequence,
     submitCompleteSequence,
     submitCourtIssuedDocketEntrySequence,
@@ -558,9 +566,11 @@ export const presenter = {
     unsetFormSubmittingSequence,
     unsetWorkQueueIsInternalSequence,
     updateAdvancedSearchFormValueSequence,
+    updateBatchDownloadProgressSequence,
     updateCaseAssociationFormValueSequence,
     updateCaseDeadlineSequence,
     updateCaseNoteOnCaseDetailSequence,
+
     updateCaseNoteOnWorkingCopySequence,
     updateCasePartyTypeSequence,
     updateCaseValueByIndexSequence,
@@ -571,6 +581,7 @@ export const presenter = {
     updateCreateOrderModalFormValueSequence,
     updateCurrentTabSequence,
     updateDocketEntryFormValueSequence,
+    updateDocketNumberSearchFormSequence,
     updateDocumentValueSequence,
     updateFileDocumentWizardFormValueSequence,
     updateFormValueSequence,

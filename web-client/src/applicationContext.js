@@ -1,3 +1,8 @@
+import {
+  getCognitoLoginUrl,
+  getUniqueId,
+} from '../../shared/src/sharedAppContext.js';
+
 import { AddPractitionerFactory } from '../../shared/src/business/entities/caseAssociation/AddPractitionerFactory';
 import { AddRespondent } from '../../shared/src/business/entities/caseAssociation/AddRespondent';
 import {
@@ -64,7 +69,6 @@ import { completeWorkItemInteractor } from '../../shared/src/proxies/workitems/c
 import { createCaseDeadlineInteractor } from '../../shared/src/proxies/caseDeadline/createCaseDeadlineProxy';
 import { createCaseFromPaperInteractor } from '../../shared/src/proxies/createCaseFromPaperProxy';
 import { createCaseInteractor } from '../../shared/src/proxies/createCaseProxy';
-import { createCaseNoteInteractor } from '../../shared/src/proxies/caseNote/createCaseNoteProxy';
 import { createCourtIssuedOrderPdfFromHtmlInteractor } from '../../shared/src/proxies/courtIssuedOrder/createCourtIssuedOrderPdfFromHtmlProxy';
 import {
   createISODateString,
@@ -127,8 +131,6 @@ import { getNotificationsInteractor } from '../../shared/src/proxies/users/getNo
 import { getPractitionersBySearchKeyInteractor } from '../../shared/src/proxies/users/getPractitionersBySearchKeyProxy';
 import { getProcedureTypesInteractor } from '../../shared/src/business/useCases/getProcedureTypesInteractor';
 import { getRespondentsBySearchKeyInteractor } from '../../shared/src/proxies/users/getRespondentsBySearchKeyProxy';
-import { getScannerInterface } from '../../shared/src/persistence/dynamsoft/getScannerInterface';
-import { getScannerInterface as getScannerMockInterfaceInteractor } from '../../shared/src/persistence/dynamsoft/getScannerMockInterface';
 import { getSentMessagesForSectionInteractor } from '../../shared/src/proxies/workitems/getSentMessagesForSectionProxy';
 import { getSentMessagesForUserInteractor } from '../../shared/src/proxies/workitems/getSentMessagesForUserProxy';
 import { getTrialSessionDetailsInteractor } from '../../shared/src/proxies/trialSessions/getTrialSessionDetailsProxy';
@@ -205,8 +207,6 @@ import { verifyPendingCaseForUserInteractor } from '../../shared/src/proxies/ver
 import { virusScanPdfInteractor } from '../../shared/src/proxies/documents/virusScanPdfProxy';
 import axios from 'axios';
 import deepFreeze from 'deep-freeze';
-import pdfjsLib from 'pdfjs-dist';
-import uuidv4 from 'uuid/v4';
 
 const MINUTES = 60 * 1000;
 
@@ -243,7 +243,6 @@ const allUseCases = {
   createCaseDeadlineInteractor,
   createCaseFromPaperInteractor,
   createCaseInteractor,
-  createCaseNoteInteractor, //not used?
   createCourtIssuedOrderPdfFromHtmlInteractor,
   createTrialSessionInteractor,
   createWorkItemInteractor,
@@ -376,16 +375,7 @@ const applicationContext = {
   getCognitoClientId: () => {
     return process.env.COGNITO_CLIENT_ID || '6tu6j1stv5ugcut7dqsqdurn8q';
   },
-  getCognitoLoginUrl: () => {
-    if (process.env.COGNITO) {
-      return 'https://auth-dev-flexion-efcms.auth.us-east-1.amazoncognito.com/login?response_type=code&client_id=6tu6j1stv5ugcut7dqsqdurn8q&redirect_uri=http%3A//localhost:1234/log-in';
-    } else {
-      return (
-        process.env.COGNITO_LOGIN_URL ||
-        'http://localhost:1234/mock-login?redirect_uri=http%3A//localhost%3A1234/log-in'
-      );
-    }
-  },
+  getCognitoLoginUrl,
   getCognitoRedirectUrl: () => {
     return process.env.COGNITO_REDIRECT_URI || 'http://localhost:1234/log-in';
   },
@@ -468,6 +458,7 @@ const applicationContext = {
   getFileReader: () => FileReader,
   getHttpClient: () => axios,
   getPdfJs: async () => {
+    const pdfjsLib = await import('pdfjs-dist');
     pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js';
     return pdfjsLib;
   },
@@ -485,17 +476,25 @@ const applicationContext = {
       uploadPdf,
     };
   },
-  getScanner: process.env.NO_SCANNER
-    ? getScannerMockInterfaceInteractor
-    : getScannerInterface,
+  getScanner: async () => {
+    if (process.env.NO_SCANNER) {
+      const scanner = await import(
+        '../../shared/src/persistence/dynamsoft/getScannerMockInterface'
+      );
+      return scanner.getScannerInterface;
+    } else {
+      const scanner = await import(
+        '../../shared/src/persistence/dynamsoft/getScannerInterface'
+      );
+      return scanner.getScannerInterface;
+    }
+  },
   getScannerResourceUri: () => {
     return (
       process.env.SCANNER_RESOURCE_URI || 'http://localhost:10000/Resources'
     );
   },
-  getUniqueId: () => {
-    return uuidv4();
-  },
+  getUniqueId,
   getUseCases: () => allUseCases,
   getUserPermissions,
   getUtilities: () => {
@@ -519,12 +518,6 @@ const applicationContext = {
       setServiceIndicatorsForCase,
       sortDocketRecords,
     };
-  },
-  getWebSocketClient: token => {
-    const notificationsUrl = process.env.WS_URL || 'ws://localhost:3011';
-    const connectionUrl = `${notificationsUrl}?token=${token}`;
-    const socket = new WebSocket(connectionUrl);
-    return socket;
   },
   setCurrentUser,
   setCurrentUserToken,

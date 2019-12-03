@@ -1,7 +1,10 @@
 import { Error } from './Error';
 import { Footer } from './Footer';
+import { HeaderPublic } from './Header/HeaderPublic';
 import { Interstitial } from './Interstitial';
-import { PublicSearch } from './PublicSearch';
+import { Loading } from './Loading';
+import { PublicCaseDetail } from './Public/PublicCaseDetail';
+import { PublicSearch } from './Public/PublicSearch';
 import { UsaBanner } from './UsaBanner';
 import { connect } from '@cerebral/react';
 import { state } from 'cerebral';
@@ -10,6 +13,7 @@ import React, { useEffect } from 'react';
 const pages = {
   Error,
   Interstitial,
+  PublicCaseDetail,
   PublicSearch,
 };
 
@@ -46,10 +50,12 @@ export const AppComponentPublic = connect(
           Skip to main content
         </a>
         <UsaBanner />
+        <HeaderPublic />
         <main id="main-content" role="main">
           <CurrentPage />
         </main>
         <Footer />
+        <Loading />
       </React.Fragment>
     );
   },

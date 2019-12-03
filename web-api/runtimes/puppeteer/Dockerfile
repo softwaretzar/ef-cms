@@ -1,4 +1,4 @@
-FROM node:8.16.2-jessie-slim
+FROM cypress/base:12.13.0
 
 WORKDIR /home/build
 

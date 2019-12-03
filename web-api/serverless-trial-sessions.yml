@@ -78,7 +78,7 @@ provider:
   tracing: true
   stage: ${self:custom.stage}
   region: ${self:custom.region}
-  runtime: nodejs10.x
+  runtime: nodejs12.x
   memorySize: 768
   timeout: 30
   logRetentionInDays: 7
@@ -267,7 +267,7 @@ functions:
     timeout: 900
     events:
       - http:
-          path: /{trialSessionId}/batch-download/{zipName}
+          path: /{trialSessionId}/batch-download
           method: get
           async: true
           cors: true

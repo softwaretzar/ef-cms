@@ -76,7 +76,7 @@ provider:
   tracing: true
   stage: ${self:custom.stage}
   region: ${self:custom.region}
-  runtime: nodejs10.x
+  runtime: nodejs12.x
   memorySize: 768
   timeout: 30
   logRetentionInDays: 7
@@ -153,18 +153,6 @@ resources:
             MetricsEnabled: true
 
 functions:
-  createCaseNote:
-    handler: web-api/${self:provider.dir}/caseNotesHandlers.createCaseNoteLambda
-    events:
-      - http:
-          path: /{caseId}
-          method: post
-          cors: true
-          authorizer:
-            type: COGNITO_USER_POOLS
-            authorizerId:
-              Ref: ApiGatewayAuthorizer
-
   getCaseNote:
     handler: web-api/${self:provider.dir}/caseNotesHandlers.getCaseNoteLambda
     events:

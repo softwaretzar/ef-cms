@@ -1,9 +1,10 @@
 const {
-  generateNoticeOfDocketChangePdf,
-} = require('../../useCaseHelper/noticeOfDocketChange/generateNoticeOfDocketChangePdf');
-const {
+  formatDocument,
   getFilingsAndProceedings,
 } = require('../../utilities/getFormattedCaseDetail');
+const {
+  generateNoticeOfDocketChangePdf,
+} = require('../../useCaseHelper/noticeOfDocketChange/generateNoticeOfDocketChangePdf');
 const {
   isAuthorized,
   ROLE_PERMISSIONS,
@@ -58,10 +59,10 @@ exports.completeDocketEntryQCInteractor = async ({
 
   const updatedDocument = new Document(
     {
-      createdAt: currentDocument.createdAt,
+      ...entryMetadata,
+      createdAt: currentDocument.createdAt, // eslint-disable-line
       documentId,
       documentType,
-      ...entryMetadata,
       relationship: 'primaryDocument',
       userId: user.userId,
       workItems: currentDocument.workItems,
@@ -73,11 +74,16 @@ exports.completeDocketEntryQCInteractor = async ({
     { applicationContext },
   ).validate();
 
+  updatedDocument.generateFiledBy(caseToUpdate, true);
+  updatedDocument.setQCed(user);
+
   let updatedDocumentTitle = updatedDocument.documentTitle;
   if (updatedDocument.additionalInfo) {
     updatedDocumentTitle += ` ${updatedDocument.additionalInfo}`;
   }
-  updatedDocumentTitle += ` ${getFilingsAndProceedings(updatedDocument)}`;
+  updatedDocumentTitle += ` ${getFilingsAndProceedings(
+    formatDocument(applicationContext, updatedDocument),
+  )}`;
   if (updatedDocument.additionalInfo2) {
     updatedDocumentTitle += ` ${updatedDocument.additionalInfo2}`;
   }
@@ -86,7 +92,9 @@ exports.completeDocketEntryQCInteractor = async ({
   if (currentDocument.additionalInfo) {
     currentDocumentTitle += ` ${currentDocument.additionalInfo}`;
   }
-  currentDocumentTitle += ` ${getFilingsAndProceedings(currentDocument)}`;
+  currentDocumentTitle += ` ${getFilingsAndProceedings(
+    formatDocument(applicationContext, currentDocument),
+  )}`;
   if (currentDocument.additionalInfo2) {
     currentDocumentTitle += ` ${currentDocument.additionalInfo2}`;
   }
@@ -98,9 +106,6 @@ exports.completeDocketEntryQCInteractor = async ({
   const needsNoticeOfDocketChange =
     updatedDocument.filedBy != currentDocument.filedBy ||
     updatedDocumentTitle != currentDocumentTitle;
-
-  updatedDocument.generateFiledBy(caseToUpdate, true);
-  updatedDocument.setQCed(user);
 
   const docketChangeInfo = {
     caseTitle: caseToUpdate.caseTitle,
@@ -128,11 +133,9 @@ exports.completeDocketEntryQCInteractor = async ({
   caseEntity.updateDocketRecordEntry(omit(docketRecordEntry, 'index'));
   caseEntity.updateDocument(updatedDocument);
 
-  const workItemsToUpdate = currentDocument.workItems.filter(
-    workItem => workItem.isQC === true,
-  );
+  const workItemToUpdate = updatedDocument.getQCWorkItem();
 
-  for (const workItemToUpdate of workItemsToUpdate) {
+  if (workItemToUpdate) {
     await applicationContext.getPersistenceGateway().deleteWorkItemFromInbox({
       applicationContext,
       workItem: workItemToUpdate,
@@ -186,7 +189,7 @@ exports.completeDocketEntryQCInteractor = async ({
       docketChangeInfo,
     });
 
-    const noticeupdatedDocument = new Document(
+    const noticeUpdatedDocument = new Document(
       {
         ...Document.NOTICE_OF_DOCKET_CHANGE,
         documentId: noticeDocumentId,
@@ -194,12 +197,13 @@ exports.completeDocketEntryQCInteractor = async ({
       },
       { applicationContext },
     );
-    noticeupdatedDocument.documentTitle = replaceBracketed(
+
+    noticeUpdatedDocument.documentTitle = replaceBracketed(
       Document.NOTICE_OF_DOCKET_CHANGE.documentTitle,
       docketChangeInfo.docketEntryIndex,
     );
 
-    caseEntity.addDocument(noticeupdatedDocument);
+    caseEntity.addDocument(noticeUpdatedDocument);
   }
 
   await applicationContext.getPersistenceGateway().updateCase({

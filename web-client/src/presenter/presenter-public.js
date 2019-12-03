@@ -1,17 +1,37 @@
 import { state } from './state-public';
 
-import { resetHeaderAccordionsSequence } from './sequences/resetHeaderAccordionsSequence';
+import { cerebralBindSimpleSetStateSequence } from './sequences/cerebralBindSimpleSetStateSequence';
+import { clearAdvancedSearchFormSequence } from './sequences/clearAdvancedSearchFormSequence';
+import { clearDocketNumberSearchFormSequence } from './sequences/clearDocketNumberSearchFormSequence';
+import { gotoPublicCaseDetailSequence } from './sequences/public/gotoPublicCaseDetailSequence';
+import { gotoPublicSearchSequence } from './sequences/public/gotoPublicSearchSequence';
+import { navigateToCognitoSequence } from './sequences/navigateToCognitoSequence';
+import { navigateToPublicSiteSequence } from './sequences/public/navigateToPublicSiteSequence';
+import { showMoreResultsSequence } from './sequences/showMoreResultsSequence';
+import { submitCaseDocketNumberSearchSequence } from './sequences/submitCaseDocketNumberSearchSequence';
+import { submitPublicAdvancedSearchSequence } from './sequences/public/submitPublicAdvancedSearchSequence';
 import { toggleBetaBarSequence } from './sequences/toggleBetaBarSequence';
-import { toggleMenuSequence } from './sequences/toggleMenuSequence';
 import { toggleUsaBannerDetailsSequence } from './sequences/toggleUsaBannerDetailsSequence';
+import { updateAdvancedSearchFormValueSequence } from './sequences/updateAdvancedSearchFormValueSequence';
+import { updateDocketNumberSearchFormSequence } from './sequences/updateDocketNumberSearchFormSequence';
 
 export const presenter = {
   providers: {},
   sequences: {
-    resetHeaderAccordionsSequence,
+    cerebralBindSimpleSetStateSequence,
+    clearAdvancedSearchFormSequence,
+    clearDocketNumberSearchFormSequence,
+    gotoPublicCaseDetailSequence,
+    gotoPublicSearchSequence,
+    navigateToCognitoSequence,
+    navigateToPublicSiteSequence,
+    showMoreResultsSequence,
+    submitCaseDocketNumberSearchSequence,
+    submitPublicAdvancedSearchSequence,
+    toggleBetaBarSequence,
     toggleUsaBannerDetailsSequence,
+    updateAdvancedSearchFormValueSequence,
+    updateDocketNumberSearchFormSequence,
   },
   state,
-  toggleBetaBarSequence,
-  toggleMenuSequence,
 };

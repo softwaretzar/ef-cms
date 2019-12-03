@@ -1,30 +1,22 @@
 const createApplicationContext = require('../applicationContext');
-const {
-  getUserFromAuthHeader,
-  handle,
-} = require('../middleware/apiGatewayHelper');
+const { handle } = require('../middleware/apiGatewayHelper');
 
 /**
- * creates a new case note.
+ * used for fetching a single case
  *
  * @param {object} event the AWS event object
  * @returns {Promise<*|undefined>} the api gateway response object containing the statusCode, body, and headers
  */
 exports.handler = event =>
   handle(event, async () => {
-    const user = getUserFromAuthHeader(event);
-    const applicationContext = createApplicationContext(user);
+    const applicationContext = createApplicationContext({});
     try {
-      const { caseId } = event.pathParameters || {};
-      const { notes } = JSON.parse(event.body);
       const results = await applicationContext
         .getUseCases()
-        .createCaseNoteInteractor({
+        .getPublicCaseInteractor({
           applicationContext,
-          caseId,
-          notes,
+          caseId: event.pathParameters.caseId,
         });
-      applicationContext.logger.info('User', user);
       applicationContext.logger.info('Results', results);
       return results;
     } catch (e) {
