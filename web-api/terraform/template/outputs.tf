@@ -13,3 +13,7 @@ output "dynamo_stream_arn" {
 output "elasticsearch_endpoint" {
   value = "${aws_elasticsearch_domain.efcms-search.endpoint}"
 }
+
+output "ecr_image_respository_url" {
+  value      = "${aws_ecr_repository.image_repository.repository_url}"
+}
