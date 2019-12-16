@@ -9,7 +9,7 @@ jobs:
           command: echo "export ENV=$(./get-env.sh $CIRCLE_BRANCH)" >> $BASH_ENV
   bundle:
     docker:
-      - image: 515554424717.dkr.ecr.us-east-1.amazonaws.com/ef-cms-$(`[ $CIRCLE_BRANCH == 'devex-terraform-ecr' ] && echo 'exp' || echo 'dev'`)-us-east-1
+      - image: "515554424717.dkr.ecr.us-east-1.amazonaws.com/ef-cms-$(( $(( $CIRCLE_BRANCH=='devex-terraform-ecr')) ? 'exp' : 'dev' ))-us-east-1"
         aws_auth:
           aws_access_key_id: $AWS_ACCESS_KEY_ID
           aws_secret_access_key: $AWS_SECRET_ACCESS_KEY
