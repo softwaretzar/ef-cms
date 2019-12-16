@@ -4,30 +4,12 @@ jobs:
     docker:
       - image: circleci/node:jessie
     steps:
-      - restore_cache:
-          name: Source - Restoring Cache
-          keys:
-            - source-{{ .Environment.CACHE_VERSION }}-{{ .Branch }}-{{ .Revision }}
-            - source-{{ .Environment.CACHE_VERSION }}-{{ .Branch }}-
-            - source-{{ .Environment.CACHE_VERSION }}-
-      - checkout
-      - save_cache:
-          name: Source - Saving Cache
-          key: source-{{ .Environment.CACHE_VERSION }}-{{ .Branch }}-{{ .Revision }}
-          paths:
-            - '.git'
-      - restore_cache:
-          name: NPM - Restoring Cache
-          keys:
-            - npm-{{ .Environment.CACHE_VERSION }}-{{ .Branch }}-{{ checksum "package-lock.json" }}
-            - npm-{{ .Environment.CACHE_VERSION }}-{{ .Branch }}-
-            - npm-{{ .Environment.CACHE_VERSION }}-
       - run:
           name: Setup Env
           command: echo "export ENV=$(./get-env.sh $CIRCLE_BRANCH)" >> $BASH_ENV
   bundle:
     docker:
-      - image: 515554424717.dkr.ecr.us-east-1.amazonaws.com/ef-cms-$ENV-us-east-1
+      - image: 515554424717.dkr.ecr.us-east-1.amazonaws.com/ef-cms-$(`[ $CIRCLE_BRANCH == 'devex-terraform-ecr' ] && echo 'exp' || echo 'dev'`)-us-east-1
         aws_auth:
           aws_access_key_id: $AWS_ACCESS_KEY_ID
           aws_secret_access_key: $AWS_SECRET_ACCESS_KEY
