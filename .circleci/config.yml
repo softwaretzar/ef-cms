@@ -1,6 +1,8 @@
 version: 2
 jobs:
   set-env:
+    docker:
+      - image: circleci/node:jessie
     steps:
       - run:
           name: Setup Env
