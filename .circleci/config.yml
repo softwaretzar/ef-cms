@@ -2,7 +2,10 @@ version: 2
 jobs:
   bundle:
     docker:
-      - image: sutt0n/ef-cms:latest
+      - image: 515554424717.dkr.ecr.us-east-1.amazonaws.com/ef-cms-exp-us-east-1
+        aws_auth:
+          aws_access_key_id: $AWS_ACCESS_KEY_ID
+          aws_secret_access_key: $AWS_SECRET_ACCESS_KEY
     steps:
       - restore_cache:
           name: Source - Restoring Cache
