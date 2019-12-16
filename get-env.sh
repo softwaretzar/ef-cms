@@ -4,7 +4,7 @@ BRANCH=$1
 
 if  [[ $BRANCH == 'develop' ]] ; then
   echo 'dev'
-elif [[ $BRANCH == 'experimental' ]] ; then
+elif [[ $BRANCH == 'experimental' ]] || [[ $BRANCH == 'devex-terraform-ecr' ]]; then
   echo 'exp'
 elif [[ $BRANCH == 'staging' ]] ; then
   echo 'stg'
