@@ -32,6 +32,7 @@
 5. Go to the settings of the project in CircleCI via clicking on the project / job, and clicking the gear icon
 6. Click "Environment Variables"
 7. Add the following:
+     - `AWS_ACCOUNT_ID` (the numerical identification number for the AWS account)
      - `AWS_ACCESS_KEY_ID` (the access key for the AWS CircleCI user created in the Prerequisites)
      - `AWS_SECRET_ACCESS_KEY` (the secret access key for the AWS CircleCI user created in the Prerequisites)
      - `EFCMS_DOMAIN` (the domain indented for use by the court, e.g., `ef-cms.example.gov`)
