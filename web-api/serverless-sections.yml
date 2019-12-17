@@ -158,7 +158,7 @@ functions:
       - http:
           path: /{section}/messages/inbox
           method: get
-          cors: true
+          cors: ui-${self:provider.stage}.ef-cms.${opt:domain}
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId:
@@ -169,7 +169,7 @@ functions:
       - http:
           path: /{section}/messages/sent
           method: get
-          cors: true
+          cors: ui-${self:provider.stage}.ef-cms.${opt:domain}
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId:
@@ -180,7 +180,7 @@ functions:
       - http:
           path: /{section}/document-qc/batched
           method: get
-          cors: true
+          cors: ui-${self:provider.stage}.ef-cms.${opt:domain}
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId:
@@ -192,7 +192,7 @@ functions:
       - http:
           path: /{section}/document-qc/served
           method: get
-          cors: true
+          cors: ui-${self:provider.stage}.ef-cms.${opt:domain}
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId:
@@ -203,7 +203,7 @@ functions:
       - http:
           path: /{section}/users
           method: get
-          cors: true
+          cors: ui-${self:provider.stage}.ef-cms.${opt:domain}
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId:
@@ -215,7 +215,7 @@ functions:
       - http:
           path: /{section}/document-qc/inbox
           method: get
-          cors: true
+          cors: ui-${self:provider.stage}.ef-cms.${opt:domain}
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId:

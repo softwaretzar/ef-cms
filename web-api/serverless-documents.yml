@@ -152,25 +152,13 @@ resources:
             MetricsEnabled: true
 
 functions:
-  getDownloadPolicyUrl:
-    handler: web-api/${self:provider.dir}/documentsHandlers.downloadPolicyUrlLambda
-    events:
-      - http:
-          path: /{documentId}/download-policy-url
-          method: get
-          cors: true
-          authorizer:
-            type: COGNITO_USER_POOLS
-            authorizerId:
-              Ref: ApiGatewayAuthorizer
-
   validate:
     handler: web-api/${self:provider.dir}/documentsHandlers.validatePdfLambda
     events:
       - http:
           path: /{documentId}/validate
           method: post
-          cors: true
+          cors: ui-${self:provider.stage}.ef-cms.${opt:domain}
     alarms:
       - errorExceptions
 
@@ -180,19 +168,11 @@ functions:
       - http:
           path: /{documentId}/upload-policy
           method: get
-          cors: true
+          cors: ui-${self:provider.stage}.ef-cms.${opt:domain}
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId:
               Ref: ApiGatewayAuthorizer
-
-  getDocumentDownloadUrl:
-    handler: web-api/${self:provider.dir}/documentsHandlers.getDocumentDownloadUrlLambda
-    events:
-      - http:
-          path: /{documentId}/document-download-url
-          method: get
-          cors: true
 
   generatePrintableFilingReceiptLambda:
     handler: web-api/${self:provider.dir}/documentsHandlers.generatePrintableFilingReceiptLambda
@@ -204,7 +184,7 @@ functions:
       - http:
           path: /filing-receipt-pdf
           method: post
-          cors: true
+          cors: ui-${self:provider.stage}.ef-cms.${opt:domain}
 
   virusScan:
     handler: web-api/${self:provider.dir}/documentsHandlers.virusScanPdfLambda
@@ -216,5 +196,5 @@ functions:
       - http:
           path: /{documentId}/virus-scan
           method: post
-          cors: true
+          cors: ui-${self:provider.stage}.ef-cms.${opt:domain}
           async: true

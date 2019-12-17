@@ -157,7 +157,7 @@ functions:
       - http:
           path: /
           method: get
-          cors: true
+          cors: ui-${self:provider.stage}.ef-cms.${opt:domain}
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId:
@@ -169,7 +169,7 @@ functions:
       - http:
           path: /internal
           method: get
-          cors: true
+          cors: ui-${self:provider.stage}.ef-cms.${opt:domain}
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId:
@@ -181,7 +181,7 @@ functions:
       - http:
           path: /
           method: post
-          cors: true
+          cors: ui-${self:provider.stage}.ef-cms.${opt:domain}
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId:
@@ -193,7 +193,19 @@ functions:
       - http:
           path: /{userId}/cases
           method: get
-          cors: true
+          cors: ui-${self:provider.stage}.ef-cms.${opt:domain}
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId:
+              Ref: ApiGatewayAuthorizer
+
+  getConsolidatedCasesByUser:
+    handler: web-api/${self:provider.dir}/usersHandlers.getConsolidatedCasesByUserLambda
+    events:
+      - http:
+          path: /{userId}/cases-with-consolidation
+          method: get
+          cors: ui-${self:provider.stage}.ef-cms.${opt:domain}
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId:
@@ -205,7 +217,7 @@ functions:
       - http:
           path: /{userId}/case/{caseId}/pending
           method: get
-          cors: true
+          cors: ui-${self:provider.stage}.ef-cms.${opt:domain}
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId:
@@ -217,7 +229,7 @@ functions:
       - http:
           path: /{userId}/case/{caseId}
           method: put
-          cors: true
+          cors: ui-${self:provider.stage}.ef-cms.${opt:domain}
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId:
@@ -229,7 +241,7 @@ functions:
       - http:
           path: /{userId}/case/{caseId}/pending
           method: put
-          cors: true
+          cors: ui-${self:provider.stage}.ef-cms.${opt:domain}
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId:
@@ -241,7 +253,7 @@ functions:
       - http:
           path: /{userId}/messages/inbox
           method: get
-          cors: true
+          cors: ui-${self:provider.stage}.ef-cms.${opt:domain}
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId:
@@ -253,7 +265,7 @@ functions:
       - http:
           path: /{userId}/messages/sent
           method: get
-          cors: true
+          cors: ui-${self:provider.stage}.ef-cms.${opt:domain}
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId:
@@ -265,7 +277,7 @@ functions:
       - http:
           path: /{userId}/document-qc/inbox
           method: get
-          cors: true
+          cors: ui-${self:provider.stage}.ef-cms.${opt:domain}
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId:
@@ -277,7 +289,7 @@ functions:
       - http:
           path: /{userId}/document-qc/batched
           method: get
-          cors: true
+          cors: ui-${self:provider.stage}.ef-cms.${opt:domain}
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId:
@@ -289,7 +301,7 @@ functions:
       - http:
           path: /{userId}/document-qc/served
           method: get
-          cors: true
+          cors: ui-${self:provider.stage}.ef-cms.${opt:domain}
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId:
@@ -305,7 +317,7 @@ functions:
       - http:
           path: /{userId}/contact-info
           method: put
-          cors: true
+          cors: ui-${self:provider.stage}.ef-cms.${opt:domain}
           async: true
           authorizer:
             type: COGNITO_USER_POOLS
@@ -318,7 +330,7 @@ functions:
       - http:
           path: /practitioners/search
           method: get
-          cors: true
+          cors: ui-${self:provider.stage}.ef-cms.${opt:domain}
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId:
@@ -330,7 +342,7 @@ functions:
       - http:
           path: /respondents/search
           method: get
-          cors: true
+          cors: ui-${self:provider.stage}.ef-cms.${opt:domain}
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId:

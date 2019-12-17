@@ -164,7 +164,7 @@ functions:
       - http:
           path: run-batch-process
           method: post
-          cors: true
+          cors: ui-${self:provider.stage}.ef-cms.${opt:domain}
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId:
@@ -176,7 +176,7 @@ functions:
       - http:
           path: notifications
           method: get
-          cors: true
+          cors: ui-${self:provider.stage}.ef-cms.${opt:domain}
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId:
@@ -193,7 +193,7 @@ functions:
       - http:
           path: swagger
           method: get
-          cors: true
+          cors: ui-${self:provider.stage}.ef-cms.${opt:domain}
 
   swaggerJson:
     handler: web-api/${self:provider.dir}/apiHandlers.swaggerJsonLambda
@@ -201,7 +201,7 @@ functions:
       - http:
           path: swagger.json
           method: get
-          cors: true
+          cors: ui-${self:provider.stage}.ef-cms.${opt:domain}
 
   createCourtIssuedOrderPdfFromHtml:
     handler: web-api/${self:provider.dir}/apiHandlers.createCourtIssuedOrderPdfFromHtmlLambda
@@ -213,7 +213,7 @@ functions:
       - http:
           path: court-issued-order
           method: post
-          cors: true
+          cors: ui-${self:provider.stage}.ef-cms.${opt:domain}
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId:
@@ -229,7 +229,7 @@ functions:
       - http:
           path: docket-record-pdf
           method: post
-          cors: true
+          cors: ui-${self:provider.stage}.ef-cms.${opt:domain}
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId:
@@ -245,7 +245,7 @@ functions:
       - http:
           path: trial-calendar-pdf
           method: post
-          cors: true
+          cors: ui-${self:provider.stage}.ef-cms.${opt:domain}
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId:
@@ -257,7 +257,7 @@ functions:
       - http:
           path: pending-items
           method: get
-          cors: true
+          cors: ui-${self:provider.stage}.ef-cms.${opt:domain}
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId:
@@ -273,7 +273,7 @@ functions:
       - http:
           path: pending-report
           method: get
-          cors: true
+          cors: ui-${self:provider.stage}.ef-cms.${opt:domain}
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId:

@@ -159,7 +159,7 @@ functions:
       - http:
           path: /
           method: put
-          cors: true
+          cors: ui-${self:provider.stage}.ef-cms.${opt:domain}
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId:
@@ -171,7 +171,7 @@ functions:
       - http:
           path: /{workItemId}
           method: get
-          cors: true
+          cors: ui-${self:provider.stage}.ef-cms.${opt:domain}
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId:
@@ -183,7 +183,7 @@ functions:
       - http:
           path: /{workItemId}/assignee
           method: put
-          cors: true
+          cors: ui-${self:provider.stage}.ef-cms.${opt:domain}
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId:
@@ -195,7 +195,7 @@ functions:
       - http:
           path: /{workItemId}/complete
           method: put
-          cors: true
+          cors: ui-${self:provider.stage}.ef-cms.${opt:domain}
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId:
@@ -207,4 +207,4 @@ functions:
       - http:
           path: /{workItemId}/read
           method: post
-          cors: true
+          cors: ui-${self:provider.stage}.ef-cms.${opt:domain}

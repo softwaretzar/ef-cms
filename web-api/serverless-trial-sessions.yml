@@ -159,7 +159,7 @@ functions:
       - http:
           path: /
           method: get
-          cors: true
+          cors: ui-${self:provider.stage}.ef-cms.${opt:domain}
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId:
@@ -170,7 +170,7 @@ functions:
       - http:
           path: /
           method: post
-          cors: true
+          cors: ui-${self:provider.stage}.ef-cms.${opt:domain}
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId:
@@ -182,7 +182,7 @@ functions:
       - http:
           path: /{trialSessionId}
           method: get
-          cors: true
+          cors: ui-${self:provider.stage}.ef-cms.${opt:domain}
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId:
@@ -194,7 +194,7 @@ functions:
       - http:
           path: /{trialSessionId}/set-swing-session
           method: post
-          cors: true
+          cors: ui-${self:provider.stage}.ef-cms.${opt:domain}
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId:
@@ -206,7 +206,7 @@ functions:
       - http:
           path: /{trialSessionId}/eligible-cases
           method: get
-          cors: true
+          cors: ui-${self:provider.stage}.ef-cms.${opt:domain}
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId:
@@ -218,7 +218,7 @@ functions:
       - http:
           path: /{trialSessionId}/set-calendar
           method: post
-          cors: true
+          cors: ui-${self:provider.stage}.ef-cms.${opt:domain}
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId:
@@ -229,7 +229,7 @@ functions:
       - http:
           path: /{trialSessionId}/get-calendared-cases
           method: get
-          cors: true
+          cors: ui-${self:provider.stage}.ef-cms.${opt:domain}
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId:
@@ -241,7 +241,7 @@ functions:
       - http:
           path: /{trialSessionId}/working-copy
           method: get
-          cors: true
+          cors: ui-${self:provider.stage}.ef-cms.${opt:domain}
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId:
@@ -253,7 +253,7 @@ functions:
       - http:
           path: /{trialSessionId}/working-copy
           method: put
-          cors: true
+          cors: ui-${self:provider.stage}.ef-cms.${opt:domain}
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId:
@@ -270,7 +270,7 @@ functions:
           path: /{trialSessionId}/batch-download
           method: get
           async: true
-          cors: true
+          cors: ui-${self:provider.stage}.ef-cms.${opt:domain}
 
   removeCaseFromTrial:
     handler: web-api/${self:provider.dir}/trialSessionsHandlers.removeCaseFromTrialLambda
@@ -278,7 +278,7 @@ functions:
       - http:
           path: /{trialSessionId}/remove-case/{caseId}
           method: put
-          cors: true
+          cors: ui-${self:provider.stage}.ef-cms.${opt:domain}
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId:
@@ -290,7 +290,7 @@ functions:
       - http:
           path: /{trialSessionId}/cases/{caseId}
           method: post
-          cors: true
+          cors: ui-${self:provider.stage}.ef-cms.${opt:domain}
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId:
@@ -306,7 +306,7 @@ functions:
       - http:
           path: /planning-report
           method: post
-          cors: true
+          cors: ui-${self:provider.stage}.ef-cms.${opt:domain}
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId:
