@@ -2,9 +2,7 @@ version: 2
 jobs:
   bundle:
     docker:
-      - image: "515554424717.dkr.ecr.us-east-1.amazonaws.com/ef-${LE_ENV}cms-$(([[ $CIRCLE_BRANCH == 'devex-terraform-ecr' ]] && echo 'exp' || echo 'dev'))-us-east-1"
-        environment:
-          LE_ENV: 'HELLO'
+      - image: $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/ef-cms-us-east-1
         aws_auth:
           aws_access_key_id: $AWS_ACCESS_KEY_ID
           aws_secret_access_key: $AWS_SECRET_ACCESS_KEY
