@@ -132,9 +132,6 @@ jobs:
   e2e-pa11y:
     docker:
       - image: sutt0n/ef-cms:latest
-        aws_auth:
-          aws_access_key_id: $AWS_ACCESS_KEY_ID
-          aws_secret_access_key: $AWS_SECRET_ACCESS_KEY
     environment:
       _JAVA_OPTIONS: '-Xms2048m -Xmx4096m'
     resource_class: large
