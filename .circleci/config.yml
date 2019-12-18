@@ -135,7 +135,8 @@ jobs:
         aws_auth:
           aws_access_key_id: $AWS_ACCESS_KEY_ID
           aws_secret_access_key: $AWS_SECRET_ACCESS_KEY
-    resource_class: xlarge
+      _JAVA_OPTIONS: '-Xms2048m -Xmx4096m'
+    resource_class: large
     steps:
       - attach_workspace:
           at: ~/
