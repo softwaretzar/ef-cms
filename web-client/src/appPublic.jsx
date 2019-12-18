@@ -6,7 +6,7 @@ import {
   externalRoute,
   revokeObjectURL,
   route,
-  router,
+  // router,
 } from './routerPublic';
 
 // Icons - Solid
@@ -21,11 +21,12 @@ import { faTimesCircle } from '@fortawesome/free-solid-svg-icons/faTimesCircle';
 import { faArrowAltCircleLeft as faArrowAltCircleLeftRegular } from '@fortawesome/free-regular-svg-icons/faArrowAltCircleLeft';
 import { faTimesCircle as faTimesCircleRegular } from '@fortawesome/free-regular-svg-icons/faTimesCircle';
 import { faUser } from '@fortawesome/free-regular-svg-icons/faUser';
-
-import { isFunction, mapValues } from 'lodash';
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { presenter } from './presenter/presenter-public';
-import App from 'cerebral';
+
+import { createOvermind } from 'overmind';
+import { isFunction, mapValues } from 'lodash';
+import { presenter } from './overmind/presenter';
+
 import React from 'react';
 import ReactDOM from 'react-dom';
 
@@ -71,12 +72,12 @@ const appPublic = {
       route,
     };
 
-    const cerebralApp = App(presenter, debugTools);
+    const overmindApp = createOvermind(presenter, debugTools);
 
-    router.initialize(cerebralApp);
+    // router.initialize(overmindApp);
 
     ReactDOM.render(
-      <Container app={cerebralApp}>
+      <Container app={overmindApp}>
         <AppComponentPublic />
         {process.env.CI && <div id="ci-environment">CI Test Environment</div>}
       </Container>,
