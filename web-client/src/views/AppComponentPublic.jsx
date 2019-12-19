@@ -7,8 +7,7 @@ import { PublicCaseDetail } from './Public/PublicCaseDetail';
 import { PublicPrintableDocketRecord } from './Public/PublicPrintableDocketRecord';
 import { PublicSearch } from './Public/PublicSearch';
 import { UsaBanner } from './UsaBanner';
-import { connect } from '@cerebral/react';
-import { state } from 'cerebral';
+import { connect } from '../overmind';
 import React, { useEffect } from 'react';
 
 const pages = {
@@ -19,46 +18,40 @@ const pages = {
   PublicSearch,
 };
 
-/**
- * Root application component for the public site
- */
-export const AppComponentPublic = connect(
-  {
-    currentPage: state.currentPage,
-    currentPageHeader: state.currentPageHeader,
-  },
-  ({ currentPage }) => {
-    const focusMain = e => {
-      e && e.preventDefault();
-      const header = document.querySelector('#main-content h1');
-      if (header) header.focus();
-      return false;
-    };
+export const AppComponentPublic = connect(({ overmind }) => {
+  const {
+    reaction,
+    state: { currentPage },
+  } = overmind;
 
-    useEffect(() => {
-      focusMain();
-    });
+  const focusMain = e => {
+    e && e.preventDefault();
+    const header = document.querySelector('#main-content h1');
+    if (header) header.focus();
+    return false;
+  };
 
-    const CurrentPage = pages[currentPage];
+  useEffect(() => reaction(focusMain), []);
 
-    return (
-      <React.Fragment>
-        <a
-          className="usa-skipnav"
-          href="#main-content"
-          tabIndex="0"
-          onClick={focusMain}
-        >
-          Skip to main content
-        </a>
-        <UsaBanner />
-        <HeaderPublic />
-        <main id="main-content" role="main">
-          <CurrentPage />
-        </main>
-        <Footer />
-        <Loading />
-      </React.Fragment>
-    );
-  },
-);
+  const CurrentPage = pages[currentPage];
+
+  return (
+    <React.Fragment>
+      <a
+        className="usa-skipnav"
+        href="#main-content"
+        tabIndex="0"
+        onClick={focusMain}
+      >
+        Skip to main content
+      </a>
+      <UsaBanner />
+      <HeaderPublic />
+      <main id="main-content" role="main">
+        <CurrentPage />
+      </main>
+      <Footer />
+      <Loading />
+    </React.Fragment>
+  );
+});

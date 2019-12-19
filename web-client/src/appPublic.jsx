@@ -1,5 +1,4 @@
 import { AppComponentPublic } from './views/AppComponentPublic';
-import { Container } from '@cerebral/react';
 import {
   back,
   createObjectURL,
@@ -23,30 +22,18 @@ import { faTimesCircle as faTimesCircleRegular } from '@fortawesome/free-regular
 import { faUser } from '@fortawesome/free-regular-svg-icons/faUser';
 import { library } from '@fortawesome/fontawesome-svg-core';
 
+import { Provider } from 'overmind-react';
 import { createOvermind } from 'overmind';
-import { isFunction, mapValues } from 'lodash';
-import { presenter } from './overmind/presenter';
+import { presenter } from './presenter/presenter-public';
 
+import { render } from 'react-dom';
 import React from 'react';
-import ReactDOM from 'react-dom';
 
 /**
  * Instantiates the Cerebral app with React
  */
 const appPublic = {
-  initialize: async (applicationContext, debugTools) => {
-    const withAppContextDecorator = (f, context) => {
-      return get => f(get, context || applicationContext);
-    };
-
-    // decorate all computed functions so they receive applicationContext as second argument ('get' is first)
-    presenter.state = mapValues(presenter.state, value => {
-      if (isFunction(value)) {
-        return withAppContextDecorator(value, applicationContext);
-      }
-      return value;
-    });
-
+  initialize: (applicationContext, debugTools) => {
     library.add(
       faFileAltSolid,
       faPrint,
@@ -74,13 +61,11 @@ const appPublic = {
 
     const overmindApp = createOvermind(presenter, debugTools);
 
-    // router.initialize(overmindApp);
-
-    ReactDOM.render(
-      <Container app={overmindApp}>
+    render(
+      <Provider value={overmindApp}>
         <AppComponentPublic />
         {process.env.CI && <div id="ci-environment">CI Test Environment</div>}
-      </Container>,
+      </Provider>,
       document.querySelector('#app-public'),
     );
   },
