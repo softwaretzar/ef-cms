@@ -1,3 +1,4 @@
+import { createConnect } from 'overmind-react';
 import { state } from './state-public';
 
 import { cerebralBindSimpleSetStateSequence } from './sequences/cerebralBindSimpleSetStateSequence';
@@ -18,7 +19,12 @@ import { toggleUsaBannerDetailsSequence } from './sequences/toggleUsaBannerDetai
 import { updateAdvancedSearchFormValueSequence } from './sequences/updateAdvancedSearchFormValueSequence';
 import { updateDocketNumberSearchFormSequence } from './sequences/updateDocketNumberSearchFormSequence';
 
+// eslint-disable-next-line spellcheck/spell-checker
+// https://overmindjs.org/guides/beginner/08_usingovermindwithreact?view=react&typescript=false
+
+export const connect = createConnect();
 export const presenter = {
+  actions: {},
   providers: {},
   sequences: {
     cerebralBindSimpleSetStateSequence,

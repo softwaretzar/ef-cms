@@ -33,7 +33,7 @@ import React from 'react';
  * Instantiates the Cerebral app with React
  */
 const appPublic = {
-  initialize: (applicationContext, debugTools) => {
+  initialize: (applicationContext, options) => {
     library.add(
       faFileAltSolid,
       faPrint,
@@ -59,7 +59,7 @@ const appPublic = {
       route,
     };
 
-    const overmindApp = createOvermind(presenter, debugTools);
+    const overmindApp = createOvermind(presenter, options);
 
     render(
       <Provider value={overmindApp}>
