@@ -25,7 +25,7 @@ export const state = {
   publicCaseDetailHelper,
   searchMode: 'byName',
   usaBanner: {
-    showDetails: false,
+    showDetails: true,
   },
   user: {},
   validationErrors: {},

@@ -7,7 +7,8 @@ import { PublicCaseDetail } from './Public/PublicCaseDetail';
 import { PublicPrintableDocketRecord } from './Public/PublicPrintableDocketRecord';
 import { PublicSearch } from './Public/PublicSearch';
 import { UsaBanner } from './UsaBanner';
-import { connect } from '../presenter/presenter-public';
+import { connect } from 'ustc-presenter';
+
 import React, { useEffect } from 'react';
 
 const pages = {
@@ -32,7 +33,10 @@ export const AppComponentPublic = connect(({ overmind }) => {
   };
 
   // useEffect(() => reaction(focusMain), []);
-  useEffect(() => focusMain, []);
+  useEffect(() => {
+    focusMain();
+    return;
+  }, []);
 
   const CurrentPage = pages[currentPage];
 
@@ -46,7 +50,8 @@ export const AppComponentPublic = connect(({ overmind }) => {
       >
         Skip to main content
       </a>
-      {/* <UsaBanner />
+      <UsaBanner />
+      {/* 
       <HeaderPublic /> */}
       <main id="main-content" role="main">
         <p>Yay</p>

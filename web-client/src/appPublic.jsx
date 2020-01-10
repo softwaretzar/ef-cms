@@ -24,7 +24,7 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 
 import { Provider } from 'overmind-react';
 import { createOvermind } from 'overmind';
-import { presenter } from './presenter/presenter-public';
+import { presenter } from 'ustc-presenter';
 
 import { render } from 'react-dom';
 import React from 'react';
