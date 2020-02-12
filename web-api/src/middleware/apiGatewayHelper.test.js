@@ -12,9 +12,15 @@ const {
 const EXPECTED_HEADERS = {
   'Access-Control-Allow-Origin': '*',
   'Cache-Control': 'max-age=0, private, no-cache, no-store, must-revalidate',
+  'Content-Security-Policy':
+    "default-src 'none'; img-src 'self'; script-src 'self'; style-src 'self'; object-src 'none'",
   'Content-Type': 'application/json',
   Pragma: 'no-cache',
+  'Referrer-Policy': 'same-origin',
+  'Strict-Transport-Security': 'max-age=63072000; includeSubdomains; preload',
   'X-Content-Type-Options': 'nosniff',
+  'X-Frame-Options': 'DENY',
+  'X-XSS-Protection': '1; mode=block',
 };
 
 const applicationContext = {
