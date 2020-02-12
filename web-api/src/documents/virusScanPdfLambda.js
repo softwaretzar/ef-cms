@@ -10,25 +10,30 @@ const {
  * @param {object} event the AWS event object
  * @returns {Promise<*|undefined>} the api gateway response object containing the statusCode, body, and headers
  */
-exports.handler = event =>
-  handle(event, async () => {
-    const { documentId } = event.pathParameters || event.path || {};
-    const user = getUserFromAuthHeader(event);
-    const applicationContext = createApplicationContext(user);
+exports.handler = event => {
+  const user = getUserFromAuthHeader(event);
+  const applicationContext = createApplicationContext(user);
+  return handle(
+    event,
+    async () => {
+      const { documentId } = event.pathParameters || event.path || {};
 
-    applicationContext.logger.info('User', user);
-    applicationContext.logger.info('Event', event);
+      applicationContext.logger.info('User', user);
+      applicationContext.logger.info('Event', event);
 
-    try {
-      const results = await applicationContext
-        .getUseCases()
-        .virusScanPdfInteractor({
-          applicationContext,
-          documentId,
-        });
-      applicationContext.logger.info('Results', results);
-    } catch (e) {
-      applicationContext.logger.error(e);
-      throw e;
-    }
-  });
+      try {
+        const results = await applicationContext
+          .getUseCases()
+          .virusScanPdfInteractor({
+            applicationContext,
+            documentId,
+          });
+        applicationContext.logger.info('Results', results);
+      } catch (e) {
+        applicationContext.logger.error(e);
+        throw e;
+      }
+    },
+    applicationContext,
+  );
+};

@@ -8,28 +8,33 @@ const { handle } = require('../middleware/apiGatewayHelper');
  * @param {object} event the AWS event object
  * @returns {Promise<*|undefined>} the api gateway response object containing the statusCode, body, and headers
  */
-exports.handler = event =>
-  handle(event, async () => {
-    const user = getUserFromAuthHeader(event);
-    const applicationContext = createApplicationContext(user);
-    const {
-      body,
-      pathParameters: { caseId, documentId: originalDocumentId },
-    } = event;
+exports.handler = event => {
+  const user = getUserFromAuthHeader(event);
+  const applicationContext = createApplicationContext(user);
+  return handle(
+    event,
+    async () => {
+      const {
+        body,
+        pathParameters: { caseId, documentId: originalDocumentId },
+      } = event;
 
-    const { signedDocumentId } = JSON.parse(body);
+      const { signedDocumentId } = JSON.parse(body);
 
-    applicationContext.logger.info('Event', event);
-    try {
-      await applicationContext.getUseCases().saveSignedDocumentInteractor({
-        applicationContext,
-        caseId,
-        originalDocumentId,
-        signedDocumentId,
-      });
-      applicationContext.logger.info('User', user);
-    } catch (e) {
-      applicationContext.logger.error(e);
-      throw e;
-    }
-  });
+      applicationContext.logger.info('Event', event);
+      try {
+        await applicationContext.getUseCases().saveSignedDocumentInteractor({
+          applicationContext,
+          caseId,
+          originalDocumentId,
+          signedDocumentId,
+        });
+        applicationContext.logger.info('User', user);
+      } catch (e) {
+        applicationContext.logger.error(e);
+        throw e;
+      }
+    },
+    applicationContext,
+  );
+};

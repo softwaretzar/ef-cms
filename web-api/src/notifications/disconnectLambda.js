@@ -7,24 +7,29 @@ const { handle } = require('../middleware/apiGatewayHelper');
  * @param {object} event the AWS event object
  * @returns {Promise<*|undefined>} the api gateway response object containing the statusCode, body, and headers
  */
-exports.handler = event =>
-  handle(event, async () => {
-    const applicationContext = createApplicationContext({});
-    try {
-      const results = await applicationContext
-        .getUseCases()
-        .onDisconnectInteractor({
-          applicationContext,
-          connectionId: event.requestContext.connectionId,
-        });
-      applicationContext.logger.info(
-        'Connection',
-        event.requestContext.connectionId,
-      );
-      applicationContext.logger.info('Results', results);
-      return results;
-    } catch (e) {
-      applicationContext.logger.error(e);
-      throw e;
-    }
-  });
+exports.handler = event => {
+  const applicationContext = createApplicationContext({});
+  return handle(
+    event,
+    async () => {
+      try {
+        const results = await applicationContext
+          .getUseCases()
+          .onDisconnectInteractor({
+            applicationContext,
+            connectionId: event.requestContext.connectionId,
+          });
+        applicationContext.logger.info(
+          'Connection',
+          event.requestContext.connectionId,
+        );
+        applicationContext.logger.info('Results', results);
+        return results;
+      } catch (e) {
+        applicationContext.logger.error(e);
+        throw e;
+      }
+    },
+    applicationContext,
+  );
+};

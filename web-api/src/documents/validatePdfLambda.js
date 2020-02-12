@@ -8,27 +8,32 @@ const { handle } = require('../middleware/apiGatewayHelper');
  * @param {object} event the AWS event object
  * @returns {Promise<*|undefined>} the api gateway response object containing the statusCode, body, and headers
  */
-exports.handler = event =>
-  handle(event, async () => {
-    const user = getUserFromAuthHeader(event);
-    const applicationContext = createApplicationContext(user);
-    const { documentId } = event.pathParameters || {};
+exports.handler = event => {
+  const user = getUserFromAuthHeader(event);
+  const applicationContext = createApplicationContext(user);
+  return handle(
+    event,
+    async () => {
+      const { documentId } = event.pathParameters || {};
 
-    applicationContext.logger.info('Event', event);
-    applicationContext.logger.info('User', user);
+      applicationContext.logger.info('Event', event);
+      applicationContext.logger.info('User', user);
 
-    try {
-      const result = await applicationContext
-        .getUseCases()
-        .validatePdfInteractor({
-          applicationContext,
-          documentId,
-        });
-      applicationContext.logger.info('Validate PDF Result', result);
+      try {
+        const result = await applicationContext
+          .getUseCases()
+          .validatePdfInteractor({
+            applicationContext,
+            documentId,
+          });
+        applicationContext.logger.info('Validate PDF Result', result);
 
-      return result;
-    } catch (e) {
-      applicationContext.logger.error(e);
-      throw e;
-    }
-  });
+        return result;
+      } catch (e) {
+        applicationContext.logger.error(e);
+        throw e;
+      }
+    },
+    applicationContext,
+  );
+};
