@@ -11,6 +11,7 @@ import { CaseDetailInternal } from './CaseDetail/CaseDetailInternal';
 import { CaseSearchNoMatches } from './CaseSearchNoMatches';
 import { CourtIssuedDocketEntry } from './CourtIssuedDocketEntry/CourtIssuedDocketEntry';
 import { CreateOrder } from './CreateOrder/CreateOrder';
+import { DashboardChambers } from './Dashboards/DashboardChambers';
 import { DashboardJudge } from './Dashboards/DashboardJudge';
 import { DashboardPetitioner } from './Dashboards/DashboardPetitioner';
 import { DashboardPractitioner } from './Dashboards/DashboardPractitioner';
@@ -39,12 +40,13 @@ import { PrintPreview } from './CourtIssuedDocketEntry/PrintPreview';
 import { PrintableDocketRecord } from './DocketRecord/PrintableDocketRecord';
 import { PrintableTrialCalendar } from './TrialSessionDetail/PrintableTrialCalendar';
 import { RequestAccessWizard } from './RequestAccess/RequestAccessWizard';
+import { ReviewPetition } from './StartCaseInternal/ReviewPetition';
 import { SecondaryContactEdit } from './SecondaryContactEdit';
 import { SelectDocumentType } from './FileDocument/SelectDocumentType';
 import { SignOrder } from './SignOrder';
 import { SignStipDecision } from './SignStipDecision';
 import { SimplePdfPreviewPage } from './PendingReport/SimplePdfPreviewPage';
-import { StartCaseInternal } from './StartCaseInternal';
+import { StartCaseInternal } from './StartCaseInternal/StartCaseInternal';
 import { StartCaseWizard } from './StartCase/StartCaseWizard';
 import { StyleGuide } from './StyleGuide/StyleGuide';
 import { TrialSessionDetail } from './TrialSessionDetail/TrialSessionDetail';
@@ -72,6 +74,7 @@ const pages = {
   CaseSearchNoMatches,
   CourtIssuedDocketEntry,
   CreateOrder,
+  DashboardChambers,
   DashboardJudge,
   DashboardPetitioner,
   DashboardPractitioner,
@@ -97,6 +100,7 @@ const pages = {
   PrintableDocketRecord,
   PrintableTrialCalendar,
   RequestAccessWizard,
+  ReviewPetition,
   SecondaryContactEdit,
   SelectDocumentType,
   SignOrder,

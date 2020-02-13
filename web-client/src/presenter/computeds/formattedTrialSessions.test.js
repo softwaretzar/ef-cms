@@ -345,6 +345,13 @@ describe('formattedTrialSessions', () => {
       },
       {
         caseOrder: [],
+        judge: { name: '2', userId: '2' },
+        startDate: '2019-11-25T15:00:00.000Z',
+        term: 'Summer',
+        trialLocation: 'Jacksonville, FL',
+      },
+      {
+        caseOrder: [],
         judge: { name: '3', userId: '3' },
         startDate: '2019-11-25T15:00:00.000Z',
         term: 'Fall',
@@ -501,6 +508,35 @@ describe('formattedTrialSessions', () => {
         sessions: [
           {
             judge: { name: '6', userId: '6' },
+            userIsAssignedToSession: false,
+          },
+        ],
+      },
+    ]);
+  });
+
+  it('sets userIsAssignedToSession false if the current user and session have no associated judge', () => {
+    const result = runCompute(formattedTrialSessions, {
+      state: {
+        ...baseState,
+        judgeUser: undefined,
+        trialSessions: [
+          {
+            caseOrder: [],
+            judge: undefined,
+            startDate: '2020-02-17T15:00:00.000Z',
+            swingSession: false,
+            trialLocation: 'Jacksonville, FL',
+          },
+        ],
+        user: { role: User.ROLES.calendarClerk, userId: '1' },
+      },
+    });
+    expect(result.formattedSessions).toMatchObject([
+      {
+        dateFormatted: 'February 17, 2020',
+        sessions: [
+          {
             userIsAssignedToSession: false,
           },
         ],
